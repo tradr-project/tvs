@@ -16,13 +16,18 @@
 
 struct Object {
     dBodyID body;
-    std::vector<dGeomID> geometry;
+    std::vector<dGeomID> geom;
 };
 
 dWorldID world;
 dSpaceID space;
 dJointGroupID contactGroup;
-std::vector<Object> object;
+
+Object box1, box2;
+dJointID joint;
+
+std::vector<Object> objects;
+std::vector<dGeomID> geoms;
 
 void initODE() {
     dInitODE2(0);
@@ -38,60 +43,63 @@ void initODE() {
     dWorldSetContactSurfaceLayer(world, 0.001);
     dWorldSetAutoDisableFlag(world, 1);
 
-    dCreatePlane(space, 0, 1, 0, 0); // (a, b, c)' (x, y, z) = d
+    dGeomID planeGeom = dCreatePlane(space, 0, 1, 0, 0); // (a, b, c)' (x, y, z) = d
+    geoms.push_back(planeGeom);
 
     {
-        Object o1;
-        o1.body = dBodyCreate(world);
-        dBodySetPosition(o1.body, 2.0, 8.0, 0.0);
+        box1.body = dBodyCreate(world);
+        dBodySetPosition(box1.body, 2.0, 8.0, 0.0);
         dMatrix3 R;
         dRFromAxisAndAngle(R,
             dRandReal() * 2.0 - 1.0,
             dRandReal() * 2.0 - 1.0,
             dRandReal() * 2.0 - 1.0,
             dRandReal() * 10.0 - 5.0);
-        dBodySetRotation(o1.body, R);
-        dBodySetLinearVel(o1.body,
+        dBodySetRotation(box1.body, R);
+        dBodySetLinearVel(box1.body,
             dRandReal() * 2.0 - 1.0,
             dRandReal() * 8.0 - 4.0,
             dRandReal() * 2.0 - 1.0);
-        //dBodySetData(object.body, (void*)0);
+        //dBodySetData(objects.body, (void*)0);
         dMass m;
-        dReal sides[] = {0.66, 0.66, 0.66};
+        dReal sides[] = {0.66, 2.66, 0.66};
         dMassSetBox(&m, /* density: */ 1.0, sides[0], sides[1], sides[2]);
-        dBodySetMass(o1.body, &m);
-        o1.geometry.push_back(dCreateBox(space, sides[0], sides[1], sides[2]));
-        dGeomSetBody(o1.geometry[0], o1.body);
-        object.push_back(o1);
+        dBodySetMass(box1.body, &m);
+        dGeomID boxGeom = dCreateBox(space, sides[0], sides[1], sides[2]);
+        geoms.push_back(boxGeom);
+        box1.geom.push_back(boxGeom);
+        dGeomSetBody(box1.geom[0], box1.body);
+        objects.push_back(box1);
     }
 
     {
-        Object o1;
-        o1.body = dBodyCreate(world);
-        dBodySetPosition(o1.body, 0.0, 6.0, 0.0);
+        box2.body = dBodyCreate(world);
+        dBodySetPosition(box2.body, 0.0, 6.0, 0.0);
         dMatrix3 R;
         dRFromAxisAndAngle(R,
             dRandReal() * 2.0 - 1.0,
             dRandReal() * 2.0 - 1.0,
             dRandReal() * 2.0 - 1.0,
             dRandReal() * 10.0 - 5.0);
-        dBodySetRotation(o1.body, R);
-        dBodySetLinearVel(o1.body,
+        dBodySetRotation(box2.body, R);
+        dBodySetLinearVel(box2.body,
             dRandReal() * 2.0 - 1.0,
             dRandReal() * 2.0 - 1.0,
             dRandReal() * 2.0 - 1.0);
-        //dBodySetData(object.body, (void*)0);
+        //dBodySetData(objects.body, (void*)0);
         dMass m;
         dReal sides[] = {0.66, 0.66, 0.66};
         dMassSetBox(&m, /* density: */ 1.0, sides[0], sides[1], sides[2]);
-        dBodySetMass(o1.body, &m);
-        o1.geometry.push_back(dCreateBox(space, sides[0], sides[1], sides[2]));
-        dGeomSetBody(o1.geometry[0], o1.body);
-        object.push_back(o1);
+        dBodySetMass(box2.body, &m);
+        dGeomID boxGeom = dCreateBox(space, sides[0], sides[1], sides[2]);
+        geoms.push_back(boxGeom);
+        box2.geom.push_back(boxGeom);
+        dGeomSetBody(box2.geom[0], box2.body);
+        objects.push_back(box2);
     }
 
-    dJointID joint = dJointCreateFixed(world, 0);
-    dJointAttach(joint, object[0].body, object[1].body);
+    joint = dJointCreateFixed(world, 0);
+    dJointAttach(joint, objects[0].body, objects[1].body);
     dJointSetFixed(joint);
     //dJointSetHingeAnchor(joint, 0.0, 10.0, 0.0);
     //dJointSetHingeAxis(joint, 1, 0, 0);
@@ -125,6 +133,9 @@ void simulationStep(int v) {
     dSpaceCollide(space, 0, &nearCallback);
     dWorldQuickStep(world, 0.05);
     dJointGroupEmpty(contactGroup);
+
+    if(stepNum == 160) {
+    }
 
     stepNum++;
 }
@@ -188,13 +199,21 @@ void drawBox(const dReal sides[3], const dReal pos[3], const dReal R[12]) {
 
 void drawGeom(dGeomID g) {
     if(!g) return;
+    int type = dGeomGetClass(g);
+    if(type == dPlaneClass) {
+        dReal params[4];
+        dGeomPlaneGetParams(g, params);
+
+        return;
+    }
     const dReal *pos = dGeomGetPosition(g);
     const dReal *R = dGeomGetRotation(g);
-    int type = dGeomGetClass(g);
+
     if(type == dBoxClass) {
         dReal sides[3];
         dGeomBoxGetLengths(g, sides);
         drawBox(sides, pos, R);
+        return;
     }
 }
 
@@ -207,10 +226,8 @@ void display(void) {
         0.0, 0.0, 0.0,      /* center is at (0,0,0) */
         0.0, 1.0, 0.);      /* up is in positive Y direction */
 
-    for(std::vector<Object>::iterator it = object.begin(); it != object.end(); it++) {
-        for(std::vector<dGeomID>::iterator it2 = (*it).geometry.begin(); it2 != (*it).geometry.end(); it2++) {
-            drawGeom(*it2);
-        }
+    for(std::vector<dGeomID>::iterator it = geoms.begin(); it != geoms.end(); it++) {
+        drawGeom(*it);
     }
 
     glutSwapBuffers();
