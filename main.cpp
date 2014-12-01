@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <cmath>
 
 #define MAX_CONTACTS 10
 
@@ -14,20 +15,203 @@
 #define NUM_Y 10
 #define NUM_Z 10
 
-struct Object {
+void drawGeom(dGeomID g);
+
+class Track;
+
+struct Grouser {
+    size_t i;
+    dGeomID gTrans, gBox;
     dBodyID body;
-    std::vector<dGeomID> geom;
+    dReal x, y, z, theta;
+    dMass mass;
+};
+
+class Track {
+    friend class Grouser;
+private:
+    dReal radius1;
+    dReal radius2;
+    dReal distance;
+    dReal pDistance;
+    dReal radiusDiff;
+    dReal theta;
+    dReal p1x, p1y, p2x, p2y;
+    dReal arc1Length;
+    dReal arc2Length;
+    dReal totalLength;
+    static const size_t sections = 4;
+    dReal dlimits[sections];
+    size_t numGrousers;
+    dReal grouserWidth;
+    dReal grouserHeight;
+    dReal trackDepth;
+    std::vector<Grouser> grousers;
+    dBodyID body;
+    dMass mass;
+public:
+    /*
+     *    ----- p1
+     *   /     *---
+     *  /     / \  -------   p2
+     *  |    /theta       -----*\
+     *  |  O    |              \/
+     *  \       /
+     *   \     /
+     *    -----
+     */
+    Track(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserWidth_, dReal grouserHeight_, dReal trackDepth_) : grousers(numGrousers_) {
+        radius1 = fmax(radius1_, radius2_);
+        radius2 = fmin(radius1_, radius2_);
+        distance = fabs(distance_);
+        numGrousers = numGrousers_;
+        grouserWidth = grouserWidth_;
+        grouserHeight = grouserHeight_;
+        trackDepth = trackDepth_;
+        radiusDiff = radius1 - radius2;
+        pDistance = sqrt(pow(distance, 2) - pow(radiusDiff, 2));
+        theta = atan2(pDistance, radiusDiff);
+        p1x = radius1 * cos(theta);
+        p1y = radius1 * sin(theta);
+        p2x = distance + radius2 * cos(theta);
+        p2y = radius2 * sin(theta);
+        arc1Length = radius1 * 2 * (M_PI - theta);
+        arc2Length = radius2 * 2 * theta;
+        dlimits[0] = arc1Length;
+        dlimits[1] = pDistance;
+        dlimits[2] = arc2Length;
+        dlimits[3] = pDistance;
+        totalLength = 0.0;
+        for(size_t i = 0; i < sections; i++) totalLength += dlimits[i];
+    }
+
+    inline dReal scale(dReal v, dReal vmin, dReal vmax) {
+        return v * (vmax - vmin) + vmin;
+    }
+
+    inline size_t section(dReal u, dReal *v) {
+        dReal u1 = (u - floor(u)) * totalLength;
+        for(size_t i = 0; i < sections; i++) {
+            if(u1 < dlimits[i]) {
+                *v = u1 / dlimits[i];
+                return i;
+            } else {
+                u1 -= dlimits[i];
+            }
+        }
+        std::cerr << "WTF in Track::section(" << u << ")" << std::endl;
+        std::cerr << "    u1 = " << u1 << std::endl;
+        return -1;
+    }
+
+    void get(dReal u, dReal *p, dReal *a) {
+        dReal v;
+        switch(section(u, &v)) {
+        case 0:
+            *a = scale(v, 2 * M_PI - theta, theta);
+            p[0] = radius1 * cos(*a);
+            p[1] = radius1 * sin(*a);
+            break;
+        case 1:
+            *a = theta;
+            p[0] = scale(v, p1x, p2x);
+            p[1] = scale(v, p1y, p2y);
+            break;
+        case 2:
+            *a = scale(v, theta, -theta);
+            p[0] = distance + radius2 * cos(*a);
+            p[1] = radius2 * sin(*a);
+            break;
+        case 3:
+            *a = -theta;
+            p[0] = scale(v, p2x, p1x);
+            p[1] = scale(v, -p2y, -p1y);
+            break;
+        default:
+            std::cerr << "WTF in Track::get()" << std::endl;
+        }
+    }
+    
+    void get(size_t i, dReal u, dReal *p, dReal *a) {
+        get(i/(dReal)numGrousers + u, p, a);
+    }
+
+    void createAll(dWorldID world, dSpaceID space) {
+        // mass of the composite object:
+        dMassSetZero(&mass);
+
+        // size of the boxes:
+        dReal sides[] = {grouserWidth, grouserHeight, trackDepth};
+
+        for(size_t i = 0; i < numGrousers; i++) {
+            grousers[i].i = i;
+            
+            // get positioon of object on curve:
+            dReal p[2];
+            get(grousers[i].i, 0.0, p, &grousers[i].theta);
+            grousers[i].x = p[0];
+            grousers[i].y = p[1];
+            grousers[i].z = 0.0;
+            dMatrix3 R;
+            dRFromAxisAndAngle(R, 0.0, 0.0, 1.0, grousers[i].theta);
+            
+            // sub object will be added to this transform:
+            grousers[i].gTrans = dCreateGeomTransform(space);
+            dGeomTransformSetCleanup(grousers[i].gTrans, 1);
+            
+            grousers[i].gBox = dCreateBox(0, sides[0], sides[1], sides[2]);
+            
+            dMassSetBox(&grousers[i].mass, 1.0, sides[0], sides[1], sides[2]);
+            
+            dGeomTransformSetGeom(grousers[i].gTrans, grousers[i].gBox);
+            
+            dGeomSetPosition(grousers[i].gBox, grousers[i].x, grousers[i].y, grousers[i].z);
+            dMassTranslate(&grousers[i].mass, grousers[i].x, grousers[i].y, grousers[i].z);
+            
+            dGeomSetRotation(grousers[i].gBox, R);
+            dMassRotate(&grousers[i].mass, R);
+            
+            dMassAdd(&mass, &grousers[i].mass);
+        }
+        
+        // translate so that center of mass is at origin and ode won't complain
+        for(int i = 0; i < numGrousers; i++) {
+            dGeomSetPosition(grousers[i].gBox,
+                              grousers[i].x - mass.c[0],
+                              grousers[i].y - mass.c[1],
+                              grousers[i].z - mass.c[2]);
+        }
+        dMassTranslate(&mass,
+                        -mass.c[0],
+                        -mass.c[1],
+                        -mass.c[2]);
+
+        body = dBodyCreate(world);
+        
+        for(int i = 0; i < numGrousers; i++) {
+            dGeomSetBody(grousers[i].gTrans, body);
+        }
+        
+        dBodySetMass(body, &mass);
+    }
+    
+    void test() {
+        dBodyAddTorque(body, 0.3, 2.0, 4.0);
+    }
+
+    void draw() {
+        for(std::vector<Grouser>::iterator it = grousers.begin(); it != grousers.end(); it++) {
+            drawGeom(it->gBox);
+        }
+    }
 };
 
 dWorldID world;
 dSpaceID space;
 dJointGroupID contactGroup;
 
-Object box1, box2;
-dJointID joint;
-
-std::vector<Object> objects;
-std::vector<dGeomID> geoms;
+Track track(0.2, 0.15, 0.45, 20, 0.03, 0.06, 0.18);
+dGeomID planeGeom;
 
 void initODE() {
     dInitODE2(0);
@@ -43,66 +227,9 @@ void initODE() {
     dWorldSetContactSurfaceLayer(world, 0.001);
     dWorldSetAutoDisableFlag(world, 1);
 
-    dGeomID planeGeom = dCreatePlane(space, 0, 1, 0, 0); // (a, b, c)' (x, y, z) = d
-    geoms.push_back(planeGeom);
+    planeGeom = dCreatePlane(space, 0, 1, 0, -0.3); // (a, b, c)' (x, y, z) = d
 
-    {
-        box1.body = dBodyCreate(world);
-        dBodySetPosition(box1.body, 2.0, 8.0, 0.0);
-        dMatrix3 R;
-        dRFromAxisAndAngle(R,
-            dRandReal() * 2.0 - 1.0,
-            dRandReal() * 2.0 - 1.0,
-            dRandReal() * 2.0 - 1.0,
-            dRandReal() * 10.0 - 5.0);
-        dBodySetRotation(box1.body, R);
-        dBodySetLinearVel(box1.body,
-            dRandReal() * 2.0 - 1.0,
-            dRandReal() * 8.0 - 4.0,
-            dRandReal() * 2.0 - 1.0);
-        //dBodySetData(objects.body, (void*)0);
-        dMass m;
-        dReal sides[] = {0.66, 2.66, 0.66};
-        dMassSetBox(&m, /* density: */ 1.0, sides[0], sides[1], sides[2]);
-        dBodySetMass(box1.body, &m);
-        dGeomID boxGeom = dCreateBox(space, sides[0], sides[1], sides[2]);
-        geoms.push_back(boxGeom);
-        box1.geom.push_back(boxGeom);
-        dGeomSetBody(box1.geom[0], box1.body);
-        objects.push_back(box1);
-    }
-
-    {
-        box2.body = dBodyCreate(world);
-        dBodySetPosition(box2.body, 0.0, 6.0, 0.0);
-        dMatrix3 R;
-        dRFromAxisAndAngle(R,
-            dRandReal() * 2.0 - 1.0,
-            dRandReal() * 2.0 - 1.0,
-            dRandReal() * 2.0 - 1.0,
-            dRandReal() * 10.0 - 5.0);
-        dBodySetRotation(box2.body, R);
-        dBodySetLinearVel(box2.body,
-            dRandReal() * 2.0 - 1.0,
-            dRandReal() * 2.0 - 1.0,
-            dRandReal() * 2.0 - 1.0);
-        //dBodySetData(objects.body, (void*)0);
-        dMass m;
-        dReal sides[] = {0.66, 0.66, 0.66};
-        dMassSetBox(&m, /* density: */ 1.0, sides[0], sides[1], sides[2]);
-        dBodySetMass(box2.body, &m);
-        dGeomID boxGeom = dCreateBox(space, sides[0], sides[1], sides[2]);
-        geoms.push_back(boxGeom);
-        box2.geom.push_back(boxGeom);
-        dGeomSetBody(box2.geom[0], box2.body);
-        objects.push_back(box2);
-    }
-
-    joint = dJointCreateFixed(world, 0);
-    dJointAttach(joint, objects[0].body, objects[1].body);
-    dJointSetFixed(joint);
-    //dJointSetHingeAnchor(joint, 0.0, 10.0, 0.0);
-    //dJointSetHingeAxis(joint, 1, 0, 0);
+    track.createAll(world, space);
 }
 
 static void nearCallback(void *data, dGeomID o1, dGeomID o2) {
@@ -134,9 +261,8 @@ void simulationStep(int v) {
     dWorldQuickStep(world, 0.05);
     dJointGroupEmpty(contactGroup);
 
-    if(stepNum == 160) {
-    }
-
+    if(stepNum > 100) track.test();
+    
     stepNum++;
 }
 
@@ -199,13 +325,16 @@ void drawBox(const dReal sides[3], const dReal pos[3], const dReal R[12]) {
 
 void drawGeom(dGeomID g) {
     if(!g) return;
+    
     int type = dGeomGetClass(g);
+    
     if(type == dPlaneClass) {
         dReal params[4];
         dGeomPlaneGetParams(g, params);
 
         return;
     }
+    
     const dReal *pos = dGeomGetPosition(g);
     const dReal *R = dGeomGetRotation(g);
 
@@ -217,18 +346,22 @@ void drawGeom(dGeomID g) {
     }
 }
 
+GLfloat cameraTheta = 14.9, cameraPhi = 0.5, cameraDist = 1.6;
+
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0.0, 25.0, 25.0,  /* eye is at (0,5,5) */
-        0.0, 0.0, 0.0,      /* center is at (0,0,0) */
-        0.0, 1.0, 0.);      /* up is in positive Y direction */
+    GLfloat x = cameraDist * cos(cameraTheta) * sin(cameraPhi);
+    GLfloat y = cameraDist * sin(cameraTheta) * sin(cameraPhi);
+    GLfloat z = cameraDist * cos(cameraPhi);
+    gluLookAt(x, y, z,   /* eye */
+        0.0, 0.0, 0.0,   /* center */
+        0.0, 1.0, 0.0);  /* up direction vector */
 
-    for(std::vector<dGeomID>::iterator it = geoms.begin(); it != geoms.end(); it++) {
-        drawGeom(*it);
-    }
+    drawGeom(planeGeom);
+    track.draw();
 
     glutSwapBuffers();
 }
@@ -250,6 +383,44 @@ void initOpenGL(void) {
         /* Z near */ 1.0, /* Z far */ 100.0);
 }
 
+static int startx = 0, starty = 0, left = 0, right = 0;
+
+void mouseButton(int button, int state, int x, int y) {
+    left = 0;
+    right = 0;
+    if(button == GLUT_LEFT_BUTTON) {
+        left = 1;
+    } else if(button == GLUT_RIGHT_BUTTON) {
+        right = 1;
+    } else {
+        return;
+    }
+    if(state == GLUT_DOWN) {
+        startx = x;
+        starty = y;
+    }
+}
+
+void mouseMotion(int x, int y) {
+    int dx = x - startx;
+    int dy = y - starty;
+    startx = x;
+    starty = y;
+    if(left) {
+        cameraTheta += 0.1 * dx;
+        cameraPhi += 0.1 * dy;
+    }
+    if(right) {
+        cameraDist += 0.1 * dy;
+    }
+    cameraPhi = fmaxf(0.1, fminf(0.9, cameraPhi));
+    cameraDist = fmaxf(0.1, fminf(10.0, cameraDist));
+    std::cout
+    << "cameraTheta = " << cameraTheta << std::endl
+    << "cameraPhi = " << cameraPhi << std::endl
+    << "cameraDist = " << cameraDist << std::endl;
+}
+
 void interval(int v) {
     simulationStep(v);
     glutPostRedisplay();
@@ -259,7 +430,7 @@ void interval(int v) {
 int main(int argc, char **argv) {
 #ifdef WITHOUT_OPENGL
     initODE();
-    for(int i = 0; i < 100; i++) simulationStep(0);
+    for(int i = 0; i < 200; i++) simulationStep(0);
     destroyODE();
 #else
     glutInit(&argc, argv);
@@ -267,7 +438,9 @@ int main(int argc, char **argv) {
     glutInitWindowSize(800, 600);
     glutCreateWindow("ODE");
     glutDisplayFunc(display);
-    glutTimerFunc(0, &interval, 0);
+    glutMouseFunc(mouseButton);
+    glutMotionFunc(mouseMotion);
+    glutTimerFunc(0, interval, 0);
     initOpenGL();
     initODE();
     glutMainLoop();
