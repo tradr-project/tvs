@@ -16,6 +16,7 @@
 #define NUM_Z 10
 
 void drawGeom(dGeomID g);
+void drawBox(const dReal sides[3], const dReal pos[3], const dReal R[12]);
 
 class Track;
 
@@ -23,8 +24,11 @@ struct Grouser {
     size_t i;
     dGeomID gTrans, gBox;
     dBodyID body;
-    dReal x, y, z, theta;
+    dReal x, y, z, theta, ox, oy, oz;
     dMass mass;
+    inline dReal _x() { return ox + x; }
+    inline dReal _y() { return oy + y; }
+    inline dReal _z() { return oz + z; }
 };
 
 class Track {
@@ -49,6 +53,8 @@ private:
     std::vector<Grouser> grousers;
     dBodyID body;
     dMass mass;
+    dReal density;
+    dReal u;
 public:
     /*
      *    ----- p1
@@ -61,6 +67,7 @@ public:
      *    -----
      */
     Track(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserWidth_, dReal grouserHeight_, dReal trackDepth_) : grousers(numGrousers_) {
+        density = 10.0;
         radius1 = fmax(radius1_, radius2_);
         radius2 = fmin(radius1_, radius2_);
         distance = fabs(distance_);
@@ -144,64 +151,95 @@ public:
         dReal sides[] = {grouserWidth, grouserHeight, trackDepth};
 
         for(size_t i = 0; i < numGrousers; i++) {
-            grousers[i].i = i;
+            Grouser& g = grousers[i];
+            g.i = i;
             
             // get positioon of object on curve:
             dReal p[2];
-            get(grousers[i].i, 0.0, p, &grousers[i].theta);
-            grousers[i].x = p[0];
-            grousers[i].y = p[1];
-            grousers[i].z = 0.0;
+            get(g.i, 0.0, p, &g.theta);
+            g.x = p[0];
+            g.y = p[1];
+            g.z = 0.0;
             dMatrix3 R;
-            dRFromAxisAndAngle(R, 0.0, 0.0, 1.0, grousers[i].theta);
+            dRFromAxisAndAngle(R, 0.0, 0.0, 1.0, g.theta);
             
             // sub object will be added to this transform:
-            grousers[i].gTrans = dCreateGeomTransform(space);
-            dGeomTransformSetCleanup(grousers[i].gTrans, 1);
+            g.gTrans = dCreateGeomTransform(space);
+            dGeomTransformSetCleanup(g.gTrans, 1);
             
-            grousers[i].gBox = dCreateBox(0, sides[0], sides[1], sides[2]);
+            g.gBox = dCreateBox(0, sides[0], sides[1], sides[2]);
             
-            dMassSetBox(&grousers[i].mass, 1.0, sides[0], sides[1], sides[2]);
+            dMassSetBox(&g.mass, density, sides[0], sides[1], sides[2]);
             
-            dGeomTransformSetGeom(grousers[i].gTrans, grousers[i].gBox);
+            dGeomTransformSetGeom(g.gTrans, g.gBox);
             
-            dGeomSetPosition(grousers[i].gBox, grousers[i].x, grousers[i].y, grousers[i].z);
-            dMassTranslate(&grousers[i].mass, grousers[i].x, grousers[i].y, grousers[i].z);
+            dGeomSetPosition(g.gBox, g.x, g.y, g.z);
+            dMassTranslate(&g.mass, g.x, g.y, g.z);
             
-            dGeomSetRotation(grousers[i].gBox, R);
-            dMassRotate(&grousers[i].mass, R);
+            dGeomSetRotation(g.gBox, R);
+            dMassRotate(&g.mass, R);
             
-            dMassAdd(&mass, &grousers[i].mass);
+            dMassAdd(&mass, &g.mass);
         }
         
         // translate so that center of mass is at origin and ode won't complain
         for(int i = 0; i < numGrousers; i++) {
-            dGeomSetPosition(grousers[i].gBox,
-                              grousers[i].x - mass.c[0],
-                              grousers[i].y - mass.c[1],
-                              grousers[i].z - mass.c[2]);
+            Grouser& g = grousers[i];
+            g.ox = -mass.c[0];
+            g.oy = -mass.c[1];
+            g.oz = -mass.c[2];
+            dGeomSetPosition(g.gBox, g._x(), g._y(), g._z());
         }
-        dMassTranslate(&mass,
-                        -mass.c[0],
-                        -mass.c[1],
-                        -mass.c[2]);
+        dMassTranslate(&mass, -mass.c[0], -mass.c[1], -mass.c[2]);
 
         body = dBodyCreate(world);
         
         for(int i = 0; i < numGrousers; i++) {
-            dGeomSetBody(grousers[i].gTrans, body);
+            Grouser& g = grousers[i];
+            dGeomSetBody(g.gTrans, body);
         }
         
         dBodySetMass(body, &mass);
     }
-    
-    void test() {
-        dBodyAddTorque(body, 0.3, 2.0, 4.0);
-    }
 
     void draw() {
+        const dReal *pos = dBodyGetPosition(body);
+        const dReal *R = dBodyGetRotation(body);
+        
         for(std::vector<Grouser>::iterator it = grousers.begin(); it != grousers.end(); it++) {
-            drawGeom(it->gBox);
+            const dReal *posL = dGeomGetPosition(it->gBox);
+            const dReal *RL = dGeomGetRotation(it->gBox);
+            dVector3 posW;
+            dMatrix3 RW;
+            dMULTIPLY0_331(posW, R, posL);
+            posW[0] += pos[0];
+            posW[1] += pos[1];
+            posW[2] += pos[2];
+            dMULTIPLY0_333(RW, R, RL);
+            
+            dReal sides[3];
+            dGeomBoxGetLengths(it->gBox, sides);
+            drawBox(sides, posW, RW);
+        }
+    }
+    
+    void rotate(dReal du) {
+        u += du;
+        
+        for(size_t i = 0; i < numGrousers; i++) {
+            Grouser& g = grousers[i];
+            
+            // get positioon of object on curve:
+            dReal p[2];
+            get(g.i, u, p, &g.theta);
+            g.x = p[0];
+            g.y = p[1];
+            g.z = 0.0;
+            dMatrix3 R;
+            dRFromAxisAndAngle(R, 0.0, 0.0, 1.0, g.theta);
+            
+            dGeomSetPosition(g.gBox, g._x(), g._y(), g._z());
+            dGeomSetRotation(g.gBox, R);
         }
     }
 };
@@ -210,7 +248,7 @@ dWorldID world;
 dSpaceID space;
 dJointGroupID contactGroup;
 
-Track track(0.2, 0.15, 0.45, 20, 0.03, 0.06, 0.18);
+Track track(0.2, 0.15, 0.6, 30, 0.01, 0.06, 0.18);
 dGeomID planeGeom;
 
 void initODE() {
@@ -227,7 +265,7 @@ void initODE() {
     dWorldSetContactSurfaceLayer(world, 0.001);
     dWorldSetAutoDisableFlag(world, 1);
 
-    planeGeom = dCreatePlane(space, 0, 1, 0, -0.3); // (a, b, c)' (x, y, z) = d
+    planeGeom = dCreatePlane(space, 0, 1, 0, -0.5); // (a, b, c)' (x, y, z) = d
 
     track.createAll(world, space);
 }
@@ -257,11 +295,11 @@ void simulationStep(int v) {
     static int stepNum = 0;
     std::cout << "about to perform simulation step " << stepNum << std::endl;
 
+    track.rotate(0.001);
+    
     dSpaceCollide(space, 0, &nearCallback);
     dWorldQuickStep(world, 0.05);
     dJointGroupEmpty(contactGroup);
-
-    if(stepNum > 100) track.test();
     
     stepNum++;
 }
@@ -323,6 +361,23 @@ void drawBox(const dReal sides[3], const dReal pos[3], const dReal R[12]) {
     glPopMatrix();
 }
 
+void drawPlane(const dReal params[4]) {
+    double a = params[0], b = params[1], c = params[2], d = params[3];
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glBegin(GL_QUADS);
+    const dReal incr = 0.2, ext = 10.0;
+    for(dReal i = -ext; i < ext; i += incr) {
+        for(dReal j = -ext; j < ext; j += incr) {
+            glVertex3d(i, -(a*i+c*j-d)/b, j);
+            glVertex3d(i, -(a*i+c*(j+1)-d)/b, j+1);
+            glVertex3d(i+incr, -(a*(i+1)+c*(j+1)-d)/b, j+1);
+            glVertex3d(i+incr, -(a*(i+1)+c*j-d)/b, j);
+        }
+    }
+    glEnd();
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
 void drawGeom(dGeomID g) {
     if(!g) return;
     
@@ -331,7 +386,7 @@ void drawGeom(dGeomID g) {
     if(type == dPlaneClass) {
         dReal params[4];
         dGeomPlaneGetParams(g, params);
-
+        drawPlane(params);
         return;
     }
     
