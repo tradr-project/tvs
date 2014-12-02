@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		CEE555701A2C8F7B000AB866 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE5556F1A2C8F7B000AB866 /* main.cpp */; };
+		CEE555741A2D1BD4000AB866 /* View.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE555721A2D1BD4000AB866 /* View.cpp */; };
+		CEE555771A2D1C50000AB866 /* TrackModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE555751A2D1C50000AB866 /* TrackModel.cpp */; };
+		CEE5557A1A2D1C9D000AB866 /* Physics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE555781A2D1C9D000AB866 /* Physics.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +28,12 @@
 /* Begin PBXFileReference section */
 		CE98939D1A2C8ED300E79C12 /* tvs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tvs; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEE5556F1A2C8F7B000AB866 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
+		CEE555721A2D1BD4000AB866 /* View.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = View.cpp; path = ../View.cpp; sourceTree = "<group>"; };
+		CEE555731A2D1BD4000AB866 /* View.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = View.h; path = ../View.h; sourceTree = "<group>"; };
+		CEE555751A2D1C50000AB866 /* TrackModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TrackModel.cpp; path = ../TrackModel.cpp; sourceTree = "<group>"; };
+		CEE555761A2D1C50000AB866 /* TrackModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TrackModel.h; path = ../TrackModel.h; sourceTree = "<group>"; };
+		CEE555781A2D1C9D000AB866 /* Physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Physics.cpp; path = ../Physics.cpp; sourceTree = "<group>"; };
+		CEE555791A2D1C9D000AB866 /* Physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Physics.h; path = ../Physics.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +67,12 @@
 			isa = PBXGroup;
 			children = (
 				CEE5556F1A2C8F7B000AB866 /* main.cpp */,
+				CEE555721A2D1BD4000AB866 /* View.cpp */,
+				CEE555731A2D1BD4000AB866 /* View.h */,
+				CEE555751A2D1C50000AB866 /* TrackModel.cpp */,
+				CEE555761A2D1C50000AB866 /* TrackModel.h */,
+				CEE555781A2D1C9D000AB866 /* Physics.cpp */,
+				CEE555791A2D1C9D000AB866 /* Physics.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -118,7 +133,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEE555771A2D1C50000AB866 /* TrackModel.cpp in Sources */,
+				CEE555741A2D1BD4000AB866 /* View.cpp in Sources */,
 				CEE555701A2C8F7B000AB866 /* main.cpp in Sources */,
+				CEE5557A1A2D1C9D000AB866 /* Physics.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
