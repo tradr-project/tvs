@@ -62,37 +62,40 @@ size_t TrackModel::section(dReal u, dReal *v) {
     return -1;
 }
 
-void TrackModel::get(dReal u, dReal *p, dReal *a) {
+void TrackModel::getPointOnPath(dReal u, dReal *x_, dReal *y_, dReal *theta_) {
     dReal v;
     switch(section(u, &v)) {
         case 0:
-            *a = scale(v, 2 * M_PI - theta, theta);
-            p[0] = radius1 * cos(*a);
-            p[1] = radius1 * sin(*a);
+            *theta_ = scale(v, 2 * M_PI - theta, theta);
+            *x_ = radius1 * cos(*theta_);
+            *y_ = radius1 * sin(*theta_);
             break;
         case 1:
-            *a = theta;
-            p[0] = scale(v, p1x, p2x);
-            p[1] = scale(v, p1y, p2y);
+            *theta_ = theta;
+            *x_ = scale(v, p1x, p2x);
+            *y_ = scale(v, p1y, p2y);
             break;
         case 2:
-            *a = scale(v, theta, -theta);
-            p[0] = distance + radius2 * cos(*a);
-            p[1] = radius2 * sin(*a);
+            *theta_ = scale(v, theta, -theta);
+            *x_ = distance + radius2 * cos(*theta_);
+            *y_ = radius2 * sin(*theta_);
             break;
         case 3:
-            *a = -theta;
-            p[0] = scale(v, p2x, p1x);
-            p[1] = scale(v, -p2y, -p1y);
+            *theta_ = -theta;
+            *x_ = scale(v, p2x, p1x);
+            *y_ = scale(v, -p2y, -p1y);
             break;
     }
 }
 
-void TrackModel::get(size_t i, dReal u, dReal *p, dReal *a) {
-    get(i/(dReal)numGrousers + u, p, a);
+void TrackModel::computeGrouserTransform3D(Grouser *g, size_t i) {
+    g->i = i;
+    g->z = 0;
+    getPointOnPath(i / (dReal)numGrousers + u, &g->x, &g->y, &g->theta);
+    dRFromAxisAndAngle(g->R, 0, 0, 1, g->theta);
 }
 
-void TrackModel::createAll(dWorldID world, dSpaceID space) {
+void TrackModel::createAllGrousers(dWorldID world, dSpaceID space) {
     // mass of the composite object:
     dMassSetZero(&mass);
     
@@ -101,16 +104,7 @@ void TrackModel::createAll(dWorldID world, dSpaceID space) {
     
     for(size_t i = 0; i < numGrousers; i++) {
         Grouser& g = grousers[i];
-        g.i = i;
-        
-        // get positioon of object on curve:
-        dReal p[2];
-        get(g.i, 0.0, p, &g.theta);
-        g.x = p[0];
-        g.y = p[1];
-        g.z = 0.0;
-        dMatrix3 R;
-        dRFromAxisAndAngle(R, 0.0, 0.0, 1.0, g.theta);
+        computeGrouserTransform3D(&grousers[i], i);
         
         // sub object will be added to this transform:
         g.gTrans = dCreateGeomTransform(space);
@@ -125,8 +119,8 @@ void TrackModel::createAll(dWorldID world, dSpaceID space) {
         dGeomSetPosition(g.gBox, g.x, g.y, g.z);
         dMassTranslate(&g.mass, g.x, g.y, g.z);
         
-        dGeomSetRotation(g.gBox, R);
-        dMassRotate(&g.mass, R);
+        dGeomSetRotation(g.gBox, g.R);
+        dMassRotate(&g.mass, g.R);
         
         dMassAdd(&mass, &g.mass);
     }
@@ -137,7 +131,7 @@ void TrackModel::createAll(dWorldID world, dSpaceID space) {
         g.ox = -mass.c[0];
         g.oy = -mass.c[1];
         g.oz = -mass.c[2];
-        dGeomSetPosition(g.gBox, g._x(), g._y(), g._z());
+        dGeomSetPosition(g.gBox, g.x + g.ox, g.y + g.oy, g.z + g.oz);
     }
     dMassTranslate(&mass, -mass.c[0], -mass.c[1], -mass.c[2]);
     
@@ -150,6 +144,10 @@ void TrackModel::createAll(dWorldID world, dSpaceID space) {
     
     dBodySetMass(body, &mass);
     dBodySetPosition(body, 0.0, 0.4, 1.0);
+}
+
+void TrackModel::create(dWorldID world, dSpaceID space) {
+    createAllGrousers(world, space);
 }
 
 void TrackModel::draw(View *view) {
@@ -181,17 +179,11 @@ void TrackModel::rotate(dReal du) {
     for(size_t i = 0; i < numGrousers; i++) {
         Grouser& g = grousers[i];
         
-        // get positioon of object on curve:
-        dReal p[2];
-        get(g.i, u, p, &g.theta);
-        g.x = p[0];
-        g.y = p[1];
-        g.z = 0.0;
-        dMatrix3 R;
-        dRFromAxisAndAngle(R, 0.0, 0.0, 1.0, g.theta);
-        
-        dGeomSetPosition(g.gBox, g._x(), g._y(), g._z());
-        dGeomSetRotation(g.gBox, R);
+        // get position of object on curve:
+        computeGrouserTransform3D(&grousers[i], i);
+
+        dGeomSetPosition(g.gBox, g.x + g.ox, g.y + g.oy, g.z + g.oz);
+        dGeomSetRotation(g.gBox, g.R);
     }
 }
 
@@ -200,5 +192,5 @@ extern Physics physics;
 
 void TrackModel::test() {
     //dBodyAddTorque(body, 0.0, 0.1, 0.0);
-    dBodyAddForce(body, 0, 0.01 * (1+sin(physics.stepNum * 0.01)), 0);
+    //dBodyAddForce(body, 0, 0.01 * (1+sin(physics.stepNum * 0.01)), 0);
 }

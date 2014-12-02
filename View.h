@@ -64,4 +64,14 @@ public:
     void pollEvents();
 };
 
+#define glCheckError() { \
+    GLenum e = glGetError(); \
+    if(e != GL_NO_ERROR) { \
+    const GLubyte *str = gluErrorString(e); \
+    std::cerr << "error: OpenGL: " << \
+        __FILE__ << ":" << __LINE__ << " " << \
+        __FUNCTION__ << ": " << str << std::endl; \
+    } \
+}
+
 #endif /* defined(__tvs__View__) */

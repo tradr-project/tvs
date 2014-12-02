@@ -21,9 +21,7 @@ struct Grouser {
     dBodyID body;
     dReal x, y, z, theta, ox, oy, oz;
     dMass mass;
-    inline dReal _x() { return ox + x; }
-    inline dReal _y() { return oy + y; }
-    inline dReal _z() { return oz + z; }
+    dMatrix3 R;
 };
 
 class TrackModel {
@@ -53,9 +51,10 @@ public:
     TrackModel(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserWidth_, dReal grouserHeight_, dReal trackDepth_);
     dReal scale(dReal v, dReal vmin, dReal vmax);
     size_t section(dReal u, dReal *v);
-    void get(dReal u, dReal *p, dReal *a);
-    void get(size_t i, dReal u, dReal *p, dReal *a);
-    void createAll(dWorldID world, dSpaceID space);
+    void getPointOnPath(dReal u, dReal *x_, dReal *y_, dReal *theta_);
+    void computeGrouserTransform3D(Grouser *g, size_t i);
+    void createAllGrousers(dWorldID world, dSpaceID space);
+    void create(dWorldID world, dSpaceID space);
     void draw(View *view);
     void rotate(dReal du);
     void test();

@@ -31,7 +31,7 @@ void Physics::init() {
     
     planeGeom = dCreatePlane(space, 0, 1, 0, 0); // (a, b, c)' (x, y, z) = d
     
-    track.createAll(world, space);
+    track.create(world, space);
 }
 
 void Physics::destroy() {
@@ -53,7 +53,11 @@ void Physics::nearCallback(dGeomID o1, dGeomID o2) {
     dContact contact[MAX_CONTACTS];
     for(i = 0; i < MAX_CONTACTS; i++) {
         contact[i].surface.mode = dContactBounce | dContactSoftCFM;
-        contact[i].surface.mu = 1; //dInfinity;
+#ifdef DIMITRI_SUGGESTION
+        contact[i].surface.mode |= dContactMotion1;
+        contact[i].surface.motion1 = -0.1;
+#endif
+        contact[i].surface.mu = dInfinity;
         contact[i].surface.mu2 = 0;
         contact[i].surface.bounce = 0.5;
         contact[i].surface.bounce_vel = 0.1;

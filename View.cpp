@@ -16,6 +16,8 @@ dVector3 O;
 
 extern Physics physics;
 
+#define checkError2()     checkError(__FILE__, __LINE__, __FUNCTION__)
+
 void View::init() {
     cx = 0.0; cy = 0.0; cz = 0.0;
     ex = 0.0; ey = 1.0; ez = -5.0;
@@ -46,13 +48,7 @@ void View::initGLFW() {
     
     glfwSetErrorCallback(errorCallback);
     
-#if 0
     glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We don't want the old OpenGL
-#endif
     
     // Open a window and create its OpenGL context
     window = glfwCreateWindow(800, 600, "tvs", NULL, NULL);
@@ -68,17 +64,8 @@ void View::initGLFW() {
     glfwSetMouseButtonCallback(window, mouseButtonCallbackWrapper);
     glfwSetCursorPosCallback(window, mousePositionCallbackWrapper);
     glfwMakeContextCurrent(window);
-    
-#if 0
-    glewExperimental = true; // Needed in core profile
-    if(glewInit() != GLEW_OK) {
-        std::cerr << "error: failed to initialize GLEW" << std::endl;
-        destroy();
-        exit(1);
-    }
-#endif
-    
-    //glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+
+    glCheckError();
 }
 
 void View::initGL() {
@@ -94,7 +81,7 @@ void View::initGL() {
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHTING);
-    
+
     /* Use depth buffering for hidden surface elimination. */
     glEnable(GL_DEPTH_TEST);
 
@@ -111,8 +98,10 @@ void View::initGL() {
                    /* Z near */ 1.0, /* Z far */ 100.0);
     
     glMatrixMode(GL_MODELVIEW);
-
+    
     glClearColor(0.19f, 0.2f, 0.21f, 1.0f);
+    
+    glCheckError();
 }
 
 void View::display() {
@@ -125,12 +114,9 @@ void View::display() {
     
     draw();
     
-    GLenum e = glGetError();
-    if(e != GL_NO_ERROR) {
-        std::cerr << "error: OpenGL: " << e << std::endl;
-    }
-    
     glfwSwapBuffers(window);
+    
+    glCheckError();
 }
 
 void View::draw() {
