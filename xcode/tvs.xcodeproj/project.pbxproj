@@ -11,6 +11,10 @@
 		CEE555741A2D1BD4000AB866 /* View.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE555721A2D1BD4000AB866 /* View.cpp */; };
 		CEE555771A2D1C50000AB866 /* TrackModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE555751A2D1C50000AB866 /* TrackModel.cpp */; };
 		CEE5557A1A2D1C9D000AB866 /* Physics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE555781A2D1C9D000AB866 /* Physics.cpp */; };
+		CEE5557F1A2E0441000AB866 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557B1A2E0441000AB866 /* Cocoa.framework */; };
+		CEE555801A2E0441000AB866 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557C1A2E0441000AB866 /* CoreVideo.framework */; };
+		CEE555811A2E0441000AB866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557D1A2E0441000AB866 /* IOKit.framework */; };
+		CEE555821A2E0441000AB866 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557E1A2E0441000AB866 /* OpenGL.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -34,6 +38,10 @@
 		CEE555761A2D1C50000AB866 /* TrackModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TrackModel.h; path = ../TrackModel.h; sourceTree = "<group>"; };
 		CEE555781A2D1C9D000AB866 /* Physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Physics.cpp; path = ../Physics.cpp; sourceTree = "<group>"; };
 		CEE555791A2D1C9D000AB866 /* Physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Physics.h; path = ../Physics.h; sourceTree = "<group>"; };
+		CEE5557B1A2E0441000AB866 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
+		CEE5557C1A2E0441000AB866 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = ../../../../System/Library/Frameworks/CoreVideo.framework; sourceTree = "<group>"; };
+		CEE5557D1A2E0441000AB866 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = ../../../../System/Library/Frameworks/IOKit.framework; sourceTree = "<group>"; };
+		CEE5557E1A2E0441000AB866 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = ../../../../System/Library/Frameworks/OpenGL.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +49,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEE5557F1A2E0441000AB866 /* Cocoa.framework in Frameworks */,
+				CEE555821A2E0441000AB866 /* OpenGL.framework in Frameworks */,
+				CEE555801A2E0441000AB866 /* CoreVideo.framework in Frameworks */,
+				CEE555811A2E0441000AB866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,6 +62,10 @@
 		CE9893941A2C8ED300E79C12 = {
 			isa = PBXGroup;
 			children = (
+				CEE5557B1A2E0441000AB866 /* Cocoa.framework */,
+				CEE5557C1A2E0441000AB866 /* CoreVideo.framework */,
+				CEE5557D1A2E0441000AB866 /* IOKit.framework */,
+				CEE5557E1A2E0441000AB866 /* OpenGL.framework */,
 				CEE555711A2C8F80000AB866 /* src */,
 				CE98939E1A2C8ED300E79C12 /* Products */,
 			);
@@ -227,15 +243,8 @@
 				);
 				OTHER_LDFLAGS = (
 					"-L/opt/local/lib",
-					"-lGL",
-					"-lGLU",
-					"-lglut",
+					"-lglfw",
 					"-lode",
-					"-lX11",
-					"-lXxf86vm",
-					"-lXrandr",
-					"-lpthread",
-					"-lXi",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -251,15 +260,8 @@
 				);
 				OTHER_LDFLAGS = (
 					"-L/opt/local/lib",
-					"-lGL",
-					"-lGLU",
-					"-lglut",
+					"-lglfw",
 					"-lode",
-					"-lX11",
-					"-lXxf86vm",
-					"-lXrandr",
-					"-lpthread",
-					"-lXi",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
