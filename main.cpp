@@ -9,19 +9,19 @@
 #include "Physics.h"
 #include "View.h"
 
+View view;
 Physics physics;
 
-void interval(int v) {
-    physics.step();
-    glutPostRedisplay();
-    glutTimerFunc(17, &interval, v);
-}
-
 int main(int argc, char **argv) {
-    initOpenGL();
+    view.init();
     physics.init();
-    glutTimerFunc(0, interval, 0);
-    glutMainLoop();
+    do {
+        physics.step();
+        view.display();
+        view.pollEvents();
+    }
+    while(!view.shutdown());
+    view.destroy();
     physics.destroy();
     return 0;
 }

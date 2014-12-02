@@ -70,7 +70,7 @@ void Physics::nearCallback(dGeomID o1, dGeomID o2) {
 }
 
 void Physics::step() {
-    std::cout << "about to perform simulation step " << stepNum << std::endl;
+    //std::cout << "about to perform simulation step " << stepNum << std::endl;
     
     contactsCache.clear();
     

@@ -11,18 +11,236 @@
 
 #include <iostream>
 
-GLfloat cameraTheta = 14.3;
-GLfloat cameraHeight = 0.5;
-GLfloat cameraDist = 3.1;
-dReal cameraCenter[] = {0.0, 0.0, 0.0};
-static int lastx = 0, lasty = 0, mcenter = 0, mrot = 0, mdist = 0;
-
 dMatrix3 I;
 dVector3 O;
 
 extern Physics physics;
 
-void glMultMatrixODE(const dReal* p, const dReal* R) {
+void View::init() {
+    cx = 0.0; cy = 0.0; cz = 0.0;
+    ex = 0.0; ey = 1.0; ez = -5.0;
+    ux = 0.0; uy = 1.0; uz = 0.0;
+    cameraTheta = 14.3;
+    cameraHeight = 0.5;
+    cameraDist = 3.1;
+    setCamera(cameraTheta, cameraHeight, cameraDist);
+
+    lastx = 0.0;
+    lasty = 0.0;
+    mcenter = 0;
+    mrot = 0;
+    mdist = 0;
+    
+    dRSetIdentity(I);
+    O[0] = O[1] = O[2] = 0.0;
+    
+    initGLFW();
+    initGL();
+}
+
+void View::initGLFW() {
+    if(!glfwInit()) {
+        std::cerr << "error: failed to initialize GLFW" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    
+    glfwSetErrorCallback(errorCallback);
+    
+#if 0
+    glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We don't want the old OpenGL
+#endif
+    
+    // Open a window and create its OpenGL context
+    window = glfwCreateWindow(800, 600, "tvs", NULL, NULL);
+    if(window == NULL) {
+        std::cerr << "error: failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try with OpenGL 2.1." << std::endl;
+        destroy();
+        exit(1);
+    }
+    
+    glfwSetWindowUserPointer(window, this);
+    glfwSetKeyCallback(window, keyCallbackWrapper);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallbackWrapper);
+    glfwSetMouseButtonCallback(window, mouseButtonCallbackWrapper);
+    glfwSetCursorPosCallback(window, mousePositionCallbackWrapper);
+    glfwMakeContextCurrent(window);
+    
+#if 0
+    glewExperimental = true; // Needed in core profile
+    if(glewInit() != GLEW_OK) {
+        std::cerr << "error: failed to initialize GLEW" << std::endl;
+        destroy();
+        exit(1);
+    }
+#endif
+    
+    //glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+}
+
+void View::initGL() {
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    double ratio = width / (double) height;
+    glViewport(0, 0, width, height);
+    
+    /* Enable a single OpenGL light. */
+    GLfloat light_diffuse[] = {1.0, 1.0, 1.0, 1.0};
+    GLfloat light_position[] = {1.0, 1.0, 10.0, 0.0};
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING);
+    
+    /* Use depth buffering for hidden surface elimination. */
+    glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_NORMALIZE);
+    glShadeModel(GL_SMOOTH);
+    
+    /* enable antialiasing */
+    glEnable(GL_MULTISAMPLE_ARB);
+    
+    /* Setup the view of the cube. */
+    glMatrixMode(GL_PROJECTION);
+    gluPerspective(/* field of view in degree */ 40.0,
+                   /* aspect ratio */ ratio,
+                   /* Z near */ 1.0, /* Z far */ 100.0);
+    
+    glMatrixMode(GL_MODELVIEW);
+
+    glClearColor(0.19f, 0.2f, 0.21f, 1.0f);
+}
+
+void View::display() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glLoadIdentity();
+    gluLookAt(ex, ey, ez,  /* eye */
+              cx, cy, cz,  /* center */
+              ux, uy, uz); /* up direction vector */
+    
+    draw();
+    
+    GLenum e = glGetError();
+    if(e != GL_NO_ERROR) {
+        std::cerr << "error: OpenGL: " << e << std::endl;
+    }
+    
+    glfwSwapBuffers(window);
+}
+
+void View::draw() {
+    drawAxes(O, I);
+    
+    setColor(0.35, 0.35, 0.35);
+    drawGeom(physics.planeGeom);
+    
+    setColor(1.0, 1.0, 1.0);
+    physics.track.draw(this);
+    
+    if(mcenter) {
+        setColor(1.0, 0.0, 0.0);
+        dReal p[] = {cx, cy, cz};
+        drawSphere(0.02, p, I);
+    }
+    
+    setColor(1.0, 0.0, 1.0);
+    for(int i = 0; i < physics.contactsCache.size(); i++) {
+        drawSphere(0.02 + 0.001*physics.contactsCache[i].depth, physics.contactsCache[i].pos, I);
+        //dMatrix3 R;
+        //dRFrom2Axes(R, 1.0, 0.0, 0.0, physics.contactsCache[i].normal[0], physics.contactsCache[i].normal[1], physics.contactsCache[i].normal[2]);
+        //drawCylinder(0.01, 0.09, physics.contactsCache[i].pos, R);
+    }
+}
+
+void View::destroy() {
+    glfwDestroyWindow(window);
+    glfwTerminate();
+}
+
+void View::setCamera(GLfloat theta, GLfloat height, GLfloat dist) {
+    ex = cx + cameraDist * cos(cameraTheta);
+    ez = cy + cameraDist * sin(cameraTheta);
+    ey = cz + cameraHeight;
+}
+
+void View::errorCallback(int error, const char *description) {
+    std::cerr << "error: GLFW: " << description << std::endl;
+}
+
+void View::keyCallbackWrapper(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    ((View *)glfwGetWindowUserPointer(window))->keyCallback(key, scancode, action, mods);
+}
+
+void View::framebufferSizeCallbackWrapper(GLFWwindow *window, int width, int height) {
+    ((View *)glfwGetWindowUserPointer(window))->framebufferSizeCallback(width, height);
+}
+
+void View::mouseButtonCallbackWrapper(GLFWwindow *window, int button, int action, int mods) {
+    ((View *)glfwGetWindowUserPointer(window))->mouseButtonCallback(button, action, mods);
+}
+
+void View::mousePositionCallbackWrapper(GLFWwindow *window, double x, double y) {
+    ((View *)glfwGetWindowUserPointer(window))->mousePositionCallback(x, y);
+}
+
+void View::keyCallback(int key, int scancode, int action, int mods) {
+    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
+void View::framebufferSizeCallback(int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+void View::mouseButtonCallback(int button, int action, int mods) {
+    if(button == GLFW_MOUSE_BUTTON_LEFT) {
+        mcenter = mrot = mdist = 0;
+        if(action == GLFW_PRESS) {
+            glfwGetCursorPos(window, &lastx, &lasty);
+            if(mods & GLFW_MOD_SHIFT) mcenter = 1;
+            else if(mods & GLFW_MOD_CONTROL) mdist = 1;
+            else mrot = 1;
+        }
+    }
+}
+
+void View::mousePositionCallback(double x, double y) {
+    double dx = x - lastx;
+    double dy = y - lasty;
+    lastx = x;
+    lasty = y;
+
+    if(mrot) {
+        cameraTheta += 0.01 * dx;
+        cameraHeight += 0.01 * dy;
+    } else if(mdist) {
+        cameraTheta += 0.01 * dx;
+        cameraDist += 0.01 * dy;
+    } else if(mcenter) {
+        cx += 0.005 * dx;
+        cz += 0.005 * dy;
+    }
+    cameraHeight = fmaxf(0.1, fminf(4.0, cameraHeight));
+    cameraDist = fmaxf(0.1, fminf(10.0, cameraDist));
+    if(mrot || mdist || mcenter) {
+        std::cout
+            << "cameraTheta = " << cameraTheta << std::endl
+            << "cameraHeight = " << cameraHeight << std::endl
+            << "cameraDist = " << cameraDist << std::endl;
+        setCamera(cameraTheta, cameraHeight, cameraDist);
+    }
+}
+
+bool View::shutdown() {
+    return glfwWindowShouldClose(window);
+}
+
+void View::glMultMatrixODE(const dReal* p, const dReal* R) {
     GLfloat M[16];
     M[0]  = (GLfloat)R[0]; M[1]  = (GLfloat)R[4]; M[2]  = (GLfloat)R[8];  M[3]  = (GLfloat)0;
     M[4]  = (GLfloat)R[1]; M[5]  = (GLfloat)R[5]; M[6]  = (GLfloat)R[9];  M[7]  = (GLfloat)0;
@@ -31,7 +249,7 @@ void glMultMatrixODE(const dReal* p, const dReal* R) {
     glMultMatrixf(&M[0]);
 }
 
-void drawBox(const dReal sides[3], const dReal pos[3], const dReal R[12]) {
+void View::drawBox(const dReal sides[3], const dReal pos[3], const dReal R[12]) {
     static GLfloat n[6][3] = {  /* Normals for the 6 faces of a cube. */
         {-1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {1.0, 0.0, 0.0},
         {0.0, -1.0, 0.0}, {0.0, 0.0, -1.0}, {0.0, 0.0, 1.0} };
@@ -64,7 +282,7 @@ void drawBox(const dReal sides[3], const dReal pos[3], const dReal R[12]) {
     glPopMatrix();
 }
 
-void drawPlane(const dReal params[4]) {
+void View::drawPlane(const dReal params[4]) {
     double a = params[0], b = params[1], c = params[2], d = params[3];
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDisable(GL_LIGHTING);
@@ -83,7 +301,7 @@ void drawPlane(const dReal params[4]) {
     glEnable(GL_LIGHTING);
 }
 
-void drawCylinder(dReal r, dReal h, const dReal pos[3], const dReal R[12]) {
+void View::drawCylinder(dReal r, dReal h, const dReal pos[3], const dReal R[12]) {
     glPushMatrix();
     glMultMatrixODE(pos, R);
     GLUquadric *q = gluNewQuadric();
@@ -92,7 +310,7 @@ void drawCylinder(dReal r, dReal h, const dReal pos[3], const dReal R[12]) {
     glPopMatrix();
 }
 
-void drawCone(dReal r, dReal h, const dReal pos[3], const dReal R[12]) {
+void View::drawCone(dReal r, dReal h, const dReal pos[3], const dReal R[12]) {
     glPushMatrix();
     glMultMatrixODE(pos, R);
     GLUquadric *q = gluNewQuadric();
@@ -101,7 +319,7 @@ void drawCone(dReal r, dReal h, const dReal pos[3], const dReal R[12]) {
     glPopMatrix();
 }
 
-void drawSphere(dReal r, const dReal pos[3], const dReal R[12]) {
+void View::drawSphere(dReal r, const dReal pos[3], const dReal R[12]) {
     glPushMatrix();
     glMultMatrixODE(pos, R);
     GLUquadric *q = gluNewQuadric();
@@ -117,11 +335,11 @@ void t(dReal B[12], const dReal A[12]) {
     B[2]  = A[8]; B[6]  = A[9]; B[10] = A[10];
 }
 
-void drawAxes(const dReal pos[3], const dReal R[12]) {
+void View::drawAxes(const dReal pos[3], const dReal R[12]) {
     drawAxes(0.01, 0.1, 0.02, 0.04, pos, R);
 }
 
-void drawAxes(dReal w, dReal l, dReal aw, dReal al, const dReal pos[3], const dReal R[12]) {
+void View::drawAxes(dReal w, dReal l, dReal aw, dReal al, const dReal pos[3], const dReal R[12]) {
     dVector3 x, y, z;
     x[0] = y[1] = z[2] = l;
     x[1] = x[2] = y[0] = y[2] = z[0] = z[1] = 0;
@@ -157,7 +375,7 @@ void drawAxes(dReal w, dReal l, dReal aw, dReal al, const dReal pos[3], const dR
     drawSphere(w * 2.5, pos, R);
 }
 
-void drawGeom(dGeomID g) {
+void View::drawGeom(dGeomID g) {
     if(!g) return;
     
     int type = dGeomGetClass(g);
@@ -189,136 +407,12 @@ void drawGeom(dGeomID g) {
     glPopMatrix();
 }
 
-void setColor(GLfloat r, GLfloat g, GLfloat b) {
+void View::setColor(GLfloat r, GLfloat g, GLfloat b) {
     GLfloat setColor_material[] = {r, g, b, 1.0};
     glMaterialfv(GL_FRONT, GL_DIFFUSE, setColor_material);
     glColor3f(r, g, b);
 }
 
-void display(void) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    GLfloat cx = cameraCenter[0], cy = cameraCenter[1], cz = cameraCenter[2];
-    GLfloat x = cx + cameraDist * cos(cameraTheta);
-    GLfloat z = cy + cameraDist * sin(cameraTheta);
-    GLfloat y = cz + cameraHeight;
-    gluLookAt(x, y, z,         /* eye */
-              cx, cy, cz,      /* center */
-              0.0, 1.0, 0.0);  /* up direction vector */
-    
-    //static GLfloat mat_ambient[] = { 1.0, 0.0, 0.0, 1.0 };
-    //glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
-    
-    //static GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
-    //glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-    
-    drawAxes(O, I);
-    
-    setColor(0.35, 0.35, 0.35);
-    drawGeom(physics.planeGeom);
-    
-    setColor(1.0, 1.0, 1.0);
-    physics.track.draw();
-    
-    if(mcenter) {
-        setColor(1.0, 0.0, 0.0);
-        drawSphere(0.02, cameraCenter, I);
-    }
-    
-#if 1
-    setColor(1.0, 0.0, 1.0);
-    for(int i = 0; i < physics.contactsCache.size(); i++) {
-        drawSphere(0.02 + 0.001*physics.contactsCache[i].depth, physics.contactsCache[i].pos, I);
-        //dMatrix3 R;
-        //dRFrom2Axes(R, 1.0, 0.0, 0.0, physics.contactsCache[i].normal[0], physics.contactsCache[i].normal[1], physics.contactsCache[i].normal[2]);
-        //drawCylinder(0.01, 0.09, physics.contactsCache[i].pos, R);
-    }
-#endif
-    
-    glutSwapBuffers();
+void View::pollEvents() {
+    glfwPollEvents();
 }
-
-void mouseButton(int button, int state, int x, int y) {
-    if(button == GLUT_LEFT_BUTTON) {
-        mcenter = mrot = mdist = 0;
-        if(state == GLUT_DOWN) {
-            lastx = x;
-            lasty = y;
-            int m = glutGetModifiers();
-            //std::cout << "________________________ m = " << m << std::endl;
-            switch(m) {
-                case 0:
-                    mrot = 1;
-                    break;
-                case GLUT_ACTIVE_SHIFT:
-                    mcenter = 1;
-                    break;
-                case GLUT_ACTIVE_CTRL:
-                    mdist = 1;
-                    break;
-            }
-        }
-    }
-}
-
-void mouseMotion(int x, int y) {
-    int dx = x - lastx;
-    int dy = y - lasty;
-    lastx = x;
-    lasty = y;
-    if(mrot) {
-        cameraTheta += 0.01 * dx;
-        cameraHeight += 0.01 * dy;
-    } else if(mdist) {
-        cameraTheta += 0.01 * dx;
-        cameraDist += 0.01 * dy;
-    } else if(mcenter) {
-        cameraCenter[0] += 0.005 * dx;
-        cameraCenter[2] += 0.005 * dy;
-    }
-    cameraHeight = fmaxf(0.1, fminf(4.0, cameraHeight));
-    cameraDist = fmaxf(0.1, fminf(10.0, cameraDist));
-    std::cout
-    << "cameraTheta = " << cameraTheta << std::endl
-    << "cameraHeight = " << cameraHeight << std::endl
-    << "cameraDist = " << cameraDist << std::endl;
-}
-
-void initOpenGL() {
-    dRSetIdentity(I);
-    O[0] = O[1] = O[2] = 0.0;
-    
-    int argc = 0; char *argv[1]; argv[0] = "blah";
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_MULTISAMPLE);
-    glutInitWindowSize(800, 600);
-    glutCreateWindow("tvs");
-    glutDisplayFunc(display);
-    glutMouseFunc(mouseButton);
-    glutMotionFunc(mouseMotion);
-    
-    /* Enable a single OpenGL light. */
-    GLfloat light_diffuse[] = {1.0, 1.0, 1.0, 1.0};
-    GLfloat light_position[] = {1.0, 1.0, 10.0, 0.0};
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHTING);
-    
-    /* Use depth buffering for hidden surface elimination. */
-    glEnable(GL_DEPTH_TEST);
-    
-    /* enable antialiasing */
-    glEnable(GL_MULTISAMPLE_ARB);
-    
-    /* Setup the view of the cube. */
-    glMatrixMode(GL_PROJECTION);
-    gluPerspective(/* field of view in degree */ 40.0,
-                   /* aspect ratio */ 1.333,
-                   /* Z near */ 1.0, /* Z far */ 100.0);
-    
-    glClearColor(0.19f, 0.2f, 0.21f, 1.0f);
-}
-

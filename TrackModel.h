@@ -13,6 +13,8 @@
 
 #include <ode/ode.h>
 
+class View;
+
 struct Grouser {
     size_t i;
     dGeomID gTrans, gBox;
@@ -54,7 +56,7 @@ public:
     void get(dReal u, dReal *p, dReal *a);
     void get(size_t i, dReal u, dReal *p, dReal *a);
     void createAll(dWorldID world, dSpaceID space);
-    void draw();
+    void draw(View *view);
     void rotate(dReal du);
     void test();
 };

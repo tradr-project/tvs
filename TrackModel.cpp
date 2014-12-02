@@ -152,11 +152,11 @@ void TrackModel::createAll(dWorldID world, dSpaceID space) {
     dBodySetPosition(body, 0.0, 0.4, 1.0);
 }
 
-void TrackModel::draw() {
+void TrackModel::draw(View *view) {
     const dReal *pos = dBodyGetPosition(body);
     const dReal *R = dBodyGetRotation(body);
     
-    drawAxes(pos, R);
+    view->drawAxes(pos, R);
     
     for(std::vector<Grouser>::iterator it = grousers.begin(); it != grousers.end(); it++) {
         const dReal *posL = dGeomGetPosition(it->gBox);
@@ -171,7 +171,7 @@ void TrackModel::draw() {
         
         dReal sides[3];
         dGeomBoxGetLengths(it->gBox, sides);
-        drawBox(sides, posW, RW);
+        view->drawBox(sides, posW, RW);
     }
 }
 
