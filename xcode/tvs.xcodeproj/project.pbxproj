@@ -243,6 +243,7 @@
 				);
 				OTHER_LDFLAGS = (
 					"-L/opt/local/lib",
+					"-lglew",
 					"-lglfw",
 					"-lode",
 				);
@@ -260,6 +261,7 @@
 				);
 				OTHER_LDFLAGS = (
 					"-L/opt/local/lib",
+					"-lglew",
 					"-lglfw",
 					"-lode",
 				);
