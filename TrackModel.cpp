@@ -183,7 +183,7 @@ void TrackModel::rotate(dReal du) {
         computeGrouserTransform3D(&grousers[i], i);
 
         dGeomSetPosition(g.gBox, g.x + g.ox, g.y + g.oy, g.z + g.oz);
-        dGeomSetRotation(g.gBox, g.R);
+        dGeomSetRotation(g.gBox, g.R);        
     }
 }
 
