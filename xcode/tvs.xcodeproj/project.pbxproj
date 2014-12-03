@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE6C89581A2F2E630054F8E0 /* drawstuff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6C89561A2F2E630054F8E0 /* drawstuff.cpp */; };
+		CE6C895D1A2F44BA0054F8E0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */; };
+		CE6C895F1A2F45960054F8E0 /* drawstuff_osx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6C895E1A2F45960054F8E0 /* drawstuff_osx.cpp */; };
 		CEE555701A2C8F7B000AB866 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE5556F1A2C8F7B000AB866 /* main.cpp */; };
-		CEE555741A2D1BD4000AB866 /* View.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE555721A2D1BD4000AB866 /* View.cpp */; };
-		CEE555771A2D1C50000AB866 /* TrackModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE555751A2D1C50000AB866 /* TrackModel.cpp */; };
-		CEE5557A1A2D1C9D000AB866 /* Physics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE555781A2D1C9D000AB866 /* Physics.cpp */; };
 		CEE5557F1A2E0441000AB866 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557B1A2E0441000AB866 /* Cocoa.framework */; };
 		CEE555801A2E0441000AB866 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557C1A2E0441000AB866 /* CoreVideo.framework */; };
 		CEE555811A2E0441000AB866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557D1A2E0441000AB866 /* IOKit.framework */; };
@@ -30,14 +30,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE6C89561A2F2E630054F8E0 /* drawstuff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = drawstuff.cpp; path = ../drawstuff.cpp; sourceTree = "<group>"; };
+		CE6C89571A2F2E630054F8E0 /* drawstuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = drawstuff.h; path = ../drawstuff.h; sourceTree = "<group>"; };
+		CE6C89591A2F2F070054F8E0 /* drawstuff_internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = drawstuff_internal.h; path = ../drawstuff_internal.h; sourceTree = "<group>"; };
+		CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../../System/Library/Frameworks/GLUT.framework; sourceTree = "<group>"; };
+		CE6C895E1A2F45960054F8E0 /* drawstuff_osx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = drawstuff_osx.cpp; path = ../drawstuff_osx.cpp; sourceTree = "<group>"; };
 		CE98939D1A2C8ED300E79C12 /* tvs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tvs; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEE5556F1A2C8F7B000AB866 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
-		CEE555721A2D1BD4000AB866 /* View.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = View.cpp; path = ../View.cpp; sourceTree = "<group>"; };
-		CEE555731A2D1BD4000AB866 /* View.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = View.h; path = ../View.h; sourceTree = "<group>"; };
-		CEE555751A2D1C50000AB866 /* TrackModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TrackModel.cpp; path = ../TrackModel.cpp; sourceTree = "<group>"; };
-		CEE555761A2D1C50000AB866 /* TrackModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TrackModel.h; path = ../TrackModel.h; sourceTree = "<group>"; };
-		CEE555781A2D1C9D000AB866 /* Physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Physics.cpp; path = ../Physics.cpp; sourceTree = "<group>"; };
-		CEE555791A2D1C9D000AB866 /* Physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Physics.h; path = ../Physics.h; sourceTree = "<group>"; };
 		CEE5557B1A2E0441000AB866 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
 		CEE5557C1A2E0441000AB866 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = ../../../../System/Library/Frameworks/CoreVideo.framework; sourceTree = "<group>"; };
 		CEE5557D1A2E0441000AB866 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = ../../../../System/Library/Frameworks/IOKit.framework; sourceTree = "<group>"; };
@@ -52,6 +51,7 @@
 				CEE5557F1A2E0441000AB866 /* Cocoa.framework in Frameworks */,
 				CEE555821A2E0441000AB866 /* OpenGL.framework in Frameworks */,
 				CEE555801A2E0441000AB866 /* CoreVideo.framework in Frameworks */,
+				CE6C895D1A2F44BA0054F8E0 /* GLUT.framework in Frameworks */,
 				CEE555811A2E0441000AB866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -62,6 +62,7 @@
 		CE9893941A2C8ED300E79C12 = {
 			isa = PBXGroup;
 			children = (
+				CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */,
 				CEE5557B1A2E0441000AB866 /* Cocoa.framework */,
 				CEE5557C1A2E0441000AB866 /* CoreVideo.framework */,
 				CEE5557D1A2E0441000AB866 /* IOKit.framework */,
@@ -83,12 +84,10 @@
 			isa = PBXGroup;
 			children = (
 				CEE5556F1A2C8F7B000AB866 /* main.cpp */,
-				CEE555721A2D1BD4000AB866 /* View.cpp */,
-				CEE555731A2D1BD4000AB866 /* View.h */,
-				CEE555751A2D1C50000AB866 /* TrackModel.cpp */,
-				CEE555761A2D1C50000AB866 /* TrackModel.h */,
-				CEE555781A2D1C9D000AB866 /* Physics.cpp */,
-				CEE555791A2D1C9D000AB866 /* Physics.h */,
+				CE6C89561A2F2E630054F8E0 /* drawstuff.cpp */,
+				CE6C89571A2F2E630054F8E0 /* drawstuff.h */,
+				CE6C89591A2F2F070054F8E0 /* drawstuff_internal.h */,
+				CE6C895E1A2F45960054F8E0 /* drawstuff_osx.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -149,10 +148,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CEE555771A2D1C50000AB866 /* TrackModel.cpp in Sources */,
-				CEE555741A2D1BD4000AB866 /* View.cpp in Sources */,
+				CE6C895F1A2F45960054F8E0 /* drawstuff_osx.cpp in Sources */,
 				CEE555701A2C8F7B000AB866 /* main.cpp in Sources */,
-				CEE5557A1A2D1C9D000AB866 /* Physics.cpp in Sources */,
+				CE6C89581A2F2E630054F8E0 /* drawstuff.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
