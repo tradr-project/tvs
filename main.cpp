@@ -155,7 +155,7 @@ void Track::create(dWorldID world, dSpaceID space, dReal xOffset, dReal yOffset,
     dJointSetHingeAxis(wheel2Joint, 0, 1, 0);
     
     // grouser shrink/grow factor
-    const dReal f = 0.9;
+    const dReal f = 0.8;
     
     for(size_t i = 0; i < m.numGrousers; i++) {
         grouserGeom[i] = dCreateBox(space, m.grouserHeight, m.trackDepth, f * m.grouserWidth);
@@ -239,7 +239,7 @@ void TrackedVehicle::create(dWorldID world, dSpaceID space, dReal xOffset, dReal
     dBodySetPosition(vehicleBody, xOffset, yOffset, zOffset);
     dGeomSetBody(vehicleGeom, vehicleBody);
     //dGeomSetPosition(vehicleGeom, leftTrack.m.distance, width, leftTrack.m.radius1);
-    dReal w = width + leftTrack.m.trackDepth;
+    dReal w = width + 2 * leftTrack.m.trackDepth;
     leftTrack.create(world, space, xOffset, yOffset + 0.5 * w, zOffset);
     rightTrack.create(world, space, xOffset, yOffset - 0.5 * w, zOffset);
     leftTrackJoint = dJointCreateFixed(world, 0);
@@ -286,7 +286,7 @@ void nearCallback(void *data, dGeomID o1, dGeomID o2) {
         contact[i].surface.mu2 = 0.0;
         contact[i].surface.bounce = 0.5;
         contact[i].surface.bounce_vel = 0.1;
-        contact[i].surface.soft_cfm = 0.001;
+        contact[i].surface.soft_cfm = 0.0001;
     }
     if(int numc = dCollide(o1, o2, MAX_CONTACTS, &contact[0].geom, sizeof(dContact))) {
         for(i = 0; i < numc; i++) {
@@ -304,9 +304,9 @@ void start() {
 
 void step(int pause) {
     if(!pause) {
-        dJointAddHingeTorque(v.leftTrack.wheel1Joint, leftTorque);
+        //dJointAddHingeTorque(v.leftTrack.wheel1Joint, leftTorque);
         dJointAddHingeTorque(v.leftTrack.wheel2Joint, leftTorque);
-        dJointAddHingeTorque(v.rightTrack.wheel1Joint, rightTorque);
+        //dJointAddHingeTorque(v.rightTrack.wheel1Joint, rightTorque);
         dJointAddHingeTorque(v.rightTrack.wheel2Joint, rightTorque);
         
         // find collisions and add contact joints
@@ -323,7 +323,7 @@ void stop() {
 }
 
 void command(int cmd) {
-    const dReal t = 0.5;
+    const dReal t = 0.1;
     switch(cmd) {
         case 'q': leftTorque = t; break;
         case 'a': leftTorque = 0.0; break;
@@ -333,7 +333,6 @@ void command(int cmd) {
         case 'x': rightTorque = -t; break;
         default: std::cout << "cmd=" << cmd << std::endl; break;
     }
-    
 }
 
 int main(int argc, char **argv) {
