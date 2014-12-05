@@ -376,7 +376,7 @@ int main(int argc, char **argv) {
     space = dHashSpaceCreate(0);
     contactGroup = dJointGroupCreate(0);
     dWorldSetGravity(world, 0, 0, -9.81);
-    dWorldSetERP(world, 0.02);
+    dWorldSetERP(world, 0.2);
     dWorldSetCFM(world, 1e-5);
     //dWorldSetContactMaxCorrectingVel(world, 0.9);
     //dWorldSetContactSurfaceLayer(world, 0.001);
