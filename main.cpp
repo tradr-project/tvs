@@ -394,7 +394,7 @@ int main(int argc, char **argv) {
     fn.step = &step;
     fn.stop = &stop;
     fn.command = &command;
-    fn.path_to_textures = "/Users/user/ode-0.12-drawstuff/drawstuff/textures";
+    fn.path_to_textures = "textures";
     dsSimulationLoop(argc, argv, 800, 600, &fn);
     
     dJointGroupDestroy(contactGroup);
