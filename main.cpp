@@ -295,30 +295,36 @@ TrackedVehicle v(0.3, 0.8, 0.2, 0.5);
 
 dReal leftTorque = 0.0, rightTorque = 0.0;
 
-
-
 void nearCallback(void *data, dGeomID o1, dGeomID o2) {
     int i;
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
     dContact contact[MAX_CONTACTS];
-    dReal mu = 1.0, mu2 =  0.0;
-    if((geomClass[o1] == CL_WHEEL && geomClass[o2] == CL_GROUSER) ||
-       (geomClass[o2] == CL_WHEEL && geomClass[o1] == CL_GROUSER)) {
+    dReal mu = 1.0, mu2 =  1.0;
+    int mode = dContactBounce | dContactSoftCFM;
+    dVector3 fdir;
+    if((geomClass[o1] == CL_WHEEL && geomClass[o2] == CL_GROUSER) || (geomClass[o2] == CL_WHEEL && geomClass[o1] == CL_GROUSER)) {
         mu = dInfinity;
-        mu2 = dInfinity;
     } else if((geomClass[o1] == CL_TERRAIN && geomClass[o2] == CL_GROUSER) ||
               (geomClass[o2] == CL_TERRAIN && geomClass[o1] == CL_GROUSER)) {
-        mu = 5.0;
+        mu = 3.0;
         mu2 = 0.0;
+        const dReal *R = dGeomGetRotation(v.vehicleGeom);
+        fdir[0] = R[0]; fdir[1] = R[4]; fdir[2] = R[8];
+        mode |= dContactMu2 | dContactFDir1;
     }
     for(i = 0; i < MAX_CONTACTS; i++) {
-        contact[i].surface.mode = dContactBounce | dContactSoftCFM;
+        contact[i].surface.mode = mode;
         contact[i].surface.mu = mu;
         contact[i].surface.mu2 = mu2;
         contact[i].surface.bounce = 0.5;
         contact[i].surface.bounce_vel = 0.1;
         contact[i].surface.soft_cfm = 0.0001;
+        if(mode & dContactFDir1) {
+            contact[i].fdir1[0] = fdir[0];
+            contact[i].fdir1[1] = fdir[1];
+            contact[i].fdir1[2] = fdir[2];
+        }
     }
     if(int numc = dCollide(o1, o2, MAX_CONTACTS, &contact[0].geom, sizeof(dContact))) {
         for(i = 0; i < numc; i++) {
