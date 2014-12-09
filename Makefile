@@ -1,5 +1,4 @@
 CFLAGS := -ggdb -DdDOUBLE
-CXXFLAGS := $(CFLAGS)
 LDLIBS := -lstdc++ -lm -lode
 
 DRAWSTUFF_DEPS = drawstuff.o
@@ -35,6 +34,8 @@ else
 #        CCFLAGS += -DARM
 #    endif
 endif
+
+CXXFLAGS := $(CFLAGS)
 
 .PHONY: clean
 
