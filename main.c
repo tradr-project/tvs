@@ -324,6 +324,7 @@ typedef struct {
     dReal scale;
     dGeomID geom;
     dHeightfieldDataID data;
+    int bWrap;
 } Heightfield;
 
 dReal heightfield_get_callback(void *h, int x, int y);
@@ -338,9 +339,9 @@ Heightfield * heightfield_create(dWorldID world, dSpaceID space, dReal width, dR
     h->wsamp = h->width / (h->wstep - 1);
     h->dsamp = h->depth / (h->dstep - 1);
     h->data = dGeomHeightfieldDataCreate();
-    const int bWrap = 1;
+    h->bWrap = 1;
     dGeomHeightfieldDataBuildCallback(h->data, h, &heightfield_get_callback,
-		h->width, h->depth, h->wstep, h->dstep, 1.0, 0.0, 0.0, bWrap);
+		h->width, h->depth, h->wstep, h->dstep, 1.0, 0.0, 0.0, h->bWrap);
     h->geom = dCreateHeightfield(space, h->data, 1);
     dMatrix3 R;
     dRFromAxisAndAngle(R, 1, 0, 0, M_PI_2);
@@ -358,49 +359,67 @@ void heightfield_destroy(Heightfield *h) {
 dReal heightfield_get(Heightfield *h, int x, int y) {
 	dReal fx = (((dReal)x) - (h->wstep - 1) / 2) / (dReal)(h->wstep - 1);
 	dReal fy = (((dReal)y) - (h->dstep - 1) / 2) / (dReal)(h->dstep - 1);
-	return h->scale * (1.0 - 16.0 * (pow(fx, 3) + pow(fy, 3)));
+	//return h->scale * (1.0 - 16.0 * (pow(fx, 3) + pow(fy, 3)));
+    return h->scale * (1 + sin(2 * fx * M_PI) * cos(2 * fy * M_PI));
 }
 
 dReal heightfield_get_callback(void *h, int x, int y) {
     return heightfield_get((Heightfield *)h, x, y);
 }
 
-void heightfield_draw(Heightfield *h) {
+void heightfield_draw_one(Heightfield *h, int xOffset, int yOffset) {
     dsSetColorAlpha(0.5, 0.9, 0.5, 1.0);
     //dsSetTexture(DS_WOOD);
 
 	const dReal* pos = dGeomGetPosition(h->geom);
 	const dReal* R = dGeomGetRotation(h->geom);
 
-	int ox = (int)(-h->width/2);
-	int oz = (int)(-h->depth/2);
+	int ox = (int)(-h->width/2) + xOffset;
+	int oz = (int)(-h->depth/2) + yOffset;
 
-    int i, j;
+    int i, j, k = 0;
+
+    int n = h->wstep * h->dstep * 2;
+    dReal *v = (dReal *)malloc(sizeof(dReal) * n * 9);
 
     for(i = 0; i < h->wstep - 1; i++) {
 		for(j = 0; j < h->dstep - 1; j++) {
-			dReal a[3], b[3], c[3], d[3];
+			v[3*(k+0)+0]                = ox + i * h->wsamp;
+			v[3*(k+0)+1]                = heightfield_get(h, i, j);
+			v[3*(k+0)+2]                = oz + j * h->dsamp;
 
-			a[0] = ox + i * h->wsamp;
-			a[1] = heightfield_get(h, i, j);
-			a[2] = oz + j * h->dsamp;
+			v[3*(k+2)+0] = v[3*(k+3)+0] = ox + (i + 1) * h->wsamp;
+			v[3*(k+2)+1] = v[3*(k+3)+1] = heightfield_get(h, i + 1, j);
+			v[3*(k+2)+2] = v[3*(k+3)+2] = oz + j * h->dsamp;
 
-			b[0] = ox + (i + 1) * h->wsamp;
-			b[1] = heightfield_get(h, i + 1, j);
-			b[2] = oz + j * h->dsamp;
+			v[3*(k+1)+0] = v[3*(k+4)+0] = ox + i * h->wsamp;
+			v[3*(k+1)+1] = v[3*(k+4)+1] = heightfield_get(h, i, j + 1);
+			v[3*(k+1)+2] = v[3*(k+4)+2] = oz + (j + 1) * h->dsamp;
 
-			c[0] = ox + i * h->wsamp;
-			c[1] = heightfield_get(h, i, j + 1);
-			c[2] = oz + (j + 1) * h->dsamp;
+			v[3*(k+5)+0]                = ox + (i + 1) * h->wsamp;
+			v[3*(k+5)+1]                = heightfield_get(h, i + 1, j + 1);
+			v[3*(k+5)+2]                = oz + (j + 1) * h->dsamp;
 
-			d[0] = ox + (i + 1) * h->wsamp;
-			d[1] = heightfield_get(h, i + 1, j + 1);
-			d[2] = oz + (j + 1) * h->dsamp;
-
-			dsDrawTriangleD(pos, R, a, c, b, 1);
-			dsDrawTriangleD(pos, R, b, c, d, 1);
+            k += 6;
 		}
 	}
+
+    dsDrawTrianglesD(pos, R, v, n, 1);
+
+    free(v);
+}
+
+void heightfield_draw(Heightfield *h) {
+    if(h->bWrap) {
+        const int d = 3;
+        for(int ox = -d; ox <= d; ox++) {
+            for(int oy = -d; oy <= d; oy++) {
+                heightfield_draw_one(h, ox * h->wstep / 4, oy * h->dstep / 4);
+            }
+        }
+    } else {
+        heightfield_draw_one(h, 0, 0);
+    }
 }
 
 #define MAX_CONTACTS 10
