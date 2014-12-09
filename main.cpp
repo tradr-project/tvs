@@ -8,14 +8,9 @@
 
 #include <vector>
 #include <iostream>
-#include <map>
+#include <assert.h>
 #include <ode/ode.h>
-#include "drawstuff.h"
-
-std::map<dGeomID,int> geomClass;
-const int CL_GROUSER = 1;
-const int CL_WHEEL = 2;
-const int CL_TERRAIN = 3;
+#include <drawstuff/drawstuff.h>
 
 class TrackKinematicModel {
 public:
@@ -98,7 +93,7 @@ void TrackKinematicModel::computeGrouserTransform3D(size_t i, dReal *pos, dReal 
     pos[1] = 0;
     dReal theta;
     getPointOnPath(i / (dReal)numGrousers, &pos[0], &pos[2], &theta);
-    dRFromAxisAndAngle(R, 0, -1, 0, theta);
+    dRFromAxisAndAngle(R, 0, 1, 0, -theta);
 }
 
 class Track {
@@ -108,7 +103,7 @@ public:
     dBodyID trackBody, wheel1Body, wheel2Body;
     dMass trackMass, wheel1Mass, wheel2Mass;
     dGeomID wheel1Geom, wheel2Geom;
-    dJointID wheel1Joint, wheel2Joint;
+    dJointID wheel1Joint, wheel2Joint, guideJoint;
     std::vector<dBodyID> grouserBody;
     std::vector<dGeomID> grouserGeom;
     std::vector<dJointID> grouserJoint;
@@ -121,7 +116,7 @@ public:
 
 Track::Track(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_)
 : m(radius1_, radius2_, distance_, numGrousers_, grouserHeight_, trackDepth_),
-  density(10.0),
+  density(1.0),
   grouserBody(numGrousers_), grouserGeom(numGrousers_),
   grouserJoint(numGrousers_), grouserMass(numGrousers_)
 {
@@ -133,6 +128,8 @@ void Track::create(dWorldID world, dSpaceID space, dReal xOffset, dReal yOffset,
     dBodySetMass(trackBody, &trackMass);
     
     wheel1Geom = dCreateCylinder(space, m.radius1, m.trackDepth);
+    dGeomSetCategoryBits(wheel1Geom, 0x1);
+    dGeomSetCollideBits(wheel1Geom, 0x2);
     dMassSetCylinder(&wheel1Mass, density, 3, m.radius1, m.trackDepth);
     wheel1Body = dBodyCreate(world);
     dBodySetMass(wheel1Body, &wheel1Mass);
@@ -145,12 +142,10 @@ void Track::create(dWorldID world, dSpaceID space, dReal xOffset, dReal yOffset,
     dJointAttach(wheel1Joint, trackBody, wheel1Body);
     dJointSetHingeAnchor(wheel1Joint, xOffset, yOffset, zOffset);
     dJointSetHingeAxis(wheel1Joint, 0, 1, 0);
-#ifdef SET_FINITE_ROTATION
-    dBodySetFiniteRotationMode(wheel1Body, 1);
-    dBodySetFiniteRotationAxis(wheel1Body, 0, 1, 0);
-#endif
     
     wheel2Geom = dCreateCylinder(space, m.radius2, m.trackDepth);
+    dGeomSetCategoryBits(wheel2Geom, 0x1);
+    dGeomSetCollideBits(wheel2Geom, 0x2);
     dMassSetCylinder(&wheel2Mass, density, 3, m.radius2, m.trackDepth);
     wheel2Body = dBodyCreate(world);
     dBodySetMass(wheel2Body, &wheel2Mass);
@@ -163,20 +158,17 @@ void Track::create(dWorldID world, dSpaceID space, dReal xOffset, dReal yOffset,
     dJointAttach(wheel2Joint, trackBody, wheel2Body);
     dJointSetHingeAnchor(wheel2Joint, xOffset + m.distance, yOffset, zOffset);
     dJointSetHingeAxis(wheel2Joint, 0, 1, 0);
-#ifdef SET_FINITE_ROTATION
-    dBodySetFiniteRotationMode(wheel2Body, 1);
-    dBodySetFiniteRotationAxis(wheel2Body, 0, 1, 0);
-#endif
-    
-    geomClass[wheel1Geom] = CL_WHEEL;
-    geomClass[wheel2Geom] = CL_WHEEL;
+
+    dJointSetHingeParam(wheel2Joint, dParamFMax, 10);
     
     // grouser shrink/grow factor
-    const dReal f = 1.0;
+    const dReal f = 0.8;
     
     for(size_t i = 0; i < m.numGrousers; i++) {
         grouserGeom[i] = dCreateBox(space, m.grouserHeight, m.trackDepth, f * m.grouserWidth);
-        dMassSetBox(&grouserMass[i], density, m.grouserHeight, m.trackDepth, f * m.grouserWidth);
+        dGeomSetCategoryBits(grouserGeom[i], 0x2);
+        dGeomSetCollideBits(grouserGeom[i], 0x1 | 0x4);
+        dMassSetBox(&grouserMass[i], 10 * density, m.grouserHeight, m.trackDepth, f * m.grouserWidth);
         grouserBody[i] = dBodyCreate(world);
         dBodySetMass(grouserBody[i], &grouserMass[i]);
         dGeomSetBody(grouserGeom[i], grouserBody[i]);
@@ -184,8 +176,15 @@ void Track::create(dWorldID world, dSpaceID space, dReal xOffset, dReal yOffset,
         m.computeGrouserTransform3D(i, pos, R);
         dBodySetPosition(grouserBody[i], xOffset + pos[0], yOffset + pos[1], zOffset + pos[2]);
         dBodySetRotation(grouserBody[i], R);
-        
-        geomClass[grouserGeom[i]] = CL_GROUSER;
+
+        // Disregard for now.
+        // if (i == 0) {
+        //     guideJoint = dJointCreateDHinge(world, 0);
+        //     dJointAttach(guideJoint, wheel1Body, grouserBody[i]);
+        //     dJointSetDHingeAxis (guideJoint, 0, 1, 0);
+        //     dJointSetDHingeAnchor1 (guideJoint, xOffset, yOffset, zOffset);
+        //     dJointSetDHingeAnchor2 (guideJoint, xOffset + pos[0], yOffset + pos[1], zOffset + pos[2]);
+        // }
     }
     
     for(size_t i = 0; i < m.numGrousers; i++) {
@@ -254,14 +253,15 @@ void TrackedVehicle::create(dWorldID world, dSpaceID space, dReal xOffset, dReal
     vehicleBody = dBodyCreate(world);
     vehicleGeom = dCreateBox(space, leftTrack.m.distance, width, leftTrack.m.radius1);
     dMassSetBox(&vehicleMass, density, leftTrack.m.distance, width, leftTrack.m.radius1);
+    dGeomSetCategoryBits(vehicleGeom, 0x0);
+    dGeomSetCollideBits(vehicleGeom, 0x0);
     dBodySetMass(vehicleBody, &vehicleMass);
     dBodySetPosition(vehicleBody, xOffset, yOffset, zOffset);
     dGeomSetBody(vehicleGeom, vehicleBody);
     //dGeomSetPosition(vehicleGeom, leftTrack.m.distance, width, leftTrack.m.radius1);
-    dReal w = width + 2 * leftTrack.m.trackDepth,
-        wb = leftTrack.m.distance;
-    leftTrack.create(world, space, xOffset - wb * 0.5, yOffset + 0.5 * w, zOffset);
-    rightTrack.create(world, space, xOffset - wb * 0.5, yOffset - 0.5 * w, zOffset);
+    dReal w = width + 2 * leftTrack.m.trackDepth;
+    leftTrack.create(world, space, xOffset, yOffset + 0.5 * w, zOffset);
+    rightTrack.create(world, space, xOffset, yOffset - 0.5 * w, zOffset);
     leftTrackJoint = dJointCreateFixed(world, 0);
     rightTrackJoint = dJointCreateFixed(world, 0);
     dJointAttach(leftTrackJoint, vehicleBody, leftTrack.trackBody);
@@ -293,38 +293,42 @@ dGeomID planeGeom;
 
 TrackedVehicle v(0.3, 0.8, 0.2, 0.5);
 
-dReal leftTorque = 0.0, rightTorque = 0.0;
-
 void nearCallback(void *data, dGeomID o1, dGeomID o2) {
     int i;
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
     dContact contact[MAX_CONTACTS];
-    dReal mu = 1.0, mu2 =  1.0;
-    int mode = dContactBounce | dContactSoftCFM;
-    dVector3 fdir;
-    if((geomClass[o1] == CL_WHEEL && geomClass[o2] == CL_GROUSER) || (geomClass[o2] == CL_WHEEL && geomClass[o1] == CL_GROUSER)) {
-        mu = dInfinity;
-    } else if((geomClass[o1] == CL_TERRAIN && geomClass[o2] == CL_GROUSER) ||
-              (geomClass[o2] == CL_TERRAIN && geomClass[o1] == CL_GROUSER)) {
-        mu = 3.0;
-        mu2 = 0.0;
-        const dReal *R = dGeomGetRotation(v.vehicleGeom);
-        fdir[0] = R[0]; fdir[1] = R[4]; fdir[2] = R[8];
-        mode |= dContactMu2 | dContactFDir1;
-    }
     for(i = 0; i < MAX_CONTACTS; i++) {
-        contact[i].surface.mode = mode;
-        contact[i].surface.mu = mu;
-        contact[i].surface.mu2 = mu2;
+        contact[i].surface.mode = dContactBounce | dContactSoftCFM | dContactMu2 | dContactFDir1;
+        const dReal *v;
+        dVector3 f;
+
+        assert(dGeomGetClass(o1) == dBoxClass ||
+               dGeomGetClass(o2) == dBoxClass);
+
+        if (dGeomGetClass(o1) == dBoxClass)
+            v = dBodyGetLinearVel(b1);
+        else
+            v = dBodyGetLinearVel(b2);
+
+        dCalcVectorCross3(contact[i].fdir1, contact[i].geom.normal, v);
+        dSafeNormalize3(contact[i].fdir1);
+
+        if (dGeomGetClass(o1) == dPlaneClass ||
+            dGeomGetClass(o2) == dPlaneClass) {
+            contact[i].surface.mu = 2.0;
+            contact[i].surface.mu2 = 0.5;
+        } else if (dGeomGetClass(o1) == dCylinderClass ||
+                   dGeomGetClass(o2) == dCylinderClass) {
+            contact[i].surface.mu = contact[i].surface.mu2 = dInfinity;
+        } else {
+            printf ("%d, %d\n", dGeomGetClass(o1), dGeomGetClass(o2));
+            assert(0);
+        }
+
         contact[i].surface.bounce = 0.5;
         contact[i].surface.bounce_vel = 0.1;
         contact[i].surface.soft_cfm = 0.0001;
-        if(mode & dContactFDir1) {
-            contact[i].fdir1[0] = fdir[0];
-            contact[i].fdir1[1] = fdir[1];
-            contact[i].fdir1[2] = fdir[2];
-        }
     }
     if(int numc = dCollide(o1, o2, MAX_CONTACTS, &contact[0].geom, sizeof(dContact))) {
         for(i = 0; i < numc; i++) {
@@ -342,17 +346,14 @@ void start() {
 
 void step(int pause) {
     if(!pause) {
-        dJointAddHingeTorque(v.leftTrack.wheel1Joint, leftTorque);
-        dJointAddHingeTorque(v.leftTrack.wheel2Joint, leftTorque);
-        dJointAddHingeTorque(v.rightTrack.wheel1Joint, rightTorque);
-        dJointAddHingeTorque(v.rightTrack.wheel2Joint, rightTorque);
-        
-        // find collisions and add contact joints
-        dSpaceCollide(space, 0, &nearCallback);
-        // step the simulation
-        dWorldQuickStep(world, 0.01);
-        // remove all contact joints
-        dJointGroupEmpty(contactGroup);
+        for(int i = 0; i < 10; i++) {
+            // find collisions and add contact joints
+            dSpaceCollide(space, 0, &nearCallback);
+            // step the simulation
+            dWorldQuickStep(world, 0.001);
+            // remove all contact joints
+            dJointGroupEmpty(contactGroup);
+        }
     }
     v.draw();
 }
@@ -361,14 +362,28 @@ void stop() {
 }
 
 void command(int cmd) {
-    const dReal t = 0.6;
+    const dReal V = 5;
     switch(cmd) {
-        case 'q': leftTorque = t; break;
-        case 'a': leftTorque = 0.0; break;
-        case 'z': leftTorque = -t; break;
-        case 'w': rightTorque = t; break;
-        case 's': rightTorque = 0.0; break;
-        case 'x': rightTorque = -t; break;
+        case 'a':
+            dJointSetHingeParam(v.rightTrack.wheel2Joint, dParamVel, V);
+            dJointSetHingeParam(v.leftTrack.wheel2Joint, dParamVel, -V);
+            break;
+        case 'd':
+            dJointSetHingeParam(v.rightTrack.wheel2Joint, dParamVel, -V);
+            dJointSetHingeParam(v.leftTrack.wheel2Joint, dParamVel, V);
+            break;
+        case 'w':
+            dJointSetHingeParam(v.rightTrack.wheel2Joint, dParamVel, V);
+            dJointSetHingeParam(v.leftTrack.wheel2Joint, dParamVel, V);
+            break;
+        case 's':
+            dJointSetHingeParam(v.rightTrack.wheel2Joint, dParamVel, -V);
+            dJointSetHingeParam(v.leftTrack.wheel2Joint, dParamVel, -V);
+            break;
+        case ' ':
+            dJointSetHingeParam(v.rightTrack.wheel2Joint, dParamVel, 0);
+            dJointSetHingeParam(v.leftTrack.wheel2Joint, dParamVel, 0);
+            break;
         default: std::cout << "cmd=" << cmd << std::endl; break;
     }
 }
@@ -382,15 +397,15 @@ int main(int argc, char **argv) {
     space = dHashSpaceCreate(0);
     contactGroup = dJointGroupCreate(0);
     dWorldSetGravity(world, 0, 0, -9.81);
-    dWorldSetERP(world, 0.2);
-    dWorldSetCFM(world, 1e-5);
+    //dWorldSetERP(world, 0.2);
+    //dWorldSetCFM(world, 1e-5);
     //dWorldSetContactMaxCorrectingVel(world, 0.9);
     //dWorldSetContactSurfaceLayer(world, 0.001);
     dWorldSetAutoDisableFlag(world, 1);
     
     planeGeom = dCreatePlane(space, 0, 0, 1, 0); // (a, b, c)' (x, y, z) = d
-    
-    geomClass[planeGeom] = CL_TERRAIN;
+    dGeomSetCategoryBits(planeGeom, 0x4);
+    dGeomSetCollideBits(planeGeom, 0x2);
     
     v.create(world, space, 0, 0, 0.301);
 
@@ -400,7 +415,7 @@ int main(int argc, char **argv) {
     fn.step = &step;
     fn.stop = &stop;
     fn.command = &command;
-    fn.path_to_textures = "textures";
+    fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
     dsSimulationLoop(argc, argv, 800, 600, &fn);
     
     dJointGroupDestroy(contactGroup);
@@ -410,3 +425,4 @@ int main(int argc, char **argv) {
     
     return 0;
 }
+
