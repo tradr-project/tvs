@@ -1,7 +1,5 @@
-CFLAGS := -ggdb -DdDOUBLE -I. -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\"
-LDLIBS := -lstdc++ -lm -lode
-
-DRAWSTUFF_DEPS = drawstuff/drawstuff.o
+CFLAGS := -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -I$(PWD)/../ode/include
+LDLIBS := -lstdc++ -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff
 
 ifeq ($(OS),Windows_NT)
 #    CCFLAGS += -DWIN32
@@ -16,12 +14,10 @@ else
     ifeq ($(UNAME_S),Linux)
         CCFLAGS += -DLINUX
         LDLIBS += -lGL -lGLU -lglut -lX11 -lXxf86vm -lXrandr -lpthread -lXi
-        DRAWSTUFF_DEPS += drawstuff/x11.o
     endif
     ifeq ($(UNAME_S),Darwin)
-        CFLAGS += -DOSX -I/opt/local/include
-        LDLIBS += -L/opt/local/lib -framework Cocoa -framework CoreVideo -framework IOKit -framework OpenGL -framework GLUT
-        DRAWSTUFF_DEPS += drawstuff/osx.o
+        CFLAGS += -DOSX
+        LDLIBS += -framework Cocoa -framework CoreVideo -framework IOKit -framework OpenGL -framework GLUT
     endif
     UNAME_P := $(shell uname -p)
     ifeq ($(UNAME_P),x86_64)
@@ -39,7 +35,7 @@ CXXFLAGS := $(CFLAGS)
 
 .PHONY: clean
 
-main: main.o $(DRAWSTUFF_DEPS)
+main: main.o
 
 clean:
 	rm -f *.o main
