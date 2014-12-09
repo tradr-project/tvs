@@ -1,4 +1,4 @@
-CFLAGS := -ggdb -DdDOUBLE -I.
+CFLAGS := -ggdb -DdDOUBLE -I. -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\"
 LDLIBS := -lstdc++ -lm -lode
 
 DRAWSTUFF_DEPS = drawstuff/drawstuff.o
@@ -19,7 +19,7 @@ else
         DRAWSTUFF_DEPS += drawstuff/x11.o
     endif
     ifeq ($(UNAME_S),Darwin)
-        CFLAGS += -DOSX -I/opt/local/include -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\"
+        CFLAGS += -DOSX -I/opt/local/include
         LDLIBS += -L/opt/local/lib -framework Cocoa -framework CoreVideo -framework IOKit -framework OpenGL -framework GLUT
         DRAWSTUFF_DEPS += drawstuff/osx.o
     endif
