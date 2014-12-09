@@ -179,7 +179,7 @@ Track * track_create(dWorldID world, dSpaceID space, dReal radius1_, dReal radiu
     dJointSetHingeParam(t->wheel2Joint, dParamFMax, 10);
 
     // grouser shrink/grow factor
-    const dReal f = 0.8;
+    const dReal f = 1.03;
     size_t i;
 
     for(i = 0; i < t->m->numGrousers; i++) {
@@ -341,7 +341,7 @@ Heightfield * heightfield_create(dWorldID world, dSpaceID space, dReal width, dR
     h->data = dGeomHeightfieldDataCreate();
     h->bWrap = 1;
     dGeomHeightfieldDataBuildCallback(h->data, h, &heightfield_get_callback,
-		h->width, h->depth, h->wstep, h->dstep, 1.0, 0.0, 0.0, h->bWrap);
+        h->width, h->depth, h->wstep, h->dstep, 1.0, 0.0, 0.0, h->bWrap);
     h->geom = dCreateHeightfield(space, h->data, 1);
     dMatrix3 R;
     dRFromAxisAndAngle(R, 1, 0, 0, M_PI_2);
@@ -357,9 +357,9 @@ void heightfield_destroy(Heightfield *h) {
 }
 
 dReal heightfield_get(Heightfield *h, int x, int y) {
-	dReal fx = (((dReal)x) - (h->wstep - 1) / 2) / (dReal)(h->wstep - 1);
-	dReal fy = (((dReal)y) - (h->dstep - 1) / 2) / (dReal)(h->dstep - 1);
-	//return h->scale * (1.0 - 16.0 * (pow(fx, 3) + pow(fy, 3)));
+    dReal fx = (((dReal)x) - (h->wstep - 1) / 2) / (dReal)(h->wstep - 1);
+    dReal fy = (((dReal)y) - (h->dstep - 1) / 2) / (dReal)(h->dstep - 1);
+    //return h->scale * (1.0 - 16.0 * (pow(fx, 3) + pow(fy, 3)));
     return h->scale * (1 + sin(2 * fx * M_PI) * cos(2 * fy * M_PI));
 }
 
@@ -371,11 +371,11 @@ void heightfield_draw_one(Heightfield *h, int xOffset, int yOffset) {
     dsSetColorAlpha(0.5, 0.9, 0.5, 1.0);
     //dsSetTexture(DS_WOOD);
 
-	const dReal* pos = dGeomGetPosition(h->geom);
-	const dReal* R = dGeomGetRotation(h->geom);
+    const dReal* pos = dGeomGetPosition(h->geom);
+    const dReal* R = dGeomGetRotation(h->geom);
 
-	int ox = (int)(-h->width/2) + xOffset;
-	int oz = (int)(-h->depth/2) + yOffset;
+    int ox = (int)(-h->width/2) + xOffset;
+    int oz = (int)(-h->depth/2) + yOffset;
 
     int i, j, k = 0;
 
@@ -383,26 +383,26 @@ void heightfield_draw_one(Heightfield *h, int xOffset, int yOffset) {
     dReal *v = (dReal *)malloc(sizeof(dReal) * n * 9);
 
     for(i = 0; i < h->wstep - 1; i++) {
-		for(j = 0; j < h->dstep - 1; j++) {
-			v[3*(k+0)+0]                = ox + i * h->wsamp;
-			v[3*(k+0)+1]                = heightfield_get(h, i, j);
-			v[3*(k+0)+2]                = oz + j * h->dsamp;
+        for(j = 0; j < h->dstep - 1; j++) {
+            v[3*(k+0)+0]                = ox + i * h->wsamp;
+            v[3*(k+0)+1]                = heightfield_get(h, i, j);
+            v[3*(k+0)+2]                = oz + j * h->dsamp;
 
-			v[3*(k+2)+0] = v[3*(k+3)+0] = ox + (i + 1) * h->wsamp;
-			v[3*(k+2)+1] = v[3*(k+3)+1] = heightfield_get(h, i + 1, j);
-			v[3*(k+2)+2] = v[3*(k+3)+2] = oz + j * h->dsamp;
+            v[3*(k+2)+0] = v[3*(k+3)+0] = ox + (i + 1) * h->wsamp;
+            v[3*(k+2)+1] = v[3*(k+3)+1] = heightfield_get(h, i + 1, j);
+            v[3*(k+2)+2] = v[3*(k+3)+2] = oz + j * h->dsamp;
 
-			v[3*(k+1)+0] = v[3*(k+4)+0] = ox + i * h->wsamp;
-			v[3*(k+1)+1] = v[3*(k+4)+1] = heightfield_get(h, i, j + 1);
-			v[3*(k+1)+2] = v[3*(k+4)+2] = oz + (j + 1) * h->dsamp;
+            v[3*(k+1)+0] = v[3*(k+4)+0] = ox + i * h->wsamp;
+            v[3*(k+1)+1] = v[3*(k+4)+1] = heightfield_get(h, i, j + 1);
+            v[3*(k+1)+2] = v[3*(k+4)+2] = oz + (j + 1) * h->dsamp;
 
-			v[3*(k+5)+0]                = ox + (i + 1) * h->wsamp;
-			v[3*(k+5)+1]                = heightfield_get(h, i + 1, j + 1);
-			v[3*(k+5)+2]                = oz + (j + 1) * h->dsamp;
+            v[3*(k+5)+0]                = ox + (i + 1) * h->wsamp;
+            v[3*(k+5)+1]                = heightfield_get(h, i + 1, j + 1);
+            v[3*(k+5)+2]                = oz + (j + 1) * h->dsamp;
 
             k += 6;
-		}
-	}
+        }
+    }
 
     dsDrawTrianglesD(pos, R, v, n, 1);
 
