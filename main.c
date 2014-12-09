@@ -30,8 +30,9 @@ typedef struct {
     dReal totalLength;
     dReal dlimits[4];
 } TrackKinematicModel;
-    
-TrackKinematicModel* track_kinematic_model_create(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_) {
+
+TrackKinematicModel * track_kinematic_model_create(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_) {
+    size_t i;
     TrackKinematicModel *m = (TrackKinematicModel *)malloc(sizeof(TrackKinematicModel));
     m->radius1 = radius1_;
     m->radius2 = radius2_;
@@ -53,7 +54,7 @@ TrackKinematicModel* track_kinematic_model_create(dReal radius1_, dReal radius2_
     m->dlimits[1] = m->pDistance;
     m->dlimits[2] = m->arc2Length;
     m->dlimits[3] = m->pDistance;
-    for(size_t i = 0; i < 4; i++)
+    for(i = 0; i < 4; i++)
         m->totalLength += m->dlimits[i];
     m->grouserWidth = m->totalLength / (double)m->numGrousers;
     return m;
@@ -66,10 +67,10 @@ void track_kinematic_model_destroy(TrackKinematicModel *m) {
 void track_kinematic_model_get_point_on_path(TrackKinematicModel *m, dReal u, dReal *x_, dReal *y_, dReal *theta_) {
     // compute which piece of the path u touches
     // and compute local parameter v
-    size_t section = -1;
+    size_t i, section = -1;
     dReal v = NAN;
     dReal u1 = (u - floor(u)) * m->totalLength;
-    for(size_t i = 0; i < 4; i++) {
+    for(i = 0; i < 4; i++) {
         if(u1 < m->dlimits[i]) {
             v = u1 / m->dlimits[i];
             section = i;
@@ -124,14 +125,14 @@ typedef struct {
     dJointID wheel1Joint;
     dJointID wheel2Joint;
     //dJointID guideJoint;
-    dBodyID* grouserBody;
-    dGeomID* grouserGeom;
-    dJointID* grouserJoint;
-    dMass* grouserMass;
+    dBodyID *grouserBody;
+    dGeomID *grouserGeom;
+    dJointID *grouserJoint;
+    dMass *grouserMass;
 } Track;
-    
-Track* track_create(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dWorldID world, dSpaceID space, dReal xOffset, dReal yOffset, dReal zOffset) {
-    Track* t = (Track *)malloc(sizeof(Track));
+
+Track * track_create(dWorldID world, dSpaceID space, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset) {
+    Track *t = (Track *)malloc(sizeof(Track));
     t->m = track_kinematic_model_create(radius1_, radius2_, distance_, numGrousers_, grouserHeight_, trackDepth_);
     t->density = 1.0;
     t->grouserBody = (dBodyID *)malloc(numGrousers_ * sizeof(dBodyID));
@@ -142,7 +143,7 @@ Track* track_create(dReal radius1_, dReal radius2_, dReal distance_, size_t numG
     t->trackBody = dBodyCreate(world);
     dMassSetBox(&t->trackMass, t->density, t->m->distance, t->m->radius2, t->m->trackDepth);
     dBodySetMass(t->trackBody, &t->trackMass);
-    
+
     t->wheel1Geom = dCreateCylinder(space, t->m->radius1, t->m->trackDepth);
     dGeomSetCategoryBits(t->wheel1Geom, 0x1);
     dGeomSetCollideBits(t->wheel1Geom, 0x2);
@@ -158,7 +159,7 @@ Track* track_create(dReal radius1_, dReal radius2_, dReal distance_, size_t numG
     dJointAttach(t->wheel1Joint, t->trackBody, t->wheel1Body);
     dJointSetHingeAnchor(t->wheel1Joint, xOffset, yOffset, zOffset);
     dJointSetHingeAxis(t->wheel1Joint, 0, 1, 0);
-    
+
     t->wheel2Geom = dCreateCylinder(space, t->m->radius2, t->m->trackDepth);
     dGeomSetCategoryBits(t->wheel2Geom, 0x1);
     dGeomSetCollideBits(t->wheel2Geom, 0x2);
@@ -176,11 +177,12 @@ Track* track_create(dReal radius1_, dReal radius2_, dReal distance_, size_t numG
     dJointSetHingeAxis(t->wheel2Joint, 0, 1, 0);
 
     dJointSetHingeParam(t->wheel2Joint, dParamFMax, 10);
-    
+
     // grouser shrink/grow factor
     const dReal f = 0.8;
-    
-    for(size_t i = 0; i < t->m->numGrousers; i++) {
+    size_t i;
+
+    for(i = 0; i < t->m->numGrousers; i++) {
         t->grouserGeom[i] = dCreateBox(space, t->m->grouserHeight, t->m->trackDepth, f * t->m->grouserWidth);
         dGeomSetCategoryBits(t->grouserGeom[i], 0x2);
         dGeomSetCollideBits(t->grouserGeom[i], 0x1 | 0x4);
@@ -194,16 +196,16 @@ Track* track_create(dReal radius1_, dReal radius2_, dReal distance_, size_t numG
         dBodySetRotation(t->grouserBody[i], R);
 
         // Disregard for now.
-        // if (i == 0) {
+        // if(i == 0) {
         //     t->guideJoint = dJointCreateDHinge(world, 0);
         //     dJointAttach(t->guideJoint, t->wheel1Body, t->grouserBody[i]);
-        //     dJointSetDHingeAxis (t->guideJoint, 0, 1, 0);
-        //     dJointSetDHingeAnchor1 (t->guideJoint, xOffset, yOffset, zOffset);
-        //     dJointSetDHingeAnchor2 (t->guideJoint, xOffset + pos[0], yOffset + pos[1], zOffset + pos[2]);
+        //     dJointSetDHingeAxis(t->guideJoint, 0, 1, 0);
+        //     dJointSetDHingeAnchor1(t->guideJoint, xOffset, yOffset, zOffset);
+        //     dJointSetDHingeAnchor2(t->guideJoint, xOffset + pos[0], yOffset + pos[1], zOffset + pos[2]);
         // }
     }
-    
-    for(size_t i = 0; i < t->m->numGrousers; i++) {
+
+    for(i = 0; i < t->m->numGrousers; i++) {
         size_t j = (i + 1) % t->m->numGrousers;
         dReal px, pz, qx, qz, a, dx, dz;
         track_kinematic_model_get_point_on_path(t->m, i / (dReal)t->m->numGrousers, &px, &pz, &a);
@@ -219,7 +221,8 @@ Track* track_create(dReal radius1_, dReal radius2_, dReal distance_, size_t numG
     return t;
 }
 
-void track_destroy(Track* t) {
+void track_destroy(Track *t) {
+    track_kinematic_model_destroy(t->m);
     free(t->grouserBody);
     free(t->grouserGeom);
     free(t->grouserJoint);
@@ -227,7 +230,7 @@ void track_destroy(Track* t) {
     free(t);
 }
 
-void track_draw(Track* t) {
+void track_draw(Track *t) {
     {
         const dReal *pos = dGeomGetPosition(t->wheel1Geom);
         const dReal *R = dGeomGetRotation(t->wheel1Geom);
@@ -235,7 +238,7 @@ void track_draw(Track* t) {
         dGeomCylinderGetParams(t->wheel1Geom, &radius, &length);
         dsDrawCylinderD(pos, R, length, radius);
     }
-    
+
     {
         const dReal *pos = dGeomGetPosition(t->wheel2Geom);
         const dReal *R = dGeomGetRotation(t->wheel2Geom);
@@ -243,8 +246,9 @@ void track_draw(Track* t) {
         dGeomCylinderGetParams(t->wheel2Geom, &radius, &length);
         dsDrawCylinderD(pos, R, length, radius);
     }
-    
-    for(int i = 0; i < t->m->numGrousers; i++) {
+
+    size_t i;
+    for(i = 0; i < t->m->numGrousers; i++) {
         const dReal *pos = dGeomGetPosition(t->grouserGeom[i]);
         const dReal *R = dGeomGetRotation(t->grouserGeom[i]);
         dReal sides[3];
@@ -265,15 +269,15 @@ typedef struct {
     dReal width;
 } TrackedVehicle;
 
-TrackedVehicle* tracked_vehicle_create(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dWorldID world, dSpaceID space, dReal xOffset, dReal yOffset, dReal zOffset) {
-    TrackedVehicle* v = (TrackedVehicle *)malloc(sizeof(TrackedVehicle));
+TrackedVehicle * tracked_vehicle_create(dWorldID world, dSpaceID space, dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset) {
+    TrackedVehicle *v = (TrackedVehicle *)malloc(sizeof(TrackedVehicle));
     v->density = 1.0;
     v->width = vehicleWidth_;
     const size_t numGrousers = 30;
     const dReal grouserHeight = 0.01;
     dReal w = v->width + 2 * trackWidth_;
-    v->leftTrack = track_create(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, world, space, xOffset, yOffset - 0.5 * w, zOffset);
-    v->rightTrack = track_create(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, world, space, xOffset, yOffset + 0.5 * w, zOffset);
+    v->leftTrack = track_create(world, space, wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset - 0.5 * w, zOffset);
+    v->rightTrack = track_create(world, space, wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset + 0.5 * w, zOffset);
     v->vehicleBody = dBodyCreate(world);
     v->vehicleGeom = dCreateBox(space, v->leftTrack->m->distance, v->width, v->leftTrack->m->radius1);
     dMassSetBox(&v->vehicleMass, v->density, v->leftTrack->m->distance, v->width, v->leftTrack->m->radius1);
@@ -291,6 +295,12 @@ TrackedVehicle* tracked_vehicle_create(dReal wheelRadius_, dReal wheelBase_, dRe
     return v;
 }
 
+void tracked_vehicle_destroy(TrackedVehicle *v) {
+    track_destroy(v->leftTrack);
+    track_destroy(v->rightTrack);
+    free(v);
+}
+
 void tracked_vehicle_draw(TrackedVehicle *v) {
     {
         const dReal *pos = dGeomGetPosition(v->vehicleGeom);
@@ -299,9 +309,97 @@ void tracked_vehicle_draw(TrackedVehicle *v) {
         dGeomBoxGetLengths(v->vehicleGeom, sides);
         dsDrawBoxD(pos, R, sides);
     }
-    
+
     track_draw(v->leftTrack);
     track_draw(v->rightTrack);
+}
+
+typedef struct {
+    dReal width;
+    dReal depth;
+    size_t wstep;
+    size_t dstep;
+    dReal wsamp;
+    dReal dsamp;
+    dReal scale;
+    dGeomID geom;
+    dHeightfieldDataID data;
+} Heightfield;
+
+dReal heightfield_get_callback(void *h, int x, int y);
+
+Heightfield * heightfield_create(dWorldID world, dSpaceID space, dReal width, dReal depth, size_t wstep, size_t dstep, dReal scale) {
+    Heightfield *h = (Heightfield *)malloc(sizeof(Heightfield));
+    h->width = width;
+    h->depth = depth;
+    h->wstep = wstep;
+    h->dstep = dstep;
+    h->scale = scale;
+    h->wsamp = h->width / (h->wstep - 1);
+    h->dsamp = h->depth / (h->dstep - 1);
+    h->data = dGeomHeightfieldDataCreate();
+    dGeomHeightfieldDataBuildCallback(h->data, h, &heightfield_get_callback,
+		h->width, h->depth, h->wstep, h->dstep, 1.0, 0.0, 0.0, 0);
+    h->geom = dCreateHeightfield(space, h->data, 1);
+    dMatrix3 R;
+    dRFromAxisAndAngle(R, 1, 0, 0, M_PI_2);
+    dGeomSetRotation(h->geom, R);
+    dGeomSetCategoryBits(h->geom, 0x4);
+    dGeomSetCollideBits(h->geom, 0x2);
+    return h;
+}
+
+void heightfield_destroy(Heightfield *h) {
+    dGeomHeightfieldDataDestroy(h->data);
+    free(h);
+}
+
+dReal heightfield_get(Heightfield *h, int x, int y) {
+	dReal fx = (((dReal)x) - (h->wstep - 1) / 2) / (dReal)(h->wstep - 1);
+	dReal fy = (((dReal)y) - (h->dstep - 1) / 2) / (dReal)(h->dstep - 1);
+	return h->scale * (1.0 - 16.0 * (pow(fx, 3) + pow(fy, 3)));
+}
+
+dReal heightfield_get_callback(void *h, int x, int y) {
+    return heightfield_get((Heightfield *)h, x, y);
+}
+
+void heightfield_draw(Heightfield *h) {
+    dsSetColorAlpha(0.5, 0.9, 0.5, 1.0);
+    //dsSetTexture(DS_WOOD);
+
+	const dReal* pos = dGeomGetPosition(h->geom);
+	const dReal* R = dGeomGetRotation(h->geom);
+
+	int ox = (int)(-h->width/2);
+	int oz = (int)(-h->depth/2);
+
+    int i, j;
+
+    for(i = 0; i < h->wstep - 1; i++) {
+		for(j = 0; j < h->dstep - 1; j++) {
+			dReal a[3], b[3], c[3], d[3];
+
+			a[0] = ox + i * h->wsamp;
+			a[1] = heightfield_get(h, i, j);
+			a[2] = oz + j * h->dsamp;
+
+			b[0] = ox + (i + 1) * h->wsamp;
+			b[1] = heightfield_get(h, i + 1, j);
+			b[2] = oz + j * h->dsamp;
+
+			c[0] = ox + i * h->wsamp;
+			c[1] = heightfield_get(h, i, j + 1);
+			c[2] = oz + (j + 1) * h->dsamp;
+
+			d[0] = ox + (i + 1) * h->wsamp;
+			d[1] = heightfield_get(h, i + 1, j + 1);
+			d[2] = oz + (j + 1) * h->dsamp;
+
+			dsDrawTriangleD(pos, R, a, c, b, 1);
+			dsDrawTriangleD(pos, R, b, c, d, 1);
+		}
+	}
 }
 
 #define MAX_CONTACTS 10
@@ -313,7 +411,11 @@ dJointGroupID contactGroup;
 dGeomID planeGeom;
 
 TrackedVehicle *v;
+Heightfield *hf;
 
+int is_terrain(dGeomID o) {
+    return dGeomGetClass(o) == dPlaneClass || dGeomGetClass(o) == dHeightfieldClass;
+}
 void nearCallback(void *data, dGeomID o1, dGeomID o2) {
     int i;
     dBodyID b1 = dGeomGetBody(o1);
@@ -335,10 +437,9 @@ void nearCallback(void *data, dGeomID o1, dGeomID o2) {
         dCalcVectorCross3(contact[i].fdir1, contact[i].geom.normal, v);
         dSafeNormalize3(contact[i].fdir1);
 
-        if (dGeomGetClass(o1) == dPlaneClass ||
-            dGeomGetClass(o2) == dPlaneClass) {
-            contact[i].surface.mu = 2.0;
-            contact[i].surface.mu2 = 0.5;
+        if (is_terrain(o1) || is_terrain(o2)) {
+            contact[i].surface.mu = 2.0*2.618;
+            contact[i].surface.mu2 = 0.5*2.618;
         } else if (dGeomGetClass(o1) == dCylinderClass ||
                    dGeomGetClass(o2) == dCylinderClass) {
             contact[i].surface.mu = contact[i].surface.mu2 = dInfinity;
@@ -366,7 +467,8 @@ void start() {
 
 void step(int pause) {
     if(!pause) {
-        for(int i = 0; i < 10; i++) {
+        size_t i;
+        for(i = 0; i < 10; i++) {
             // find collisions and add contact joints
             dSpaceCollide(space, 0, &nearCallback);
             // step the simulation
@@ -375,6 +477,7 @@ void step(int pause) {
             dJointGroupEmpty(contactGroup);
         }
     }
+    heightfield_draw(hf);
     tracked_vehicle_draw(v);
 }
 
@@ -413,7 +516,7 @@ void command(int cmd) {
 int main(int argc, char **argv) {
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
-    
+
     world = dWorldCreate();
     //space = dSimpleSpaceCreate(0);
     space = dHashSpaceCreate(0);
@@ -424,12 +527,13 @@ int main(int argc, char **argv) {
     //dWorldSetContactMaxCorrectingVel(world, 0.9);
     //dWorldSetContactSurfaceLayer(world, 0.001);
     dWorldSetAutoDisableFlag(world, 1);
-    
+
     planeGeom = dCreatePlane(space, 0, 0, 1, 0); // (a, b, c)' (x, y, z) = d
     dGeomSetCategoryBits(planeGeom, 0x4);
     dGeomSetCollideBits(planeGeom, 0x2);
-    
-    v = tracked_vehicle_create(0.3, 0.8, 0.2, 0.5, world, space, 0, 0, 0.301);
+
+    v = tracked_vehicle_create(world, space, 0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+1);
+    hf = heightfield_create(world, space, 4.0, 8.0, 15, 31, 0.4);
 
     dsFunctions fn;
     fn.version = DS_VERSION;
@@ -439,12 +543,15 @@ int main(int argc, char **argv) {
     fn.command = &command;
     fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
     dsSimulationLoop(argc, argv, 800, 600, &fn);
-    
+
+    tracked_vehicle_destroy(v);
+    heightfield_destroy(hf);
+
     dJointGroupDestroy(contactGroup);
     dSpaceDestroy(space);
     dWorldDestroy(world);
     dCloseODE();
-    
+
     return 0;
 }
 

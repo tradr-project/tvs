@@ -1,5 +1,5 @@
 CFLAGS := -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -I$(PWD)/../ode/include
-LDLIBS := -lstdc++ -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff
+LDLIBS := -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff -lstdc++
 
 ifeq ($(OS),Windows_NT)
 #    CCFLAGS += -DWIN32
