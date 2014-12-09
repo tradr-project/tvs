@@ -338,8 +338,9 @@ Heightfield * heightfield_create(dWorldID world, dSpaceID space, dReal width, dR
     h->wsamp = h->width / (h->wstep - 1);
     h->dsamp = h->depth / (h->dstep - 1);
     h->data = dGeomHeightfieldDataCreate();
+    const int bWrap = 1;
     dGeomHeightfieldDataBuildCallback(h->data, h, &heightfield_get_callback,
-		h->width, h->depth, h->wstep, h->dstep, 1.0, 0.0, 0.0, 0);
+		h->width, h->depth, h->wstep, h->dstep, 1.0, 0.0, 0.0, bWrap);
     h->geom = dCreateHeightfield(space, h->data, 1);
     dMatrix3 R;
     dRFromAxisAndAngle(R, 1, 0, 0, M_PI_2);
