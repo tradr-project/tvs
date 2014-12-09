@@ -12,7 +12,7 @@ ifeq ($(OS),Windows_NT)
 else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
-        CCFLAGS += -DLINUX
+        CFLAGS += -DLINUX
         LDLIBS += -lGL -lGLU -lglut -lX11 -lXxf86vm -lXrandr -lpthread -lXi
     endif
     ifeq ($(UNAME_S),Darwin)
@@ -21,17 +21,15 @@ else
     endif
     UNAME_P := $(shell uname -p)
     ifeq ($(UNAME_P),x86_64)
-        CCFLAGS += -DAMD64
+        CFLAGS += -DAMD64
     endif
     ifneq ($(filter %86,$(UNAME_P)),)
-        CCFLAGS += -DIA32
+        CFLAGS += -DIA32
     endif
 #    ifneq ($(filter arm%,$(UNAME_P)),)
 #        CCFLAGS += -DARM
 #    endif
 endif
-
-CXXFLAGS := $(CFLAGS)
 
 .PHONY: clean
 
