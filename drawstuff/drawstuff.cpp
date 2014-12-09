@@ -54,7 +54,7 @@
 #endif
 
 #include "drawstuff.h"
-#include "drawstuff_internal.h"
+#include "internal.h"
 
 //***************************************************************************
 // misc

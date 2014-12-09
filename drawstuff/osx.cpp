@@ -37,7 +37,7 @@
 #endif
 
 #include "drawstuff.h"
-#include "drawstuff_internal.h"
+#include "internal.h"
 
 #include <OpenGL/gl.h>
 #include <GLUT/glut.h>

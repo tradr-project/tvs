@@ -1,7 +1,7 @@
-CFLAGS := -ggdb -DdDOUBLE
+CFLAGS := -ggdb -DdDOUBLE -I.
 LDLIBS := -lstdc++ -lm -lode
 
-DRAWSTUFF_DEPS = drawstuff.o
+DRAWSTUFF_DEPS = drawstuff/drawstuff.o
 
 ifeq ($(OS),Windows_NT)
 #    CCFLAGS += -DWIN32
@@ -16,12 +16,12 @@ else
     ifeq ($(UNAME_S),Linux)
         CCFLAGS += -DLINUX
         LDLIBS += -lGL -lGLU -lglut -lX11 -lXxf86vm -lXrandr -lpthread -lXi
-        DRAWSTUFF_DEPS += drawstuff_x11.o
+        DRAWSTUFF_DEPS += drawstuff/x11.o
     endif
     ifeq ($(UNAME_S),Darwin)
-        CFLAGS += -DOSX -I/opt/local/include
+        CFLAGS += -DOSX -I/opt/local/include -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\"
         LDLIBS += -L/opt/local/lib -framework Cocoa -framework CoreVideo -framework IOKit -framework OpenGL -framework GLUT
-        DRAWSTUFF_DEPS += drawstuff_osx.o
+        DRAWSTUFF_DEPS += drawstuff/osx.o
     endif
     UNAME_P := $(shell uname -p)
     ifeq ($(UNAME_P),x86_64)
