@@ -6,9 +6,40 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <ode/ode.h>
 #include <drawstuff/drawstuff.h>
+
+// convert pcd di ascii ply with:
+//    pcl_pcd2ply -format 0 samp11-utm.pcd samp11-utm.ply
+// then remove header (leave first line with number of points)
+dReal * read_xyz(const char *filename, size_t *n) {
+    FILE *f = fopen(filename, "r");
+    int m = 0;
+    fscanf(f, "%d", &m);
+    dReal *p = (dReal *)malloc(sizeof(dReal) * m * 3), *q = p;
+    *n = 0;
+    while((*n)++ < m && fscanf(f, "%lf %lf %lf", q, q+1, q+2) != EOF)
+        q += 3;
+    fclose(f);
+    return p;
+}
+
+dGeomID * create_pcl_geom(dWorldID world, dSpaceID space, dReal *pcl, size_t n, dReal radius) {
+    size_t i;
+    dGeomID *g = (dGeomID *)malloc(sizeof(dGeomID) * n);
+    for(i = 0; i < n; i++) {
+        g[i] = dCreateSphere(space, radius);
+        dGeomSetPosition(g[i], pcl[i * 3], pcl[i * 3 + 1], pcl[i * 3 + 2]);
+        dMatrix3 R; dRSetIdentity(R);
+        dGeomSetRotation(g[i], R);
+        dGeomSetCategoryBits(g[i], 0x4);
+        dGeomSetCollideBits(g[i], 0x2);
+    }
+    return g;
+}
 
 typedef struct {
     dReal radius1;
@@ -404,21 +435,18 @@ void heightfield_draw_one(Heightfield *h, int xOffset, int yOffset) {
         }
     }
 
-    dsDrawTrianglesD(pos, R, v, n, 1);
+    //dsDrawTrianglesD(pos, R, v, n, 1);
 
     free(v);
 }
 
 void heightfield_draw(Heightfield *h) {
-    if(h->bWrap) {
-        const int d = 3;
-        for(int ox = -d; ox <= d; ox++) {
-            for(int oy = -d; oy <= d; oy++) {
-                heightfield_draw_one(h, ox * h->wstep / 4, oy * h->dstep / 4);
-            }
+    const int d = 3 * h->bWrap;
+    int ox, oy;
+    for(ox = -d; ox <= d; ox++) {
+        for(oy = -d; oy <= d; oy++) {
+            heightfield_draw_one(h, ox * h->wstep / 4, oy * h->dstep / 4);
         }
-    } else {
-        heightfield_draw_one(h, 0, 0);
     }
 }
 
@@ -432,9 +460,13 @@ dGeomID planeGeom;
 
 TrackedVehicle *v;
 Heightfield *hf;
+dReal *pcl;
+size_t pcl_size;
+dGeomID *pcl_geom;
+dReal pcl_radius;
 
 int is_terrain(dGeomID o) {
-    return dGeomGetClass(o) == dPlaneClass || dGeomGetClass(o) == dHeightfieldClass;
+    return dGeomGetClass(o) == dPlaneClass || dGeomGetClass(o) == dHeightfieldClass || dGeomGetClass(o) == dSphereClass;
 }
 void nearCallback(void *data, dGeomID o1, dGeomID o2) {
     int i;
@@ -485,20 +517,26 @@ void start() {
     dsSetViewpoint(xyz,hpr);
 }
 
+const int simulationStepsPerFrame = 4;
+int nstep = 0;
+
 void step(int pause) {
     if(!pause) {
         size_t i;
-        for(i = 0; i < 10; i++) {
+        for(i = 0; i < simulationStepsPerFrame; i++) {
             // find collisions and add contact joints
             dSpaceCollide(space, 0, &nearCallback);
             // step the simulation
-            dWorldQuickStep(world, 0.001);
+            dWorldQuickStep(world, 0.01 / (dReal)simulationStepsPerFrame);
             // remove all contact joints
             dJointGroupEmpty(contactGroup);
         }
     }
-    heightfield_draw(hf);
-    tracked_vehicle_draw(v);
+    //heightfield_draw(hf);
+    if(!(nstep++ % 5)) {
+        tracked_vehicle_draw(v);
+        dsDrawPCLD(pcl, pcl_size, pcl_radius);
+    }
 }
 
 void stop() {
@@ -516,12 +554,12 @@ void command(int cmd) {
             dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, V);
             break;
         case 'w':
-            dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, V);
-            dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, V);
-            break;
-        case 's':
             dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, -V);
             dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, -V);
+            break;
+        case 's':
+            dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, V);
+            dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, V);
             break;
         case ' ':
             dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, 0);
@@ -533,16 +571,44 @@ void command(int cmd) {
     }
 }
 
+dReal dist(const dReal *a, const dReal *b) {
+    dReal sd = 0.0;
+    int i;
+    for(i = 0; i < 3; i++) sd += pow(a[i] - b[i], 2);
+    return sqrt(sd);
+}
+
 int main(int argc, char **argv) {
+    dReal *pcl2 = read_xyz("data/pcd_0000.ds.0.2.xyz", &pcl_size);
+    dReal leaf_size = 0.2;
+    size_t near = 0, i;
+    const dVector3 center = {3,3,0}, extents = {7,7,7};
+    const dReal limit = 7.0;
+    dReal *p;
+    for(p = pcl2; p < pcl2 + pcl_size * 3; p += 3)
+        if(dist(p, center) < limit)
+            near++;
+    printf("%ld near points\n", near);
+    pcl = (dReal *)malloc(sizeof(dReal) * 3 * near);
+    near = 0;
+    for(p = pcl2; p < pcl2 + pcl_size * 3; p += 3)
+        if(dist(p, center) < limit)
+            memcpy(pcl + 3 * near++, p, 3 * sizeof(dReal));
+    free(pcl2);
+    pcl_size = near;
+    pcl_radius = 0.5 * sqrt(3.0) * leaf_size;
+    pcl_radius = leaf_size;
+
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
 
     world = dWorldCreate();
     //space = dSimpleSpaceCreate(0);
-    space = dHashSpaceCreate(0);
+    //space = dHashSpaceCreate(0);
+    space = dQuadTreeSpaceCreate(0, center, extents, 6);
     contactGroup = dJointGroupCreate(0);
     dWorldSetGravity(world, 0, 0, -9.81);
-    //dWorldSetERP(world, 0.2);
+    //dWorldSetERP(world, 0.7);
     //dWorldSetCFM(world, 1e-5);
     //dWorldSetContactMaxCorrectingVel(world, 0.9);
     //dWorldSetContactSurfaceLayer(world, 0.001);
@@ -552,8 +618,9 @@ int main(int argc, char **argv) {
     dGeomSetCategoryBits(planeGeom, 0x4);
     dGeomSetCollideBits(planeGeom, 0x2);
 
-    v = tracked_vehicle_create(world, space, 0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+1);
-    hf = heightfield_create(world, space, 4.0, 8.0, 15, 31, 0.4);
+    v = tracked_vehicle_create(world, space, 0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0.4);
+    //hf = heightfield_create(world, space, 4.0, 8.0, 15, 31, 0.4);
+    pcl_geom = create_pcl_geom(world, space, pcl, pcl_size, pcl_radius);
 
     dsFunctions fn;
     fn.version = DS_VERSION;
@@ -565,12 +632,14 @@ int main(int argc, char **argv) {
     dsSimulationLoop(argc, argv, 800, 600, &fn);
 
     tracked_vehicle_destroy(v);
-    heightfield_destroy(hf);
+    //heightfield_destroy(hf);
 
     dJointGroupDestroy(contactGroup);
     dSpaceDestroy(space);
     dWorldDestroy(world);
     dCloseODE();
+    
+    free(pcl);
 
     return 0;
 }
