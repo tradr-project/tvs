@@ -7,10 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE6C89581A2F2E630054F8E0 /* drawstuff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6C89561A2F2E630054F8E0 /* drawstuff.cpp */; };
+		CE503E9E1A3B48D4003367F7 /* heightfield.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E931A3B48D4003367F7 /* heightfield.c */; };
+		CE503E9F1A3B48D4003367F7 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E951A3B48D4003367F7 /* main.c */; };
+		CE503EA01A3B48D4003367F7 /* point_cloud.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E961A3B48D4003367F7 /* point_cloud.c */; };
+		CE503EA11A3B48D4003367F7 /* track_kinematic_model.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E981A3B48D4003367F7 /* track_kinematic_model.c */; };
+		CE503EA21A3B48D4003367F7 /* track.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E9A1A3B48D4003367F7 /* track.c */; };
+		CE503EA31A3B48D4003367F7 /* tracked_vehicle.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E9C1A3B48D4003367F7 /* tracked_vehicle.c */; };
 		CE6C895D1A2F44BA0054F8E0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */; };
-		CE6C895F1A2F45960054F8E0 /* drawstuff_osx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6C895E1A2F45960054F8E0 /* drawstuff_osx.cpp */; };
-		CEE555701A2C8F7B000AB866 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE5556F1A2C8F7B000AB866 /* main.cpp */; };
 		CEE5557F1A2E0441000AB866 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557B1A2E0441000AB866 /* Cocoa.framework */; };
 		CEE555801A2E0441000AB866 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557C1A2E0441000AB866 /* CoreVideo.framework */; };
 		CEE555811A2E0441000AB866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557D1A2E0441000AB866 /* IOKit.framework */; };
@@ -30,13 +33,19 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		CE6C89561A2F2E630054F8E0 /* drawstuff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = drawstuff.cpp; path = ../drawstuff.cpp; sourceTree = "<group>"; };
-		CE6C89571A2F2E630054F8E0 /* drawstuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = drawstuff.h; path = ../drawstuff.h; sourceTree = "<group>"; };
-		CE6C89591A2F2F070054F8E0 /* drawstuff_internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = drawstuff_internal.h; path = ../drawstuff_internal.h; sourceTree = "<group>"; };
+		CE503E931A3B48D4003367F7 /* heightfield.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = heightfield.c; path = ../heightfield.c; sourceTree = "<group>"; };
+		CE503E941A3B48D4003367F7 /* heightfield.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = heightfield.h; path = ../heightfield.h; sourceTree = "<group>"; };
+		CE503E951A3B48D4003367F7 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../main.c; sourceTree = "<group>"; };
+		CE503E961A3B48D4003367F7 /* point_cloud.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = point_cloud.c; path = ../point_cloud.c; sourceTree = "<group>"; };
+		CE503E971A3B48D4003367F7 /* point_cloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = point_cloud.h; path = ../point_cloud.h; sourceTree = "<group>"; };
+		CE503E981A3B48D4003367F7 /* track_kinematic_model.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = track_kinematic_model.c; path = ../track_kinematic_model.c; sourceTree = "<group>"; };
+		CE503E991A3B48D4003367F7 /* track_kinematic_model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = track_kinematic_model.h; path = ../track_kinematic_model.h; sourceTree = "<group>"; };
+		CE503E9A1A3B48D4003367F7 /* track.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = track.c; path = ../track.c; sourceTree = "<group>"; };
+		CE503E9B1A3B48D4003367F7 /* track.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = track.h; path = ../track.h; sourceTree = "<group>"; };
+		CE503E9C1A3B48D4003367F7 /* tracked_vehicle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tracked_vehicle.c; path = ../tracked_vehicle.c; sourceTree = "<group>"; };
+		CE503E9D1A3B48D4003367F7 /* tracked_vehicle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tracked_vehicle.h; path = ../tracked_vehicle.h; sourceTree = "<group>"; };
 		CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../../System/Library/Frameworks/GLUT.framework; sourceTree = "<group>"; };
-		CE6C895E1A2F45960054F8E0 /* drawstuff_osx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = drawstuff_osx.cpp; path = ../drawstuff_osx.cpp; sourceTree = "<group>"; };
 		CE98939D1A2C8ED300E79C12 /* tvs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tvs; sourceTree = BUILT_PRODUCTS_DIR; };
-		CEE5556F1A2C8F7B000AB866 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
 		CEE5557B1A2E0441000AB866 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
 		CEE5557C1A2E0441000AB866 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = ../../../../System/Library/Frameworks/CoreVideo.framework; sourceTree = "<group>"; };
 		CEE5557D1A2E0441000AB866 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = ../../../../System/Library/Frameworks/IOKit.framework; sourceTree = "<group>"; };
@@ -83,11 +92,17 @@
 		CEE555711A2C8F80000AB866 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				CEE5556F1A2C8F7B000AB866 /* main.cpp */,
-				CE6C89561A2F2E630054F8E0 /* drawstuff.cpp */,
-				CE6C89571A2F2E630054F8E0 /* drawstuff.h */,
-				CE6C89591A2F2F070054F8E0 /* drawstuff_internal.h */,
-				CE6C895E1A2F45960054F8E0 /* drawstuff_osx.cpp */,
+				CE503E931A3B48D4003367F7 /* heightfield.c */,
+				CE503E941A3B48D4003367F7 /* heightfield.h */,
+				CE503E951A3B48D4003367F7 /* main.c */,
+				CE503E961A3B48D4003367F7 /* point_cloud.c */,
+				CE503E971A3B48D4003367F7 /* point_cloud.h */,
+				CE503E981A3B48D4003367F7 /* track_kinematic_model.c */,
+				CE503E991A3B48D4003367F7 /* track_kinematic_model.h */,
+				CE503E9A1A3B48D4003367F7 /* track.c */,
+				CE503E9B1A3B48D4003367F7 /* track.h */,
+				CE503E9C1A3B48D4003367F7 /* tracked_vehicle.c */,
+				CE503E9D1A3B48D4003367F7 /* tracked_vehicle.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -148,9 +163,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE6C895F1A2F45960054F8E0 /* drawstuff_osx.cpp in Sources */,
-				CEE555701A2C8F7B000AB866 /* main.cpp in Sources */,
-				CE6C89581A2F2E630054F8E0 /* drawstuff.cpp in Sources */,
+				CE503EA21A3B48D4003367F7 /* track.c in Sources */,
+				CE503EA01A3B48D4003367F7 /* point_cloud.c in Sources */,
+				CE503EA11A3B48D4003367F7 /* track_kinematic_model.c in Sources */,
+				CE503EA31A3B48D4003367F7 /* tracked_vehicle.c in Sources */,
+				CE503E9F1A3B48D4003367F7 /* main.c in Sources */,
+				CE503E9E1A3B48D4003367F7 /* heightfield.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -234,16 +252,23 @@
 		CE9893A51A2C8ED300E79C12 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DRAWSTUFF_TEXTURE_PATH=\\\"$SRCROOT/../textures\\\"",
+					"DEBUG=1",
+					"POINTCLOUDS_PATH=\\\"$SRCROOT/../pointclouds\\\"",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/opt/local/include,
+					$SRCROOT/../../ode/include,
 				);
 				OTHER_LDFLAGS = (
-					"-L/opt/local/lib",
-					"-lglew",
-					"-lglfw",
+					"-L$SRCROOT/../../ode/ode/src/.libs",
 					"-lode",
+					"-L$SRCROOT/../../ode/drawstuff/src/.libs",
+					"-ldrawstuff",
+					"-lstdc++",
+					"-lm",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -252,16 +277,22 @@
 		CE9893A61A2C8ED300E79C12 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DRAWSTUFF_TEXTURE_PATH=\\\"$SRCROOT/../textures\\\"",
+					"POINTCLOUDS_PATH=\\\"$SRCROOT/../pointclouds\\\"",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					/opt/local/include,
+					$SRCROOT/../../ode/include,
 				);
 				OTHER_LDFLAGS = (
-					"-L/opt/local/lib",
-					"-lglew",
-					"-lglfw",
+					"-L$SRCROOT/../../ode/ode/src/.libs",
 					"-lode",
+					"-L$SRCROOT/../../ode/drawstuff/src/.libs",
+					"-ldrawstuff",
+					"-lstdc++",
+					"-lm",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

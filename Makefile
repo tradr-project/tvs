@@ -1,4 +1,4 @@
-CFLAGS := -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -I$(PWD)/../ode/include
+CFLAGS := -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -DPOINTCLOUDS_PATH=\"$(PWD)/pointclouds\" -I$(PWD)/../ode/include
 LDLIBS := -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff -lstdc++
 
 ifeq ($(OS),Windows_NT)
@@ -40,9 +40,23 @@ endif
 
 .PHONY: clean all
 
-all: main
+OBJS := heightfield.o point_cloud.o track.o track_kinematic_model.o tracked_vehicle.o main.o
+TARGET = main
 
-main: main.o
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(OBJS) $(LDLIBS) -o $(TARGET)
+
+-include $(OBJS:.o=.d)
+
+%.o: %.c
+	$(CC) -c $(CFLAGS) $*.c -o $*.o
+	$(CC) -MM $(CFLAGS) $*.c > $*.d
+	@cp -f $*.d $*.d.tmp
+	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
+	  sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
+	@rm -f $*.d.tmp
 
 clean:
-	rm -f *.o main
+	rm -f $(OBJS) $(OBJS:.o=.d) $(TARGET)
