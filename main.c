@@ -15,7 +15,11 @@
 #include "tracked_vehicle.h"
 #include "point_cloud.h"
 
-#define MAX_CONTACTS 10
+#define SIMPLE              1
+#define HASH                2
+#define QUADTREE            3
+#define SPACE_TYPE          QUADTREE
+#define MAX_CONTACTS        10
 
 dWorldID world;
 dSpaceID space;
@@ -24,7 +28,6 @@ dJointGroupID contactGroup;
 dGeomID planeGeom;
 
 TrackedVehicle *v;
-//Heightfield *hf;
 PointCloud *pcl;
 
 int is_terrain(dGeomID o) {
@@ -86,7 +89,6 @@ int nstep = 0;
 
 void draw() {
     tracked_vehicle_draw(v);
-    //heightfield_draw(hf);
     point_cloud_draw(pcl);
 }
 
@@ -111,34 +113,28 @@ void stop() {
 
 void command(int cmd) {
     const dReal V = 5;
+    
+#define MapKey(k,vr,vl) case k:\
+    dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, V); \
+    dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, -V); \
+    break;
+    
     switch(cmd) {
-        case 'a':
-            dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, V);
-            dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, -V);
-            break;
-        case 'd':
-            dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, -V);
-            dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, V);
-            break;
-        case 'w':
-            dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, -V);
-            dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, -V);
-            break;
-        case 's':
-            dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, V);
-            dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, V);
-            break;
-        case ' ':
-            dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, 0);
-            dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, 0);
-            break;
-        default:
-            printf("cmd=%d\n", cmd);
-            break;
+    MapKey('a',  V, -V);
+    MapKey('d', -V,  V);
+    MapKey('w', -V, -V);
+    MapKey('s',  V,  V);
+    MapKey(' ',  0,  0);
     }
+    
+#undef MapKey
 }
 
+#include "fe.c"
+
 int main(int argc, char **argv) {
+    feenableexcept(FE_INVALID | FE_OVERFLOW);
+    
     const dVector3 center = {3,3,0};
     const dReal limit = 4.0;
     PointCloud *pcl_full = point_cloud_read("pcd_0000.ds.0.3.xyz");
@@ -151,12 +147,16 @@ int main(int argc, char **argv) {
 
     world = dWorldCreate();
     
-    //space = dSimpleSpaceCreate(0);
-    
+#if SPACE_TYPE == SIMPLE
+    space = dSimpleSpaceCreate(0);
+#elif SPACE_TYPE == HASH
     space = dHashSpaceCreate(0);
-    
-    //const dVector3 extents = {7,7,7};
-    //space = dQuadTreeSpaceCreate(0, center, extents, 6);
+#elif SPACE_TYPE == QUADTREE
+    const dVector3 extents = {7,7,7};
+    space = dQuadTreeSpaceCreate(0, center, extents, 6);
+#else
+#error Bad SPACE_TYPE
+#endif
     
     contactGroup = dJointGroupCreate(0);
     
@@ -172,7 +172,6 @@ int main(int argc, char **argv) {
     dGeomSetCollideBits(planeGeom, 0x2);
 
     v = tracked_vehicle_create(world, space, 0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0.4);
-    //hf = heightfield_create(world, space, 4.0, 8.0, 15, 31, 0.4);
     point_cloud_create_geom(pcl, world, space);
 
     dsFunctions fn;
@@ -185,15 +184,12 @@ int main(int argc, char **argv) {
     dsSimulationLoop(argc, argv, 800, 600, &fn);
 
     tracked_vehicle_destroy(v);
-    //heightfield_destroy(hf);
     point_cloud_destroy(pcl);
 
     dJointGroupDestroy(contactGroup);
     dSpaceDestroy(space);
     dWorldDestroy(world);
     dCloseODE();
-    
-    free(pcl);
 
     return 0;
 }
