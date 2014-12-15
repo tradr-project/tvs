@@ -38,6 +38,8 @@ else
     endif
 endif
 
+CXXFLAGS = $(CFLAGS)
+
 .PHONY: clean all
 
 OBJS := heightfield.o point_cloud.o track.o track_kinematic_model.o tracked_vehicle.o main.o
@@ -50,9 +52,9 @@ $(TARGET): $(OBJS)
 
 -include $(OBJS:.o=.d)
 
-%.o: %.c
-	$(CC) -c $(CFLAGS) $*.c -o $*.o
-	$(CC) -MM $(CFLAGS) $*.c > $*.d
+%.o: %.cpp
+	$(CXX) -c $(CXXFLAGS) $*.cpp -o $*.o
+	$(CXX) -MM $(CXXFLAGS) $*.cpp > $*.d
 	@cp -f $*.d $*.d.tmp
 	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
 	  sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
