@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE503E9E1A3B48D4003367F7 /* heightfield.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E931A3B48D4003367F7 /* heightfield.c */; };
-		CE503E9F1A3B48D4003367F7 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E951A3B48D4003367F7 /* main.c */; };
-		CE503EA01A3B48D4003367F7 /* point_cloud.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E961A3B48D4003367F7 /* point_cloud.c */; };
-		CE503EA11A3B48D4003367F7 /* track_kinematic_model.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E981A3B48D4003367F7 /* track_kinematic_model.c */; };
-		CE503EA21A3B48D4003367F7 /* track.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E9A1A3B48D4003367F7 /* track.c */; };
-		CE503EA31A3B48D4003367F7 /* tracked_vehicle.c in Sources */ = {isa = PBXBuildFile; fileRef = CE503E9C1A3B48D4003367F7 /* tracked_vehicle.c */; };
 		CE503EA51A3F407C003367F7 /* planner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE503EA41A3F407C003367F7 /* planner.cpp */; };
+		CE503EAC1A3F537B003367F7 /* heightfield.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE503EA61A3F537B003367F7 /* heightfield.cpp */; };
+		CE503EAD1A3F537B003367F7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE503EA71A3F537B003367F7 /* main.cpp */; };
+		CE503EAE1A3F537B003367F7 /* point_cloud.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE503EA81A3F537B003367F7 /* point_cloud.cpp */; };
+		CE503EAF1A3F537B003367F7 /* track_kinematic_model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE503EA91A3F537B003367F7 /* track_kinematic_model.cpp */; };
+		CE503EB01A3F537B003367F7 /* track.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE503EAA1A3F537B003367F7 /* track.cpp */; };
+		CE503EB11A3F537B003367F7 /* tracked_vehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE503EAB1A3F537B003367F7 /* tracked_vehicle.cpp */; };
 		CE6C895D1A2F44BA0054F8E0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */; };
 		CEE5557F1A2E0441000AB866 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557B1A2E0441000AB866 /* Cocoa.framework */; };
 		CEE555801A2E0441000AB866 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557C1A2E0441000AB866 /* CoreVideo.framework */; };
@@ -34,18 +34,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		CE503E931A3B48D4003367F7 /* heightfield.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = heightfield.c; path = ../heightfield.c; sourceTree = "<group>"; };
 		CE503E941A3B48D4003367F7 /* heightfield.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = heightfield.h; path = ../heightfield.h; sourceTree = "<group>"; };
-		CE503E951A3B48D4003367F7 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../main.c; sourceTree = "<group>"; };
-		CE503E961A3B48D4003367F7 /* point_cloud.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = point_cloud.c; path = ../point_cloud.c; sourceTree = "<group>"; };
 		CE503E971A3B48D4003367F7 /* point_cloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = point_cloud.h; path = ../point_cloud.h; sourceTree = "<group>"; };
-		CE503E981A3B48D4003367F7 /* track_kinematic_model.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = track_kinematic_model.c; path = ../track_kinematic_model.c; sourceTree = "<group>"; };
 		CE503E991A3B48D4003367F7 /* track_kinematic_model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = track_kinematic_model.h; path = ../track_kinematic_model.h; sourceTree = "<group>"; };
-		CE503E9A1A3B48D4003367F7 /* track.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = track.c; path = ../track.c; sourceTree = "<group>"; };
 		CE503E9B1A3B48D4003367F7 /* track.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = track.h; path = ../track.h; sourceTree = "<group>"; };
-		CE503E9C1A3B48D4003367F7 /* tracked_vehicle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tracked_vehicle.c; path = ../tracked_vehicle.c; sourceTree = "<group>"; };
 		CE503E9D1A3B48D4003367F7 /* tracked_vehicle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tracked_vehicle.h; path = ../tracked_vehicle.h; sourceTree = "<group>"; };
 		CE503EA41A3F407C003367F7 /* planner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = planner.cpp; path = ../planner.cpp; sourceTree = "<group>"; };
+		CE503EA61A3F537B003367F7 /* heightfield.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = heightfield.cpp; path = ../heightfield.cpp; sourceTree = "<group>"; };
+		CE503EA71A3F537B003367F7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
+		CE503EA81A3F537B003367F7 /* point_cloud.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = point_cloud.cpp; path = ../point_cloud.cpp; sourceTree = "<group>"; };
+		CE503EA91A3F537B003367F7 /* track_kinematic_model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = track_kinematic_model.cpp; path = ../track_kinematic_model.cpp; sourceTree = "<group>"; };
+		CE503EAA1A3F537B003367F7 /* track.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = track.cpp; path = ../track.cpp; sourceTree = "<group>"; };
+		CE503EAB1A3F537B003367F7 /* tracked_vehicle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tracked_vehicle.cpp; path = ../tracked_vehicle.cpp; sourceTree = "<group>"; };
 		CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../../System/Library/Frameworks/GLUT.framework; sourceTree = "<group>"; };
 		CE98939D1A2C8ED300E79C12 /* tvs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tvs; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEE5557B1A2E0441000AB866 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
@@ -94,17 +94,17 @@
 		CEE555711A2C8F80000AB866 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CE503EA61A3F537B003367F7 /* heightfield.cpp */,
+				CE503EA71A3F537B003367F7 /* main.cpp */,
+				CE503EA81A3F537B003367F7 /* point_cloud.cpp */,
+				CE503EA91A3F537B003367F7 /* track_kinematic_model.cpp */,
+				CE503EAA1A3F537B003367F7 /* track.cpp */,
+				CE503EAB1A3F537B003367F7 /* tracked_vehicle.cpp */,
 				CE503EA41A3F407C003367F7 /* planner.cpp */,
-				CE503E931A3B48D4003367F7 /* heightfield.c */,
 				CE503E941A3B48D4003367F7 /* heightfield.h */,
-				CE503E951A3B48D4003367F7 /* main.c */,
-				CE503E961A3B48D4003367F7 /* point_cloud.c */,
 				CE503E971A3B48D4003367F7 /* point_cloud.h */,
-				CE503E981A3B48D4003367F7 /* track_kinematic_model.c */,
 				CE503E991A3B48D4003367F7 /* track_kinematic_model.h */,
-				CE503E9A1A3B48D4003367F7 /* track.c */,
 				CE503E9B1A3B48D4003367F7 /* track.h */,
-				CE503E9C1A3B48D4003367F7 /* tracked_vehicle.c */,
 				CE503E9D1A3B48D4003367F7 /* tracked_vehicle.h */,
 			);
 			name = src;
@@ -166,13 +166,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE503EAE1A3F537B003367F7 /* point_cloud.cpp in Sources */,
 				CE503EA51A3F407C003367F7 /* planner.cpp in Sources */,
-				CE503EA21A3B48D4003367F7 /* track.c in Sources */,
-				CE503EA01A3B48D4003367F7 /* point_cloud.c in Sources */,
-				CE503EA11A3B48D4003367F7 /* track_kinematic_model.c in Sources */,
-				CE503EA31A3B48D4003367F7 /* tracked_vehicle.c in Sources */,
-				CE503E9F1A3B48D4003367F7 /* main.c in Sources */,
-				CE503E9E1A3B48D4003367F7 /* heightfield.c in Sources */,
+				CE503EB11A3F537B003367F7 /* tracked_vehicle.cpp in Sources */,
+				CE503EAC1A3F537B003367F7 /* heightfield.cpp in Sources */,
+				CE503EAF1A3F537B003367F7 /* track_kinematic_model.cpp in Sources */,
+				CE503EAD1A3F537B003367F7 /* main.cpp in Sources */,
+				CE503EB01A3F537B003367F7 /* track.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
