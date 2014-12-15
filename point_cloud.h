@@ -6,6 +6,9 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
+#ifndef POINT_CLOUD_H_INCLUDED
+#define POINT_CLOUD_H_INCLUDED
+
 #include <ode/ode.h>
 
 typedef struct {
@@ -25,3 +28,4 @@ void point_cloud_create_geom(PointCloud *p, dWorldID world, dSpaceID space);
 
 void point_cloud_draw(PointCloud *p);
 
+#endif // POINT_CLOUD_H_INCLUDED

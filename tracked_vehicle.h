@@ -6,6 +6,9 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
+#ifndef TRACKED_VEHICLE_H_INCLUDED
+#define TRACKED_VEHICLE_H_INCLUDED
+
 #include <ode/ode.h>
 #include "track.h"
 
@@ -27,3 +30,4 @@ void tracked_vehicle_destroy(TrackedVehicle *v);
 
 void tracked_vehicle_draw(TrackedVehicle *v);
 
+#endif // TRACKED_VEHICLE_H_INCLUDED

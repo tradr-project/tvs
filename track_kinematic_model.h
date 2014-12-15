@@ -6,6 +6,9 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
+#ifndef TRACK_KINEMATIC_MODEL_H_INCLUDED
+#define TRACK_KINEMATIC_MODEL_H_INCLUDED
+
 #include <ode/ode.h>
 
 typedef struct {
@@ -37,3 +40,4 @@ void track_kinematic_model_get_point_on_path(TrackKinematicModel *m, dReal u, dR
 
 void track_kinematic_model_compute_grouser_transform_3D(TrackKinematicModel *m, size_t i, dReal *pos, dReal *R);
 
+#endif // TRACK_KINEMATIC_MODEL_H_INCLUDED

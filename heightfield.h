@@ -6,6 +6,9 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
+#ifndef HEIGHTFIELD_H_INCLUDED
+#define HEIGHTFIELD_H_INCLUDED
+
 #include <ode/ode.h>
 
 typedef struct {
@@ -33,3 +36,4 @@ void heightfield_draw_one(Heightfield *h, int xOffset, int yOffset);
 
 void heightfield_draw(Heightfield *h);
 
+#endif // HEIGHTFIELD_H_INCLUDED

@@ -6,6 +6,9 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
+#ifndef TRACK_H_INCLUDED
+#define TRACK_H_INCLUDED
+
 #include <ode/ode.h>
 #include "track_kinematic_model.h"
 
@@ -35,3 +38,4 @@ void track_destroy(Track *t);
 
 void track_draw(Track *t);
 
+#endif // TRACK_H_INCLUDED
