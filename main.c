@@ -113,12 +113,10 @@ void stop() {
 
 void command(int cmd) {
     const dReal V = 5;
-    
-#define MapKey(k,vr,vl) case k:\
-    dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, vr); \
-    dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, vl); \
-    break;
-    
+
+#define SetVel(trk,vv) dJointSetHingeParam(v->trk##Track->wheel2Joint, dParamVel, vv)
+#define MapKey(k,vr,vl) case k: SetVel(right, vr); SetVel(left, vl); break;
+
     switch(cmd) {
     MapKey('a',  V, -V);
     MapKey('d', -V,  V);
@@ -130,6 +128,7 @@ void command(int cmd) {
     }
     
 #undef MapKey
+#undef SetVel
 }
 
 //#include "fe.c"
