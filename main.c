@@ -43,19 +43,25 @@ void nearCallback(void *data, dGeomID o1, dGeomID o2) {
     dContact contact[MAX_CONTACTS];
     for(i = 0; i < MAX_CONTACTS; i++) {
         contact[i].surface.mode = dContactBounce | dContactSoftCFM | dContactMu2 | dContactFDir1;
+        contact[i].surface.bounce = 0.5;
+        contact[i].surface.bounce_vel = 0.1;
+        contact[i].surface.soft_cfm = 0.0001;
+    }
+    int numc = dCollide(o1, o2, MAX_CONTACTS, &contact[0].geom, sizeof(dContact));
+    for(i = 0; i < numc; i++) {
         const dReal *v;
-
+        
         assert(dGeomGetClass(o1) == dBoxClass ||
                dGeomGetClass(o2) == dBoxClass);
-
+        
         if (dGeomGetClass(o1) == dBoxClass)
             v = dBodyGetLinearVel(b1);
         else
             v = dBodyGetLinearVel(b2);
-
+        
         dCalcVectorCross3(contact[i].fdir1, contact[i].geom.normal, v);
         dSafeNormalize3(contact[i].fdir1);
-
+        
         if (is_terrain(o1) || is_terrain(o2)) {
             contact[i].surface.mu = 2.0*2.618;
             contact[i].surface.mu2 = 0.5*2.618;
@@ -66,14 +72,8 @@ void nearCallback(void *data, dGeomID o1, dGeomID o2) {
             printf ("%d, %d\n", dGeomGetClass(o1), dGeomGetClass(o2));
             assert(0);
         }
-
-        contact[i].surface.bounce = 0.5;
-        contact[i].surface.bounce_vel = 0.1;
-        contact[i].surface.soft_cfm = 0.0001;
-    }
-    int numc = dCollide(o1, o2, MAX_CONTACTS, &contact[0].geom, sizeof(dContact));
-    for(i = 0; i < numc; i++) {
-        dJointID c = dJointCreateContact(world, contactGroup, contact + i);
+        
+        dJointID c = dJointCreateContact(world, contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
     }
 }
@@ -115,8 +115,8 @@ void command(int cmd) {
     const dReal V = 5;
     
 #define MapKey(k,vr,vl) case k:\
-    dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, V); \
-    dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, -V); \
+    dJointSetHingeParam(v->rightTrack->wheel2Joint, dParamVel, vr); \
+    dJointSetHingeParam(v->leftTrack->wheel2Joint, dParamVel, vl); \
     break;
     
     switch(cmd) {
@@ -130,17 +130,17 @@ void command(int cmd) {
 #undef MapKey
 }
 
-#include "fe.c"
+//#include "fe.c"
 
 int main(int argc, char **argv) {
-    feenableexcept(FE_INVALID | FE_OVERFLOW);
+    //feenableexcept(FE_INVALID | FE_OVERFLOW);
     
     const dVector3 center = {3,3,0};
-    const dReal limit = 4.0;
+    const dReal limit = 8.0;
     PointCloud *pcl_full = point_cloud_read("pcd_0000.ds.0.3.xyz");
     pcl = point_cloud_filter_far(pcl_full, center, limit);
     point_cloud_destroy(pcl_full);
-    pcl->point_radius = 0.13;
+    pcl->point_radius = 0.3 * sqrt(3) / 2.0;
 
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
