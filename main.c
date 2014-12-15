@@ -79,8 +79,8 @@ void nearCallback(void *data, dGeomID o1, dGeomID o2) {
 }
 
 void start() {
-    static float xyz[3] = {2.0f,-2.0f,1.7600f};
-    static float hpr[3] = {140.000f,-17.0000f,0.0000f};
+    static float xyz[3] = {6.3286,-5.9263,1.7600};
+    static float hpr[3] = {102.5000,-16.0000,0.0000};
     dsSetViewpoint(xyz,hpr);
 }
 
@@ -124,6 +124,8 @@ void command(int cmd) {
     MapKey('d', -V,  V);
     MapKey('w', -V, -V);
     MapKey('s',  V,  V);
+    MapKey('q',  0, -V);
+    MapKey('e', -V,  0);
     MapKey(' ',  0,  0);
     }
     
