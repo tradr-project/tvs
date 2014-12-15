@@ -2,3 +2,4 @@ main
 *.o
 *.d
 **/UserInterfaceState.xcuserstate
+**/xcuserdata
