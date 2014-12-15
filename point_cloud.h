@@ -22,6 +22,8 @@ PointCloud * point_cloud_read(const char *filename);
 
 void point_cloud_destroy(PointCloud *p);
 
+void point_cloud_deinit(PointCloud *p);
+
 PointCloud * point_cloud_filter_far(PointCloud *p, const dReal *center, dReal distance);
 
 void point_cloud_create_geom(PointCloud *p, dWorldID world, dSpaceID space);

@@ -30,11 +30,18 @@ typedef struct {
     dGeomID *grouserGeom;
     dJointID *grouserJoint;
     dMass *grouserMass;
+    dReal xOffset;
+    dReal yOffset;
+    dReal zOffset;
 } Track;
 
-Track * track_create(dWorldID world, dSpaceID space, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset);
+Track * track_init(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset);
+
+void track_create(Track * t, dWorldID world, dSpaceID space);
 
 void track_destroy(Track *t);
+
+void track_deinit(Track *t);
 
 void track_draw(Track *t);
 

@@ -12,22 +12,31 @@
 #include <assert.h>
 #include <drawstuff/drawstuff.h>
 
-TrackedVehicle * tracked_vehicle_create(dWorldID world, dSpaceID space, dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset) {
+TrackedVehicle * tracked_vehicle_init(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset) {
     TrackedVehicle *v = (TrackedVehicle *)malloc(sizeof(TrackedVehicle));
     v->density = 1.0;
     v->width = vehicleWidth_;
     const size_t numGrousers = 30;
     const dReal grouserHeight = 0.01;
     dReal w = v->width + 2 * trackWidth_;
-    v->leftTrack = track_create(world, space, wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset - 0.5 * w, zOffset);
-    v->rightTrack = track_create(world, space, wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset + 0.5 * w, zOffset);
+    v->leftTrack = track_init(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset - 0.5 * w, zOffset);
+    v->rightTrack = track_init(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset + 0.5 * w, zOffset);
+    v->xOffset = xOffset;
+    v->yOffset = yOffset;
+    v->zOffset = zOffset;
+    return v;
+}
+
+void tracked_vehicle_create(TrackedVehicle *v, dWorldID world, dSpaceID space) {
+    track_create(v->leftTrack, world, space);
+    track_create(v->rightTrack, world, space);
     v->vehicleBody = dBodyCreate(world);
     v->vehicleGeom = dCreateBox(space, v->leftTrack->m->distance, v->width, v->leftTrack->m->radius1);
     dMassSetBox(&v->vehicleMass, v->density, v->leftTrack->m->distance, v->width, v->leftTrack->m->radius1);
     dGeomSetCategoryBits(v->vehicleGeom, 0x0);
     dGeomSetCollideBits(v->vehicleGeom, 0x0);
     dBodySetMass(v->vehicleBody, &v->vehicleMass);
-    dBodySetPosition(v->vehicleBody, xOffset, yOffset, zOffset);
+    dBodySetPosition(v->vehicleBody, v->xOffset, v->yOffset, v->zOffset);
     dGeomSetBody(v->vehicleGeom, v->vehicleBody);
     v->leftTrackJoint = dJointCreateFixed(world, 0);
     v->rightTrackJoint = dJointCreateFixed(world, 0);
@@ -35,12 +44,16 @@ TrackedVehicle * tracked_vehicle_create(dWorldID world, dSpaceID space, dReal wh
     dJointAttach(v->rightTrackJoint, v->vehicleBody, v->rightTrack->trackBody);
     dJointSetFixed(v->leftTrackJoint);
     dJointSetFixed(v->rightTrackJoint);
-    return v;
 }
 
 void tracked_vehicle_destroy(TrackedVehicle *v) {
     track_destroy(v->leftTrack);
     track_destroy(v->rightTrack);
+}
+
+void tracked_vehicle_deinit(TrackedVehicle *v) {
+    track_deinit(v->leftTrack);
+    track_deinit(v->rightTrack);
     free(v);
 }
 

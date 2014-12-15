@@ -13,7 +13,7 @@
 #include <math.h>
 #include <drawstuff/drawstuff.h>
 
-Heightfield * heightfield_create(dWorldID world, dSpaceID space, dReal width, dReal depth, int wstep, int dstep, dReal scale) {
+Heightfield * heightfield_init(dReal width, dReal depth, int wstep, int dstep, dReal scale) {
     Heightfield *h = (Heightfield *)malloc(sizeof(Heightfield));
     h->width = width;
     h->depth = depth;
@@ -24,6 +24,10 @@ Heightfield * heightfield_create(dWorldID world, dSpaceID space, dReal width, dR
     h->dsamp = h->depth / (h->dstep - 1);
     h->data = dGeomHeightfieldDataCreate();
     h->bWrap = 1;
+    return h;
+}
+
+void heightfield_create(Heightfield *h, dWorldID world, dSpaceID space) {
     dGeomHeightfieldDataBuildCallback(h->data, h, &heightfield_get_callback,
         h->width, h->depth, h->wstep, h->dstep, 1.0, 0.0, 0.0, h->bWrap);
     h->geom = dCreateHeightfield(space, h->data, 1);
@@ -32,11 +36,13 @@ Heightfield * heightfield_create(dWorldID world, dSpaceID space, dReal width, dR
     dGeomSetRotation(h->geom, R);
     dGeomSetCategoryBits(h->geom, 0x4);
     dGeomSetCollideBits(h->geom, 0x2);
-    return h;
 }
 
 void heightfield_destroy(Heightfield *h) {
     dGeomHeightfieldDataDestroy(h->data);
+}
+
+void heightfield_deinit(Heightfield *h) {
     free(h);
 }
 

@@ -173,7 +173,9 @@ int main(int argc, char **argv) {
     dGeomSetCategoryBits(planeGeom, 0x4);
     dGeomSetCollideBits(planeGeom, 0x2);
 
-    v = tracked_vehicle_create(world, space, 0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0.4);
+    v = tracked_vehicle_init(0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0.4);
+    tracked_vehicle_create(v, world, space);
+    
     point_cloud_create_geom(pcl, world, space);
 
     dsFunctions fn;
@@ -185,8 +187,8 @@ int main(int argc, char **argv) {
     fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
     dsSimulationLoop(argc, argv, 800, 600, &fn);
 
-    tracked_vehicle_destroy(v);
-    point_cloud_destroy(pcl);
+    tracked_vehicle_deinit(v);
+    point_cloud_deinit(pcl);
 
     dJointGroupDestroy(contactGroup);
     dSpaceDestroy(space);

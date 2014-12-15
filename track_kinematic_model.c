@@ -13,7 +13,7 @@
 #include <math.h>
 #include <drawstuff/drawstuff.h>
 
-TrackKinematicModel * track_kinematic_model_create(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_) {
+TrackKinematicModel * track_kinematic_model_init(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_) {
     size_t i;
     TrackKinematicModel *m = (TrackKinematicModel *)malloc(sizeof(TrackKinematicModel));
     m->radius1 = radius1_;
@@ -42,7 +42,7 @@ TrackKinematicModel * track_kinematic_model_create(dReal radius1_, dReal radius2
     return m;
 }
 
-void track_kinematic_model_destroy(TrackKinematicModel *m) {
+void track_kinematic_model_deinit(TrackKinematicModel *m) {
     free(m);
 }
 

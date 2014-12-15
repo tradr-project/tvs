@@ -22,11 +22,18 @@ typedef struct {
     dJointID leftTrackJoint;
     dJointID rightTrackJoint;
     dReal width;
+    dReal xOffset;
+    dReal yOffset;
+    dReal zOffset;
 } TrackedVehicle;
 
-TrackedVehicle * tracked_vehicle_create(dWorldID world, dSpaceID space, dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset);
+TrackedVehicle * tracked_vehicle_init(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset);
+
+void tracked_vehicle_create(TrackedVehicle *v, dWorldID world, dSpaceID space);
 
 void tracked_vehicle_destroy(TrackedVehicle *v);
+
+void tracked_vehicle_deinit(TrackedVehicle *v);
 
 void tracked_vehicle_draw(TrackedVehicle *v);
 

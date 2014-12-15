@@ -24,9 +24,13 @@ typedef struct {
     int bWrap;
 } Heightfield;
 
-Heightfield * heightfield_create(dWorldID world, dSpaceID space, dReal width, dReal depth, int wstep, int dstep, dReal scale);
+Heightfield * heightfield_init(dReal width, dReal depth, int wstep, int dstep, dReal scale);
+
+void heightfield_create(Heightfield *h, dWorldID world, dSpaceID space);
 
 void heightfield_destroy(Heightfield *h);
+
+void heightfield_deinit(Heightfield *h);
 
 dReal heightfield_get(Heightfield *h, int x, int y);
 

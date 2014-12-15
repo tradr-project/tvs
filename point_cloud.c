@@ -32,6 +32,9 @@ PointCloud * point_cloud_read(const char *filename) {
 }
 
 void point_cloud_destroy(PointCloud *p) {
+}
+
+void point_cloud_deinit(PointCloud *p) {
     if(p->geom) free(p->geom);
     free(p->data);
     free(p);
