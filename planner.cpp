@@ -4,6 +4,7 @@
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/control/ControlSpace.h>
 #include <ompl/control/ControlSpaceTypes.h>
+#include <ompl/control/SimpleSetup.h>
 #include <ompl/control/SpaceInformation.h>
 #include <ompl/control/spaces/RealVectorControlSpace.h>
 #include <ompl/geometric/SimpleSetup.h>
@@ -18,10 +19,9 @@ static bool isStateValid(const ob::State *state) {
     return true;
 }
 
-static void propagateState(const ob::State *state, const oc::Control *control, const double boh, ob::State* newState) {
+static void propagateState(const ob::State *state, const oc::Control *control, const double duration, ob::State* newState) {
 }
 
-#if 0
 void plan() {
     // construct the state space we are planning in
     ob::StateSpacePtr space(new ob::SE3StateSpace());
@@ -30,9 +30,9 @@ void plan() {
     bounds.setHigh(1);
     space->as<ob::SE3StateSpace>()->setBounds(bounds);
 
-    ob::SpaceInformationPtr si(new ob::SpaceInformation(space));
-    si->setStateValidityChecker(boost::bind(&isStateValid, _1));
-    si->setStatePropagator(boost::bind(&propagateState, _1, _2, _3, _4)));
+    //ob::SpaceInformationPtr si(new ob::SpaceInformation(space));
+    //si->setStateValidityChecker(boost::bind(&isStateValid, _1));
+    //si->setStatePropagator(boost::bind(&propagateState, _1, _2, _3, _4)));
     
     oc::ControlSpacePtr cspace(new oc::RealVectorControlSpace(space, 2));
     ob::RealVectorBounds cbounds(2);
@@ -40,35 +40,44 @@ void plan() {
     cbounds.setHigh(1);
     cspace->as<oc::RealVectorControlSpace>()->setBounds(cbounds);
 
-    oc::SpaceInformationPtr csi(new oc::SpaceInformation(space));
-    csi->setMinMaxControlDuration(1, 5);
+    //oc::SpaceInformationPtr csi(new oc::SpaceInformation(space));
+    //csi->setMinMaxControlDuration(1, 5);
 
+    oc::SimpleSetup ss(cspace);
+    ss.setStateValidityChecker(boost::bind(&isStateValid, ss.getSpaceInformation().get(), _1));
+    ss.setStatePropagator(boost::bind(&propagateState, _1, _2, _3, _4));
+    
     ob::ScopedState<> start(space);
     start.random();
 
     ob::ScopedState<> goal(space);
     goal.random();
 
-    ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));
-    pdef->setStartAndGoalStates(start, goal);
+    //ob::ProblemDefinitionPtr pdef(new ob::ProblemDefinition(si));
+    //pdef->setStartAndGoalStates(start, goal);
 
-    ob::PlannerPtr planner(new og::RRTConnect(si));
-    planner->setProblemDefinition(pdef);
-    planner->setup();
+    //ob::PlannerPtr planner(new og::RRTConnect(si));
+    //planner->setProblemDefinition(pdef);
+    //planner->setup();
 
-    ob::PlannerStatus solved = planner->solve(1.0);
+    //ob::PlannerStatus solved = planner->solve(1.0);
+    
+    ss.setStartAndGoalStates(start, goal);
+    ss.setup();
+    ob::PlannerStatus solved = ss.solve(100.0);
 
     if (solved)
     {
         // get the goal representation from the problem definition (not the same as the goal state)
         // and inquire about the found path
-        ob::PathPtr path = pdef->getSolutionPath();
+        og::PathGeometric path = ss.getSolutionPath().asGeometric();
         std::cout << "Found solution:" << std::endl;
         // print the path to screen
-        path->print(std::cout);
+        path.printAsMatrix(std::cout);
     }
 }
 
+#if 0
 int main(int argc, const char * argv[]) {
     plan();
     return 0;
