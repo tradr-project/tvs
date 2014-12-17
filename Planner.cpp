@@ -17,8 +17,6 @@ namespace ob = ompl::base;
 namespace og = ompl::geometric;
 namespace oc = ompl::control;
 
-/// @cond IGNORE
-
 class RigidBodyEnvironment : public oc::OpenDEEnvironment {
 public:
     RigidBodyEnvironment(void) : oc::OpenDEEnvironment() {
