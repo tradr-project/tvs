@@ -24,16 +24,12 @@ World::World() {
     this->pcl = new PointCloud("pcd_0000.ds.0.3.xyz");
     this->pcl->filterFar(center, limit);
     this->pcl->point_radius = 0.3 * sqrt(3) / 2.0;
-
-    dInitODE2(0);
-    dAllocateODEDataForThread(dAllocateMaskAll);
 }
 
 World::~World() {
     dJointGroupDestroy(this->contactGroup);
     dSpaceDestroy(this->space);
     dWorldDestroy(this->world);
-    dCloseODE();
 }
 
 void World::create() {
