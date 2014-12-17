@@ -12,7 +12,7 @@
 #include <ode/ode.h>
 #include "TrackKinematicModel.h"
 
-class World;
+class Environment;
 
 class Track {
 public:
@@ -39,7 +39,7 @@ public:
 
     Track(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~Track();
-    void create(World *world);
+    void create(Environment *environment);
     void destroy();
     void draw();
 };

@@ -12,10 +12,10 @@
 #include <cassert>
 #include <ode/ode.h>
 #include <drawstuff/drawstuff.h>
-#include "World.h"
+#include "Environment.h"
 #include "Planner.h"
 
-World *world;
+Environment *environment;
 
 int nstep = 0;
 
@@ -26,9 +26,9 @@ void start() {
 }
 
 void step(int pause) {
-    world->draw();
+    environment->draw();
     if(!pause) {
-        world->step(0.01, 4);
+        environment->step(0.01, 4);
         nstep++;
     }
 }
@@ -39,7 +39,7 @@ void stop() {
 void command(int cmd) {
     const dReal V = 5;
 
-#define SetVel(trk,vv) dJointSetHingeParam(world->v->trk##Track->wheel2Joint, dParamVel, vv)
+#define SetVel(trk,vv) dJointSetHingeParam(environment->v->trk##Track->wheel2Joint, dParamVel, vv)
 #define MapKey(k,vr,vl) case k: SetVel(right, vr); SetVel(left, vl); break;
 
     switch(cmd) {
@@ -65,8 +65,8 @@ int main(int argc, char **argv) {
     dAllocateODEDataForThread(dAllocateMaskAll);
 
 #if 0
-    world = new World();
-    world->create();
+    environment = new Environment();
+    environment->create();
 
     dsFunctions fn;
     fn.version = DS_VERSION;
@@ -77,8 +77,8 @@ int main(int argc, char **argv) {
     fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
     dsSimulationLoop(argc, argv, 800, 600, &fn);
     
-    world->destroy();
-    delete world;
+    environment->destroy();
+    delete environment;
     
 #else
     plan();

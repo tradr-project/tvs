@@ -1,12 +1,12 @@
 //
-//  World.cpp
+//  Environment.cpp
 //  tvs
 //
 //  Created by Federico Ferri on 17/12/2014.
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
-#include "World.h"
+#include "Environment.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>
@@ -19,20 +19,20 @@ static const dVector3 center = {3,3,0};
 static const dVector3 extents = {7,7,7};
 static const dReal limit = 8.0;
 
-World::World() {
+Environment::Environment() {
     this->v = new TrackedVehicle(0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0.4);
     this->pcl = new PointCloud("pcd_0000.ds.0.3.xyz");
     this->pcl->filterFar(center, limit);
     this->pcl->point_radius = 0.3 * sqrt(3) / 2.0;
 }
 
-World::~World() {
+Environment::~Environment() {
     dJointGroupDestroy(this->contactGroup);
     dSpaceDestroy(this->space);
     dWorldDestroy(this->world);
 }
 
-void World::create() {
+void Environment::create() {
     this->world = dWorldCreate();
     this->space = dQuadTreeSpaceCreate(0, center, extents, 6);
     this->contactGroup = dJointGroupCreate(0);
@@ -51,22 +51,22 @@ void World::create() {
     pcl->create(this);
 }
 
-void World::destroy() {
+void Environment::destroy() {
     v->destroy();
     pcl->destroy();
 }
 
-static inline bool is_terrain(dGeomID g) {
+static inline bool isTerrain(dGeomID g) {
     return dGeomGetClass(g) == dPlaneClass
         || dGeomGetClass(g) == dHeightfieldClass
         || dGeomGetClass(g) == dSphereClass;
 }
 
 static void nearCallbackWrapper(void *data, dGeomID o1, dGeomID o2) {
-    reinterpret_cast<World *>(data)->nearCallback(o1, o2);
+    reinterpret_cast<Environment *>(data)->nearCallback(o1, o2);
 }
 
-void World::nearCallback(dGeomID o1, dGeomID o2) {
+void Environment::nearCallback(dGeomID o1, dGeomID o2) {
     int i;
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
@@ -92,7 +92,7 @@ void World::nearCallback(dGeomID o1, dGeomID o2) {
         dCalcVectorCross3(contact[i].fdir1, contact[i].geom.normal, v);
         dSafeNormalize3(contact[i].fdir1);
         
-        if (is_terrain(o1) || is_terrain(o2)) {
+        if (isTerrain(o1) || isTerrain(o2)) {
             contact[i].surface.mu = 2.0*2.618;
             contact[i].surface.mu2 = 0.5*2.618;
         } else if (dGeomGetClass(o1) == dCylinderClass ||
@@ -108,7 +108,7 @@ void World::nearCallback(dGeomID o1, dGeomID o2) {
     }
 }
 
-void World::step(dReal stepSize, int simulationStepsPerFrame) {
+void Environment::step(dReal stepSize, int simulationStepsPerFrame) {
     size_t i;
     for(i = 0; i < simulationStepsPerFrame; i++) {
         // find collisions and add contact joints
@@ -120,7 +120,7 @@ void World::step(dReal stepSize, int simulationStepsPerFrame) {
     }
 }
 
-void World::draw() {
+void Environment::draw() {
     this->pcl->draw();
     this->v->draw();
 }

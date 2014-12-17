@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
-#include "World.h"
+#include "Environment.h"
 #include "PointCloud.h"
 #include <cstdio>
 #include <cstdlib>
@@ -40,10 +40,10 @@ PointCloud::~PointCloud() {
     if(this->data) delete [] this->data;
 }
 
-void PointCloud::create(World *world) {
+void PointCloud::create(Environment *environment) {
     this->geom = new dGeomID[this->size];
     for(size_t i = 0; i < this->size; i++) {
-        this->geom[i] = dCreateSphere(world->space, this->point_radius);
+        this->geom[i] = dCreateSphere(environment->space, this->point_radius);
         dGeomSetPosition(this->geom[i], this->data[i * 3], this->data[i * 3 + 1], this->data[i * 3 + 2]);
         dMatrix3 R; dRSetIdentity(R);
         dGeomSetRotation(this->geom[i], R);

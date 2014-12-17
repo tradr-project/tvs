@@ -1,5 +1,5 @@
 //
-//  World.h
+//  Environment.h
 //  tvs
 //
 //  Created by Federico Ferri on 17/12/2014.
@@ -13,7 +13,7 @@
 #include "TrackedVehicle.h"
 #include "PointCloud.h"
 
-class World {
+class Environment {
 public:
     dWorldID world;
     dSpaceID space;
@@ -24,8 +24,8 @@ public:
     TrackedVehicle *v;
     PointCloud *pcl;
     
-    World();
-    virtual ~World();
+    Environment();
+    virtual ~Environment();
     void create();
     void destroy();
     void nearCallback(dGeomID o1, dGeomID o2);

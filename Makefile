@@ -42,7 +42,7 @@ CXXFLAGS = $(CFLAGS)
 
 .PHONY: clean all
 
-OBJS := Heightfield.o PointCloud.o Track.o TrackKinematicModel.o TrackedVehicle.o World.o Planner.o main.o
+OBJS := Heightfield.o PointCloud.o Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o Planner.o main.o
 TARGET = main
 
 all: $(TARGET)

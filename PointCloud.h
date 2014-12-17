@@ -11,7 +11,7 @@
 
 #include <ode/ode.h>
 
-class World;
+class Environment;
 
 class PointCloud {
 public:
@@ -23,7 +23,7 @@ public:
     PointCloud();
     PointCloud(const char *filename);
     virtual ~PointCloud();
-    void create(World *world);
+    void create(Environment *environment);
     void destroy();
     void draw();
     void filterFar(const dReal *center, dReal distance);

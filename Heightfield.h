@@ -11,7 +11,7 @@
 
 #include <ode/ode.h>
 
-class World;
+class Environment;
 
 class Heightfield {
 public:
@@ -28,7 +28,7 @@ public:
     
     Heightfield(dReal width, dReal depth, int wstep, int dstep, dReal scale);
     virtual ~Heightfield();
-    void create(World *world);
+    void create(Environment *environment);
     void destroy();
     dReal get(int x, int y);
     static dReal getCallback(void *h, int x, int y);

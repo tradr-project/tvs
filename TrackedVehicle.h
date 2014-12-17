@@ -12,7 +12,7 @@
 #include <ode/ode.h>
 #include "Track.h"
 
-class World;
+class Environment;
 
 class TrackedVehicle {
 public:
@@ -31,7 +31,7 @@ public:
     
     TrackedVehicle(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~TrackedVehicle();
-    void create(World *world);
+    void create(Environment *environment);
     void destroy();
     void draw();
 };

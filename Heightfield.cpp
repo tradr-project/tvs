@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
-#include "World.h"
+#include "Environment.h"
 #include "Heightfield.h"
 #include <cstdio>
 #include <cstdlib>
@@ -29,10 +29,10 @@ Heightfield::Heightfield(dReal width, dReal depth, int wstep, int dstep, dReal s
 Heightfield::~Heightfield() {
 }
 
-void Heightfield::create(World *world) {
+void Heightfield::create(Environment *environment) {
     dGeomHeightfieldDataBuildCallback(this->data, this, &Heightfield::getCallback,
         this->width, this->depth, this->wstep, this->dstep, 1.0, 0.0, 0.0, this->bWrap);
-    this->geom = dCreateHeightfield(world->space, this->data, 1);
+    this->geom = dCreateHeightfield(environment->space, this->data, 1);
     dMatrix3 R;
     dRFromAxisAndAngle(R, 1, 0, 0, M_PI_2);
     dGeomSetRotation(this->geom, R);

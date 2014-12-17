@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
-#include "World.h"
+#include "Environment.h"
 #include "TrackedVehicle.h"
 #include <cstdio>
 #include <cstdlib>
@@ -31,19 +31,19 @@ TrackedVehicle::~TrackedVehicle() {
     delete this->rightTrack;
 }
 
-void TrackedVehicle::create(World *world) {
-    this->leftTrack->create(world);
-    this->rightTrack->create(world);
-    this->vehicleBody = dBodyCreate(world->world);
-    this->vehicleGeom = dCreateBox(world->space, this->leftTrack->m->distance, this->width, this->leftTrack->m->radius1);
+void TrackedVehicle::create(Environment *environment) {
+    this->leftTrack->create(environment);
+    this->rightTrack->create(environment);
+    this->vehicleBody = dBodyCreate(environment->world);
+    this->vehicleGeom = dCreateBox(environment->space, this->leftTrack->m->distance, this->width, this->leftTrack->m->radius1);
     dMassSetBox(&this->vehicleMass, this->density, this->leftTrack->m->distance, this->width, this->leftTrack->m->radius1);
     dGeomSetCategoryBits(this->vehicleGeom, 0x0);
     dGeomSetCollideBits(this->vehicleGeom, 0x0);
     dBodySetMass(this->vehicleBody, &this->vehicleMass);
     dBodySetPosition(this->vehicleBody, this->xOffset, this->yOffset, this->zOffset);
     dGeomSetBody(this->vehicleGeom, this->vehicleBody);
-    this->leftTrackJoint = dJointCreateFixed(world->world, 0);
-    this->rightTrackJoint = dJointCreateFixed(world->world, 0);
+    this->leftTrackJoint = dJointCreateFixed(environment->world, 0);
+    this->rightTrackJoint = dJointCreateFixed(environment->world, 0);
     dJointAttach(this->leftTrackJoint, this->vehicleBody, this->leftTrack->trackBody);
     dJointAttach(this->rightTrackJoint, this->vehicleBody, this->rightTrack->trackBody);
     dJointSetFixed(this->leftTrackJoint);
