@@ -51,6 +51,7 @@
 		CE98939D1A2C8ED300E79C12 /* tvs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tvs; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEA84B701A41A77E000AA8FB /* world.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = world.cpp; path = ../world.cpp; sourceTree = "<group>"; };
 		CEA84B721A41A788000AA8FB /* world.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = world.h; path = ../world.h; sourceTree = "<group>"; };
+		CEA84B731A41A957000AA8FB /* planner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = planner.h; path = ../planner.h; sourceTree = "<group>"; };
 		CEE5557B1A2E0441000AB866 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
 		CEE5557C1A2E0441000AB866 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = ../../../../System/Library/Frameworks/CoreVideo.framework; sourceTree = "<group>"; };
 		CEE5557D1A2E0441000AB866 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = ../../../../System/Library/Frameworks/IOKit.framework; sourceTree = "<group>"; };
@@ -111,6 +112,7 @@
 				CE503E991A3B48D4003367F7 /* track_kinematic_model.h */,
 				CE503E9B1A3B48D4003367F7 /* track.h */,
 				CE503E9D1A3B48D4003367F7 /* tracked_vehicle.h */,
+				CEA84B731A41A957000AA8FB /* planner.h */,
 			);
 			name = src;
 			sourceTree = "<group>";

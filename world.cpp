@@ -1,5 +1,5 @@
 //
-//  world.c
+//  world.cpp
 //  tvs
 //
 //  Created by Federico Ferri on 17/12/2014.

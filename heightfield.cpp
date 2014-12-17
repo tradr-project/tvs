@@ -1,5 +1,5 @@
 //
-//  heightfield.c
+//  heightfield.cpp
 //  tvs
 //
 //  Created by Federico Ferri on 30/11/2014.
