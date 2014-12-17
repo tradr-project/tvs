@@ -1,5 +1,5 @@
-CFLAGS := -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -DPOINTCLOUDS_PATH=\"$(PWD)/pointclouds\" -I$(PWD)/../ode/include
-LDLIBS := -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff -lstdc++
+CFLAGS := -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -DPOINTCLOUDS_PATH=\"$(PWD)/pointclouds\" -I$(PWD)/../ode/include -I/opt/local/include
+LDLIBS := -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff -lstdc++ -L/opt/local/lib -lboost_system-mt -lompl
 
 ifeq ($(OS),Windows_NT)
     CFLAGS += -DWIN32
@@ -42,7 +42,7 @@ CXXFLAGS = $(CFLAGS)
 
 .PHONY: clean all
 
-OBJS := Heightfield.o PointCloud.o Track.o TrackKinematicModel.o TrackedVehicle.o World.o main.o
+OBJS := Heightfield.o PointCloud.o Track.o TrackKinematicModel.o TrackedVehicle.o World.o Planner.o main.o
 TARGET = main
 
 all: $(TARGET)
