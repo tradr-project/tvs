@@ -13,6 +13,7 @@
 #include <ode/ode.h>
 #include <drawstuff/drawstuff.h>
 #include "world.h"
+#include "planner.h"
 
 World *world;
 
@@ -59,7 +60,11 @@ void command(int cmd) {
 
 int main(int argc, char **argv) {
     //feenableexcept(FE_INVALID | FE_OVERFLOW);
-    
+
+    dInitODE2(0);
+    dAllocateODEDataForThread(dAllocateMaskAll);
+
+#if 0
     world = new World();
     world->create();
 
@@ -74,6 +79,12 @@ int main(int argc, char **argv) {
     
     world->destroy();
     delete world;
+    
+#else
+    plan();
+#endif
+    
+    dCloseODE();
 
     return 0;
 }
