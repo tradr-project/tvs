@@ -15,6 +15,7 @@
 		CE503EB01A3F537B003367F7 /* track.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE503EAA1A3F537B003367F7 /* track.cpp */; };
 		CE503EB11A3F537B003367F7 /* tracked_vehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE503EAB1A3F537B003367F7 /* tracked_vehicle.cpp */; };
 		CE6C895D1A2F44BA0054F8E0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */; };
+		CEA84B711A41A77E000AA8FB /* world.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B701A41A77E000AA8FB /* world.cpp */; };
 		CEE5557F1A2E0441000AB866 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557B1A2E0441000AB866 /* Cocoa.framework */; };
 		CEE555801A2E0441000AB866 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557C1A2E0441000AB866 /* CoreVideo.framework */; };
 		CEE555811A2E0441000AB866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557D1A2E0441000AB866 /* IOKit.framework */; };
@@ -48,6 +49,8 @@
 		CE503EAB1A3F537B003367F7 /* tracked_vehicle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tracked_vehicle.cpp; path = ../tracked_vehicle.cpp; sourceTree = "<group>"; };
 		CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../../System/Library/Frameworks/GLUT.framework; sourceTree = "<group>"; };
 		CE98939D1A2C8ED300E79C12 /* tvs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tvs; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEA84B701A41A77E000AA8FB /* world.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = world.cpp; path = ../world.cpp; sourceTree = "<group>"; };
+		CEA84B721A41A788000AA8FB /* world.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = world.h; path = ../world.h; sourceTree = "<group>"; };
 		CEE5557B1A2E0441000AB866 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../../System/Library/Frameworks/Cocoa.framework; sourceTree = "<group>"; };
 		CEE5557C1A2E0441000AB866 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = ../../../../System/Library/Frameworks/CoreVideo.framework; sourceTree = "<group>"; };
 		CEE5557D1A2E0441000AB866 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = ../../../../System/Library/Frameworks/IOKit.framework; sourceTree = "<group>"; };
@@ -94,6 +97,7 @@
 		CEE555711A2C8F80000AB866 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CEA84B701A41A77E000AA8FB /* world.cpp */,
 				CE503EA61A3F537B003367F7 /* heightfield.cpp */,
 				CE503EA71A3F537B003367F7 /* main.cpp */,
 				CE503EA81A3F537B003367F7 /* point_cloud.cpp */,
@@ -101,6 +105,7 @@
 				CE503EAA1A3F537B003367F7 /* track.cpp */,
 				CE503EAB1A3F537B003367F7 /* tracked_vehicle.cpp */,
 				CE503EA41A3F407C003367F7 /* planner.cpp */,
+				CEA84B721A41A788000AA8FB /* world.h */,
 				CE503E941A3B48D4003367F7 /* heightfield.h */,
 				CE503E971A3B48D4003367F7 /* point_cloud.h */,
 				CE503E991A3B48D4003367F7 /* track_kinematic_model.h */,
@@ -168,6 +173,7 @@
 			files = (
 				CE503EAE1A3F537B003367F7 /* point_cloud.cpp in Sources */,
 				CE503EA51A3F407C003367F7 /* planner.cpp in Sources */,
+				CEA84B711A41A77E000AA8FB /* world.cpp in Sources */,
 				CE503EB11A3F537B003367F7 /* tracked_vehicle.cpp in Sources */,
 				CE503EAC1A3F537B003367F7 /* heightfield.cpp in Sources */,
 				CE503EAF1A3F537B003367F7 /* track_kinematic_model.cpp in Sources */,

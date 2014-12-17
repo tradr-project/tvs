@@ -12,71 +12,11 @@
 #include <assert.h>
 #include <ode/ode.h>
 #include <drawstuff/drawstuff.h>
-#include "tracked_vehicle.h"
-#include "point_cloud.h"
+#include "world.h"
 
-#define SIMPLE              1
-#define HASH                2
-#define QUADTREE            3
-#define SPACE_TYPE          QUADTREE
-#define MAX_CONTACTS        10
-
-dWorldID world;
-dSpaceID space;
-dJointGroupID contactGroup;
-
-dGeomID planeGeom;
-
-TrackedVehicle *v;
-PointCloud *pcl;
-
-int is_terrain(dGeomID o) {
-    return dGeomGetClass(o) == dPlaneClass
-        || dGeomGetClass(o) == dHeightfieldClass
-        || dGeomGetClass(o) == dSphereClass;
-}
-
-void nearCallback(void *data, dGeomID o1, dGeomID o2) {
-    int i;
-    dBodyID b1 = dGeomGetBody(o1);
-    dBodyID b2 = dGeomGetBody(o2);
-    dContact contact[MAX_CONTACTS];
-    for(i = 0; i < MAX_CONTACTS; i++) {
-        contact[i].surface.mode = dContactBounce | dContactSoftCFM | dContactMu2 | dContactFDir1;
-        contact[i].surface.bounce = 0.5;
-        contact[i].surface.bounce_vel = 0.1;
-        contact[i].surface.soft_cfm = 0.0001;
-    }
-    int numc = dCollide(o1, o2, MAX_CONTACTS, &contact[0].geom, sizeof(dContact));
-    for(i = 0; i < numc; i++) {
-        const dReal *v;
-        
-        assert(dGeomGetClass(o1) == dBoxClass ||
-               dGeomGetClass(o2) == dBoxClass);
-        
-        if (dGeomGetClass(o1) == dBoxClass)
-            v = dBodyGetLinearVel(b1);
-        else
-            v = dBodyGetLinearVel(b2);
-        
-        dCalcVectorCross3(contact[i].fdir1, contact[i].geom.normal, v);
-        dSafeNormalize3(contact[i].fdir1);
-        
-        if (is_terrain(o1) || is_terrain(o2)) {
-            contact[i].surface.mu = 2.0*2.618;
-            contact[i].surface.mu2 = 0.5*2.618;
-        } else if (dGeomGetClass(o1) == dCylinderClass ||
-                   dGeomGetClass(o2) == dCylinderClass) {
-            contact[i].surface.mu = contact[i].surface.mu2 = dInfinity;
-        } else {
-            printf ("%d, %d\n", dGeomGetClass(o1), dGeomGetClass(o2));
-            assert(0);
-        }
-        
-        dJointID c = dJointCreateContact(world, contactGroup, &contact[i]);
-        dJointAttach(c, b1, b2);
-    }
-}
+World *world;
+const int simulationStepsPerFrame = 4;
+int nstep = 0;
 
 void start() {
     static float xyz[3] = {6.3286,-5.9263,1.7600};
@@ -84,27 +24,11 @@ void start() {
     dsSetViewpoint(xyz,hpr);
 }
 
-const int simulationStepsPerFrame = 4;
-int nstep = 0;
-
-void draw() {
-    tracked_vehicle_draw(v);
-    point_cloud_draw(pcl);
-}
-
 void step(int pause) {
-    draw();
-
+    world_draw(world);
     if(!pause) {
-        size_t i;
-        for(i = 0; i < simulationStepsPerFrame; i++) {
-            // find collisions and add contact joints
-            dSpaceCollide(space, 0, &nearCallback);
-            // step the simulation
-            dWorldQuickStep(world, 0.01 / (dReal)simulationStepsPerFrame);
-            // remove all contact joints
-            dJointGroupEmpty(contactGroup);
-        }
+        world_step(world, 0.01, 4);
+        nstep++;
     }
 }
 
@@ -114,7 +38,7 @@ void stop() {
 void command(int cmd) {
     const dReal V = 5;
 
-#define SetVel(trk,vv) dJointSetHingeParam(v->trk##Track->wheel2Joint, dParamVel, vv)
+#define SetVel(trk,vv) dJointSetHingeParam(world->v->trk##Track->wheel2Joint, dParamVel, vv)
 #define MapKey(k,vr,vl) case k: SetVel(right, vr); SetVel(left, vl); break;
 
     switch(cmd) {
@@ -136,46 +60,8 @@ void command(int cmd) {
 int main(int argc, char **argv) {
     //feenableexcept(FE_INVALID | FE_OVERFLOW);
     
-    const dVector3 center = {3,3,0};
-    const dReal limit = 8.0;
-    PointCloud *pcl_full = point_cloud_read("pcd_0000.ds.0.3.xyz");
-    pcl = point_cloud_filter_far(pcl_full, center, limit);
-    point_cloud_destroy(pcl_full);
-    pcl->point_radius = 0.3 * sqrt(3) / 2.0;
-
-    dInitODE2(0);
-    dAllocateODEDataForThread(dAllocateMaskAll);
-
-    world = dWorldCreate();
-    
-#if SPACE_TYPE == SIMPLE
-    space = dSimpleSpaceCreate(0);
-#elif SPACE_TYPE == HASH
-    space = dHashSpaceCreate(0);
-#elif SPACE_TYPE == QUADTREE
-    const dVector3 extents = {7,7,7};
-    space = dQuadTreeSpaceCreate(0, center, extents, 6);
-#else
-#error Bad SPACE_TYPE
-#endif
-    
-    contactGroup = dJointGroupCreate(0);
-    
-    dWorldSetGravity(world, 0, 0, -9.81);
-    //dWorldSetERP(world, 0.7);
-    //dWorldSetCFM(world, 1e-5);
-    //dWorldSetContactMaxCorrectingVel(world, 0.9);
-    //dWorldSetContactSurfaceLayer(world, 0.001);
-    dWorldSetAutoDisableFlag(world, 1);
-
-    planeGeom = dCreatePlane(space, 0, 0, 1, 0); // (a, b, c)' (x, y, z) = d
-    dGeomSetCategoryBits(planeGeom, 0x4);
-    dGeomSetCollideBits(planeGeom, 0x2);
-
-    v = tracked_vehicle_init(0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0.4);
-    tracked_vehicle_create(v, world, space);
-    
-    point_cloud_create_geom(pcl, world, space);
+    world = world_init();
+    world_create(world);
 
     dsFunctions fn;
     fn.version = DS_VERSION;
@@ -186,13 +72,8 @@ int main(int argc, char **argv) {
     fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
     dsSimulationLoop(argc, argv, 800, 600, &fn);
 
-    tracked_vehicle_deinit(v);
-    point_cloud_deinit(pcl);
-
-    dJointGroupDestroy(contactGroup);
-    dSpaceDestroy(space);
-    dWorldDestroy(world);
-    dCloseODE();
+    world_deinit(world);
+    world_destroy(world);
 
     return 0;
 }

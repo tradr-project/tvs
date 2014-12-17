@@ -44,8 +44,8 @@ void plan() {
     //csi->setMinMaxControlDuration(1, 5);
 
     oc::SimpleSetup ss(cspace);
-    ss.setStateValidityChecker(boost::bind(&isStateValid, ss.getSpaceInformation().get(), _1));
-    ss.setStatePropagator(boost::bind(&propagateState, _1, _2, _3, _4));
+    //ss.setStateValidityChecker(boost::bind(&isStateValid, ss.getSpaceInformation().get(), _1));
+    //ss.setStatePropagator(boost::bind(&propagateState, _1, _2, _3, _4));
     
     ob::ScopedState<> start(space);
     start.random();
