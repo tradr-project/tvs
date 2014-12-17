@@ -284,6 +284,7 @@
 					"-lm",
 					"-L/opt/local/lib",
 					"-lompl",
+					"-lboost_system-mt",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -311,6 +312,7 @@
 					"-lm",
 					"-L/opt/local/lib",
 					"-lompl",
+					"-lboost_system-mt",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
