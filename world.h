@@ -13,7 +13,8 @@
 #include "tracked_vehicle.h"
 #include "point_cloud.h"
 
-typedef struct {
+class World {
+public:
     dWorldID world;
     dSpaceID space;
     dJointGroupID contactGroup;
@@ -22,19 +23,14 @@ typedef struct {
 
     TrackedVehicle *v;
     PointCloud *pcl;
-} World;
-
-World * world_init();
-
-void world_create(World *w);
-
-void world_step(World *w, dReal stepSize, int simulationStepsPerFrame);
-
-void world_destroy(World *w);
-
-void world_deinit(World *w);
-
-void world_draw(World *w);
+    
+    World();
+    virtual ~World();
+    void create();
+    void destroy();
+    void nearCallback(dGeomID o1, dGeomID o2);
+    void step(dReal stepSize, int simulationStepsPerFrame);
+    void draw();
+};
 
 #endif // WORLD_H_INCLUDED
-

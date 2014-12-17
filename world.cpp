@@ -19,50 +19,58 @@ static const dVector3 center = {3,3,0};
 static const dVector3 extents = {7,7,7};
 static const dReal limit = 8.0;
 
-World * world_init() {
-    World *w = (World *)malloc(sizeof(World));
-
-    PointCloud *pcl_full = point_cloud_read("pcd_0000.ds.0.3.xyz");
-    w->pcl = point_cloud_filter_far(pcl_full, center, limit);
-    point_cloud_destroy(pcl_full);
-    w->pcl->point_radius = 0.3 * sqrt(3) / 2.0;
+World::World() {
+    this->v = new TrackedVehicle(0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0.4);
+    this->pcl = new PointCloud("pcd_0000.ds.0.3.xyz");
+    this->pcl->filterFar(center, limit);
+    this->pcl->point_radius = 0.3 * sqrt(3) / 2.0;
 
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
-
-    w->v = tracked_vehicle_init(0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0.4);
-
-    return w;
 }
 
-void world_create(World *w) {
-    w->world = dWorldCreate();
-    w->space = dQuadTreeSpaceCreate(0, center, extents, 6);
-    w->contactGroup = dJointGroupCreate(0);
-    dWorldSetGravity(w->world, 0, 0, -9.81);
-    //dWorldSetERP(w->world, 0.7);
-    //dWorldSetCFM(w->world, 1e-5);
-    //dWorldSetContactMaxCorrectingVel(w->world, 0.9);
-    //dWorldSetContactSurfaceLayer(w->world, 0.001);
-    dWorldSetAutoDisableFlag(w->world, 1);
-
-    w->planeGeom = dCreatePlane(w->space, 0, 0, 1, 0); // (a, b, c)' (x, y, z) = d
-    dGeomSetCategoryBits(w->planeGeom, 0x4);
-    dGeomSetCollideBits(w->planeGeom, 0x2);
-
-    tracked_vehicle_create(w->v, w->world, w->space);
-
-    point_cloud_create_geom(w->pcl, w->world, w->space);
+World::~World() {
+    dJointGroupDestroy(this->contactGroup);
+    dSpaceDestroy(this->space);
+    dWorldDestroy(this->world);
+    dCloseODE();
 }
 
-static int is_terrain(dGeomID g) {
+void World::create() {
+    this->world = dWorldCreate();
+    this->space = dQuadTreeSpaceCreate(0, center, extents, 6);
+    this->contactGroup = dJointGroupCreate(0);
+    dWorldSetGravity(this->world, 0, 0, -9.81);
+    //dWorldSetERP(this->world, 0.7);
+    //dWorldSetCFM(this->world, 1e-5);
+    //dWorldSetContactMaxCorrectingVel(this->world, 0.9);
+    //dWorldSetContactSurfaceLayer(this->world, 0.001);
+    dWorldSetAutoDisableFlag(this->world, 1);
+
+    this->planeGeom = dCreatePlane(this->space, 0, 0, 1, 0); // (a, b, c)' (x, y, z) = d
+    dGeomSetCategoryBits(this->planeGeom, 0x4);
+    dGeomSetCollideBits(this->planeGeom, 0x2);
+
+    v->create(this);
+    pcl->create(this);
+}
+
+void World::destroy() {
+    v->destroy();
+    pcl->destroy();
+}
+
+static inline bool is_terrain(dGeomID g) {
     return dGeomGetClass(g) == dPlaneClass
         || dGeomGetClass(g) == dHeightfieldClass
         || dGeomGetClass(g) == dSphereClass;
 }
 
-static void nearCallback(void *data, dGeomID o1, dGeomID o2) {
-    World *w = (World *)data;
+static void nearCallbackWrapper(void *data, dGeomID o1, dGeomID o2) {
+    reinterpret_cast<World *>(data)->nearCallback(o1, o2);
+}
+
+void World::nearCallback(dGeomID o1, dGeomID o2) {
     int i;
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
@@ -99,42 +107,25 @@ static void nearCallback(void *data, dGeomID o1, dGeomID o2) {
             assert(0);
         }
         
-        dJointID c = dJointCreateContact(w->world, w->contactGroup, &contact[i]);
+        dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
     }
 }
 
-void world_step(World *w, dReal stepSize, int simulationStepsPerFrame) {
+void World::step(dReal stepSize, int simulationStepsPerFrame) {
     size_t i;
     for(i = 0; i < simulationStepsPerFrame; i++) {
         // find collisions and add contact joints
-        dSpaceCollide(w->space, w, &nearCallback);
+        dSpaceCollide(this->space, this, &nearCallbackWrapper);
         // step the simulation
-        dWorldQuickStep(w->world, stepSize / (dReal)simulationStepsPerFrame);
+        dWorldQuickStep(this->world, stepSize / (dReal)simulationStepsPerFrame);
         // remove all contact joints
-        dJointGroupEmpty(w->contactGroup);
+        dJointGroupEmpty(this->contactGroup);
     }
 }
 
-void world_destroy(World *w) {
-    point_cloud_destroy(w->pcl);
-    tracked_vehicle_destroy(w->v);
-}
-
-void world_deinit(World *w) {
-    point_cloud_deinit(w->pcl);
-    tracked_vehicle_deinit(w->v);
-
-    dJointGroupDestroy(w->contactGroup);
-    dSpaceDestroy(w->space);
-    dWorldDestroy(w->world);
-    dCloseODE();
-
-    free(w);
-}
-
-void world_draw(World *w) {
-    point_cloud_draw(w->pcl);
-    tracked_vehicle_draw(w->v);
+void World::draw() {
+    this->pcl->draw();
+    this->v->draw();
 }
 

@@ -15,7 +15,7 @@
 #include "world.h"
 
 World *world;
-const int simulationStepsPerFrame = 4;
+
 int nstep = 0;
 
 void start() {
@@ -25,9 +25,9 @@ void start() {
 }
 
 void step(int pause) {
-    world_draw(world);
+    world->draw();
     if(!pause) {
-        world_step(world, 0.01, 4);
+        world->step(0.01, 4);
         nstep++;
     }
 }
@@ -60,8 +60,8 @@ void command(int cmd) {
 int main(int argc, char **argv) {
     //feenableexcept(FE_INVALID | FE_OVERFLOW);
     
-    world = world_init();
-    world_create(world);
+    world = new World();
+    world->create();
 
     dsFunctions fn;
     fn.version = DS_VERSION;
@@ -71,9 +71,9 @@ int main(int argc, char **argv) {
     fn.command = &command;
     fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
     dsSimulationLoop(argc, argv, 800, 600, &fn);
-
-    world_deinit(world);
-    world_destroy(world);
+    
+    world->destroy();
+    delete world;
 
     return 0;
 }

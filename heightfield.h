@@ -11,7 +11,10 @@
 
 #include <ode/ode.h>
 
-typedef struct {
+class World;
+
+class Heightfield {
+public:
     dReal width;
     dReal depth;
     int wstep;
@@ -22,22 +25,15 @@ typedef struct {
     dGeomID geom;
     dHeightfieldDataID data;
     int bWrap;
-} Heightfield;
-
-Heightfield * heightfield_init(dReal width, dReal depth, int wstep, int dstep, dReal scale);
-
-void heightfield_create(Heightfield *h, dWorldID world, dSpaceID space);
-
-void heightfield_destroy(Heightfield *h);
-
-void heightfield_deinit(Heightfield *h);
-
-dReal heightfield_get(Heightfield *h, int x, int y);
-
-dReal heightfield_get_callback(void *h, int x, int y);
-
-void heightfield_draw_one(Heightfield *h, int xOffset, int yOffset);
-
-void heightfield_draw(Heightfield *h);
+    
+    Heightfield(dReal width, dReal depth, int wstep, int dstep, dReal scale);
+    virtual ~Heightfield();
+    void create(World *world);
+    void destroy();
+    dReal get(int x, int y);
+    static dReal getCallback(void *h, int x, int y);
+    void drawOne(int xOffset, int yOffset);
+    void draw();
+};
 
 #endif // HEIGHTFIELD_H_INCLUDED

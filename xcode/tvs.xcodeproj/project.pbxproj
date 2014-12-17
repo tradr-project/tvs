@@ -100,12 +100,12 @@
 			children = (
 				CEA84B701A41A77E000AA8FB /* world.cpp */,
 				CE503EA61A3F537B003367F7 /* heightfield.cpp */,
-				CE503EA71A3F537B003367F7 /* main.cpp */,
 				CE503EA81A3F537B003367F7 /* point_cloud.cpp */,
 				CE503EA91A3F537B003367F7 /* track_kinematic_model.cpp */,
 				CE503EAA1A3F537B003367F7 /* track.cpp */,
 				CE503EAB1A3F537B003367F7 /* tracked_vehicle.cpp */,
 				CE503EA41A3F407C003367F7 /* planner.cpp */,
+				CE503EA71A3F537B003367F7 /* main.cpp */,
 				CEA84B721A41A788000AA8FB /* world.h */,
 				CE503E941A3B48D4003367F7 /* heightfield.h */,
 				CE503E971A3B48D4003367F7 /* point_cloud.h */,

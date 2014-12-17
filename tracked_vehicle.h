@@ -12,7 +12,10 @@
 #include <ode/ode.h>
 #include "track.h"
 
-typedef struct {
+class World;
+
+class TrackedVehicle {
+public:
     Track *leftTrack;
     Track *rightTrack;
     dReal density;
@@ -25,16 +28,12 @@ typedef struct {
     dReal xOffset;
     dReal yOffset;
     dReal zOffset;
-} TrackedVehicle;
-
-TrackedVehicle * tracked_vehicle_init(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset);
-
-void tracked_vehicle_create(TrackedVehicle *v, dWorldID world, dSpaceID space);
-
-void tracked_vehicle_destroy(TrackedVehicle *v);
-
-void tracked_vehicle_deinit(TrackedVehicle *v);
-
-void tracked_vehicle_draw(TrackedVehicle *v);
+    
+    TrackedVehicle(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset);
+    virtual ~TrackedVehicle();
+    void create(World *world);
+    void destroy();
+    void draw();
+};
 
 #endif // TRACKED_VEHICLE_H_INCLUDED

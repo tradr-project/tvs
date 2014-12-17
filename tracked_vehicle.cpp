@@ -6,67 +6,65 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
+#include "world.h"
 #include "tracked_vehicle.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <drawstuff/drawstuff.h>
 
-TrackedVehicle * tracked_vehicle_init(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset) {
-    TrackedVehicle *v = (TrackedVehicle *)malloc(sizeof(TrackedVehicle));
-    v->density = 1.0;
-    v->width = vehicleWidth_;
+TrackedVehicle::TrackedVehicle(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset) {
+    this->density = 1.0;
+    this->width = vehicleWidth_;
     const size_t numGrousers = 30;
     const dReal grouserHeight = 0.01;
-    dReal w = v->width + 2 * trackWidth_;
-    v->leftTrack = track_init(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset - 0.5 * w, zOffset);
-    v->rightTrack = track_init(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset + 0.5 * w, zOffset);
-    v->xOffset = xOffset;
-    v->yOffset = yOffset;
-    v->zOffset = zOffset;
-    return v;
+    dReal w = this->width + 2 * trackWidth_;
+    this->leftTrack = new Track(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset - 0.5 * w, zOffset);
+    this->rightTrack = new Track(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset + 0.5 * w, zOffset);
+    this->xOffset = xOffset;
+    this->yOffset = yOffset;
+    this->zOffset = zOffset;
 }
 
-void tracked_vehicle_create(TrackedVehicle *v, dWorldID world, dSpaceID space) {
-    track_create(v->leftTrack, world, space);
-    track_create(v->rightTrack, world, space);
-    v->vehicleBody = dBodyCreate(world);
-    v->vehicleGeom = dCreateBox(space, v->leftTrack->m->distance, v->width, v->leftTrack->m->radius1);
-    dMassSetBox(&v->vehicleMass, v->density, v->leftTrack->m->distance, v->width, v->leftTrack->m->radius1);
-    dGeomSetCategoryBits(v->vehicleGeom, 0x0);
-    dGeomSetCollideBits(v->vehicleGeom, 0x0);
-    dBodySetMass(v->vehicleBody, &v->vehicleMass);
-    dBodySetPosition(v->vehicleBody, v->xOffset, v->yOffset, v->zOffset);
-    dGeomSetBody(v->vehicleGeom, v->vehicleBody);
-    v->leftTrackJoint = dJointCreateFixed(world, 0);
-    v->rightTrackJoint = dJointCreateFixed(world, 0);
-    dJointAttach(v->leftTrackJoint, v->vehicleBody, v->leftTrack->trackBody);
-    dJointAttach(v->rightTrackJoint, v->vehicleBody, v->rightTrack->trackBody);
-    dJointSetFixed(v->leftTrackJoint);
-    dJointSetFixed(v->rightTrackJoint);
+TrackedVehicle::~TrackedVehicle() {
+    delete this->leftTrack;
+    delete this->rightTrack;
 }
 
-void tracked_vehicle_destroy(TrackedVehicle *v) {
-    track_destroy(v->leftTrack);
-    track_destroy(v->rightTrack);
+void TrackedVehicle::create(World *world) {
+    this->leftTrack->create(world);
+    this->rightTrack->create(world);
+    this->vehicleBody = dBodyCreate(world->world);
+    this->vehicleGeom = dCreateBox(world->space, this->leftTrack->m->distance, this->width, this->leftTrack->m->radius1);
+    dMassSetBox(&this->vehicleMass, this->density, this->leftTrack->m->distance, this->width, this->leftTrack->m->radius1);
+    dGeomSetCategoryBits(this->vehicleGeom, 0x0);
+    dGeomSetCollideBits(this->vehicleGeom, 0x0);
+    dBodySetMass(this->vehicleBody, &this->vehicleMass);
+    dBodySetPosition(this->vehicleBody, this->xOffset, this->yOffset, this->zOffset);
+    dGeomSetBody(this->vehicleGeom, this->vehicleBody);
+    this->leftTrackJoint = dJointCreateFixed(world->world, 0);
+    this->rightTrackJoint = dJointCreateFixed(world->world, 0);
+    dJointAttach(this->leftTrackJoint, this->vehicleBody, this->leftTrack->trackBody);
+    dJointAttach(this->rightTrackJoint, this->vehicleBody, this->rightTrack->trackBody);
+    dJointSetFixed(this->leftTrackJoint);
+    dJointSetFixed(this->rightTrackJoint);
 }
 
-void tracked_vehicle_deinit(TrackedVehicle *v) {
-    track_deinit(v->leftTrack);
-    track_deinit(v->rightTrack);
-    free(v);
+void TrackedVehicle::destroy() {
+    this->leftTrack->destroy();
+    this->rightTrack->destroy();
 }
 
-void tracked_vehicle_draw(TrackedVehicle *v) {
+void TrackedVehicle::draw() {
     {
-        const dReal *pos = dGeomGetPosition(v->vehicleGeom);
-        const dReal *R = dGeomGetRotation(v->vehicleGeom);
+        const dReal *pos = dGeomGetPosition(this->vehicleGeom);
+        const dReal *R = dGeomGetRotation(this->vehicleGeom);
         dReal sides[3];
-        dGeomBoxGetLengths(v->vehicleGeom, sides);
+        dGeomBoxGetLengths(this->vehicleGeom, sides);
         dsDrawBoxD(pos, R, sides);
     }
 
-    track_draw(v->leftTrack);
-    track_draw(v->rightTrack);
+    this->leftTrack->draw();
+    this->rightTrack->draw();
 }
 
