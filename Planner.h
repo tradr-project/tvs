@@ -1,5 +1,5 @@
 //
-//  planner.h
+//  Planner.h
 //  tvs
 //
 //  Created by Federico Ferri on 16/12/2014.

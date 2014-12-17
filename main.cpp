@@ -6,14 +6,14 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <cassert>
 #include <ode/ode.h>
 #include <drawstuff/drawstuff.h>
-#include "world.h"
-#include "planner.h"
+#include "World.h"
+#include "Planner.h"
 
 World *world;
 

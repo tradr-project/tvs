@@ -1,5 +1,5 @@
 //
-//  tracked_vehicle.h
+//  TrackedVehicle.h
 //  tvs
 //
 //  Created by Federico Ferri on 30/11/2014.
@@ -10,7 +10,7 @@
 #define TRACKED_VEHICLE_H_INCLUDED
 
 #include <ode/ode.h>
-#include "track.h"
+#include "Track.h"
 
 class World;
 

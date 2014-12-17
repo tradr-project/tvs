@@ -1,5 +1,5 @@
 //
-//  pointcloud.h
+//  PointCloud.h
 //  tvs
 //
 //  Created by Federico Ferri on 11/12/2014.

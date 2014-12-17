@@ -1,17 +1,17 @@
 //
-//  heightfield.cpp
+//  Heightfield.cpp
 //  tvs
 //
 //  Created by Federico Ferri on 30/11/2014.
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
-#include "world.h"
-#include "heightfield.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
+#include "World.h"
+#include "Heightfield.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
+#include <cmath>
 #include <drawstuff/drawstuff.h>
 
 Heightfield::Heightfield(dReal width, dReal depth, int wstep, int dstep, dReal scale) {

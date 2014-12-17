@@ -1,5 +1,5 @@
 //
-//  world.h
+//  World.h
 //  tvs
 //
 //  Created by Federico Ferri on 17/12/2014.
@@ -10,8 +10,8 @@
 #define WORLD_H_INCLUDED
 
 #include <ode/ode.h>
-#include "tracked_vehicle.h"
-#include "point_cloud.h"
+#include "TrackedVehicle.h"
+#include "PointCloud.h"
 
 class World {
 public:

@@ -1,17 +1,17 @@
 //
-//  track.cpp
+//  Track.cpp
 //  tvs
 //
 //  Created by Federico Ferri on 30/11/2014.
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
-#include "track.h"
-#include "world.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
+#include "Track.h"
+#include "World.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
+#include <cmath>
 #include <drawstuff/drawstuff.h>
 
 Track::Track(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset) {

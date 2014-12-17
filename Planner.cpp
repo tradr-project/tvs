@@ -1,12 +1,12 @@
 //
-//  planner.cpp
+//  Planner.cpp
 //  tvs
 //
 //  Created by Federico Ferri on 16/12/2014.
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
-#include "planner.h"
+#include "Planner.h"
 #include <ompl/extensions/opende/OpenDESimpleSetup.h>
 #include <ompl/base/goals/GoalRegion.h>
 #include <ompl/config.h>

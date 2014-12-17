@@ -1,5 +1,5 @@
 //
-//  track.h
+//  Track.h
 //  tvs
 //
 //  Created by Federico Ferri on 30/11/2014.
@@ -10,7 +10,7 @@
 #define TRACK_H_INCLUDED
 
 #include <ode/ode.h>
-#include "track_kinematic_model.h"
+#include "TrackKinematicModel.h"
 
 class World;
 

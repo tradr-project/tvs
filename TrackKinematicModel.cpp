@@ -1,12 +1,12 @@
 //
-//  track_kinematic_model.cpp
+//  TrackKinematicModel.cpp
 //  tvs
 //
 //  Created by Federico Ferri on 30/11/2014.
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
-#include "track_kinematic_model.h"
+#include "TrackKinematicModel.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>

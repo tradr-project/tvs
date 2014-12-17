@@ -1,13 +1,13 @@
 //
-//  pointcloud.cpp
+//  PointCloud.cpp
 //  tvs
 //
 //  Created by Federico Ferri on 11/12/2014.
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
-#include "world.h"
-#include "point_cloud.h"
+#include "World.h"
+#include "PointCloud.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>

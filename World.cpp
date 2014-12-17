@@ -1,16 +1,16 @@
 //
-//  world.cpp
+//  World.cpp
 //  tvs
 //
 //  Created by Federico Ferri on 17/12/2014.
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
-#include "world.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
+#include "World.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
+#include <cmath>
 #include <drawstuff/drawstuff.h>
 
 #define MAX_CONTACTS 10
