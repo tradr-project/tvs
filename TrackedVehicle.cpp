@@ -83,3 +83,7 @@ void TrackedVehicle::draw() {
     this->rightTrack->draw();
 }
 
+void TrackedVehicle::setTrackVelocities(dReal left, dReal right) {
+    dJointSetHingeParam(this->leftTrack->wheel2Joint, dParamVel, left);
+    dJointSetHingeParam(this->rightTrack->wheel2Joint, dParamVel, right);
+}

@@ -38,10 +38,7 @@ void stop() {
 
 void command(int cmd) {
     const dReal V = 5;
-
-#define SetVel(trk,vv) dJointSetHingeParam(environment->v->trk##Track->wheel2Joint, dParamVel, vv)
-#define MapKey(k,vr,vl) case k: SetVel(right, vr); SetVel(left, vl); break;
-
+#define MapKey(k,vr,vl) case k: environment->v->setTrackVelocities(vl,vr); break;
     switch(cmd) {
     MapKey('a',  V, -V);
     MapKey('d', -V,  V);
@@ -51,9 +48,7 @@ void command(int cmd) {
     MapKey('e', -V,  0);
     MapKey(' ',  0,  0);
     }
-    
 #undef MapKey
-#undef SetVel
 }
 
 //#include "fe.c"
@@ -64,7 +59,7 @@ int main(int argc, char **argv) {
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
 
-#if 1
+#if 0
     environment = new Environment();
     environment->create();
 

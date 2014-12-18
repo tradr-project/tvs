@@ -37,6 +37,7 @@ public:
     void create(Environment *environment);
     void destroy();
     void draw();
+    void setTrackVelocities(dReal left, dReal right);
 };
 
 #endif // TRACKED_VEHICLE_H_INCLUDED
