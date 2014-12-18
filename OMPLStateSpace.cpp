@@ -9,9 +9,18 @@
 #include "OMPLStateSpace.h"
 #include "OMPLStateProjectionEvaluator.h"
 
-OMPLStateSpace::OMPLStateSpace(const oc::OpenDEEnvironmentPtr &env) : oc::OpenDEStateSpace(env) {
+OMPLStateSpace::OMPLStateSpace(const OMPLEnvironmentPtr &env) {
+    this->env = env;
+    
+    addSubspace(ob::StateSpacePtr(new ob::SO3StateSpace()), 1.0);
+    addSubspace(ob::StateSpacePtr(new ob::RealVectorStateSpace(2)), 1.0);
+    lock();
 }
 
+OMPLStateSpace::~OMPLStateSpace() {
+}
+
+/*
 double OMPLStateSpace::distance(const ob::State *s1, const ob::State *s2) const {
     const double *p1 = s1->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
     const double *p2 = s2->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
@@ -24,7 +33,7 @@ double OMPLStateSpace::distance(const ob::State *s1, const ob::State *s2) const 
 void OMPLStateSpace::registerProjections() {
     registerDefaultProjection(ob::ProjectionEvaluatorPtr(new OMPLStateProjectionEvaluator(this)));
 }
-
+*/
 /*
 bool OMPLStateSpace::evaluateCollision(const ob::State *state) const {
     if (state->as<StateType>()->collision & (1 << STATE_COLLISION_KNOWN_BIT))

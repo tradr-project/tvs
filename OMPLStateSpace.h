@@ -9,7 +9,7 @@
 #ifndef __tvs__OMPLStateSpace__
 #define __tvs__OMPLStateSpace__
 
-#include <ompl/extensions/opende/OpenDESimpleSetup.h>
+#include <ompl/base/StateSpace.h>
 #include <ompl/util/ClassForward.h>
 #include <cstdio>
 #include "OMPLEnvironment.h"
@@ -20,12 +20,19 @@ namespace oc = ompl::control;
 
 OMPL_CLASS_FORWARD(OMPLStateSpace);
 
-class OMPLStateSpace : public oc::OpenDEStateSpace {
+class OMPLStateSpace : public ob::CompoundStateSpace {
 public:
-    OMPLStateSpace(const oc::OpenDEEnvironmentPtr &env);
-    virtual double distance(const ob::State *s1, const ob::State *s2) const;
-    virtual void registerProjections();
-    //virtual bool evaluateCollision(const ob::State *source) const;
+    OMPLStateSpace(const OMPLEnvironmentPtr &env);
+    virtual ~OMPLStateSpace();
+
+    //virtual double distance(const ob::State *s1, const ob::State *s2) const;
+    //virtual void registerProjections();
+
+protected:
+    OMPLEnvironmentPtr env;
+    ob::RealVectorBounds volumeBounds;
+    ob::RealVectorBounds linearVelocityBounds;
+    ob::RealVectorBounds angularVelocityBounds;
 };
 
 #endif /* defined(__tvs__OMPLStateSpace__) */

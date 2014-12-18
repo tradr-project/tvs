@@ -13,6 +13,8 @@
 		CE067A4A1A42E1910046E5EF /* OMPLStateSpace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE067A481A42E1910046E5EF /* OMPLStateSpace.cpp */; };
 		CE067A501A42E85F0046E5EF /* OMPLStatePropagator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE067A4E1A42E85F0046E5EF /* OMPLStatePropagator.cpp */; };
 		CE067A531A43581F0046E5EF /* ODEUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE067A511A43581F0046E5EF /* ODEUtils.cpp */; };
+		CE067A561A438A790046E5EF /* OMPLControlSpace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE067A541A438A790046E5EF /* OMPLControlSpace.cpp */; };
+		CE067A591A438C3A0046E5EF /* OMPLStateValidityChecker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE067A571A438C3A0046E5EF /* OMPLStateValidityChecker.cpp */; };
 		CE6C895D1A2F44BA0054F8E0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */; };
 		CE7B050B1A4220280022D473 /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE7B05091A4220280022D473 /* Environment.cpp */; };
 		CEA84B841A4219FA000AA8FB /* Heightfield.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B741A4219FA000AA8FB /* Heightfield.cpp */; };
@@ -54,6 +56,10 @@
 		CE067A4F1A42E85F0046E5EF /* OMPLStatePropagator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OMPLStatePropagator.h; path = ../OMPLStatePropagator.h; sourceTree = "<group>"; };
 		CE067A511A43581F0046E5EF /* ODEUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ODEUtils.cpp; path = ../ODEUtils.cpp; sourceTree = "<group>"; };
 		CE067A521A43581F0046E5EF /* ODEUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ODEUtils.h; path = ../ODEUtils.h; sourceTree = "<group>"; };
+		CE067A541A438A790046E5EF /* OMPLControlSpace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OMPLControlSpace.cpp; path = ../OMPLControlSpace.cpp; sourceTree = "<group>"; };
+		CE067A551A438A790046E5EF /* OMPLControlSpace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OMPLControlSpace.h; path = ../OMPLControlSpace.h; sourceTree = "<group>"; };
+		CE067A571A438C3A0046E5EF /* OMPLStateValidityChecker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OMPLStateValidityChecker.cpp; path = ../OMPLStateValidityChecker.cpp; sourceTree = "<group>"; };
+		CE067A581A438C3A0046E5EF /* OMPLStateValidityChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OMPLStateValidityChecker.h; path = ../OMPLStateValidityChecker.h; sourceTree = "<group>"; };
 		CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../../System/Library/Frameworks/GLUT.framework; sourceTree = "<group>"; };
 		CE7B05091A4220280022D473 /* Environment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Environment.cpp; path = ../Environment.cpp; sourceTree = "<group>"; };
 		CE7B050A1A4220280022D473 /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Environment.h; path = ../Environment.h; sourceTree = "<group>"; };
@@ -142,8 +148,12 @@
 				CE067A461A42E0DF0046E5EF /* OMPLStateProjectionEvaluator.h */,
 				CE067A481A42E1910046E5EF /* OMPLStateSpace.cpp */,
 				CE067A491A42E1910046E5EF /* OMPLStateSpace.h */,
+				CE067A541A438A790046E5EF /* OMPLControlSpace.cpp */,
+				CE067A551A438A790046E5EF /* OMPLControlSpace.h */,
 				CE067A4E1A42E85F0046E5EF /* OMPLStatePropagator.cpp */,
 				CE067A4F1A42E85F0046E5EF /* OMPLStatePropagator.h */,
+				CE067A571A438C3A0046E5EF /* OMPLStateValidityChecker.cpp */,
+				CE067A581A438C3A0046E5EF /* OMPLStateValidityChecker.h */,
 				CE067A511A43581F0046E5EF /* ODEUtils.cpp */,
 				CE067A521A43581F0046E5EF /* ODEUtils.h */,
 			);
@@ -210,12 +220,14 @@
 				CEA84B851A4219FA000AA8FB /* main.cpp in Sources */,
 				CEA84B8C1A4219FA000AA8FB /* fe.c in Sources */,
 				CE067A501A42E85F0046E5EF /* OMPLStatePropagator.cpp in Sources */,
+				CE067A591A438C3A0046E5EF /* OMPLStateValidityChecker.cpp in Sources */,
 				CE067A4A1A42E1910046E5EF /* OMPLStateSpace.cpp in Sources */,
 				CE067A531A43581F0046E5EF /* ODEUtils.cpp in Sources */,
 				CE7B050B1A4220280022D473 /* Environment.cpp in Sources */,
 				CE067A471A42E0DF0046E5EF /* OMPLStateProjectionEvaluator.cpp in Sources */,
 				CEA84B881A4219FA000AA8FB /* Track.cpp in Sources */,
 				CEA84B861A4219FA000AA8FB /* Planner.cpp in Sources */,
+				CE067A561A438A790046E5EF /* OMPLControlSpace.cpp in Sources */,
 				CE067A441A42DFA40046E5EF /* OMPLGoalRegion.cpp in Sources */,
 				CEA84B841A4219FA000AA8FB /* Heightfield.cpp in Sources */,
 				CE067A411A42DDDA0046E5EF /* OMPLEnvironment.cpp in Sources */,
