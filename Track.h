@@ -36,6 +36,7 @@ public:
     dReal xOffset;
     dReal yOffset;
     dReal zOffset;
+    size_t numGrousers;
 
     Track(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~Track();

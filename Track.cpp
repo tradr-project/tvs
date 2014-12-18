@@ -24,6 +24,7 @@ Track::Track(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers
     this->xOffset = xOffset;
     this->yOffset = yOffset;
     this->zOffset = zOffset;
+    this->numGrousers = numGrousers_;
 }
 
 Track::~Track() {
