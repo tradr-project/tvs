@@ -29,6 +29,9 @@ public:
     dReal yOffset;
     dReal zOffset;
     
+    dBodyID *bodyArray;
+    size_t bodyArraySize;
+    
     TrackedVehicle(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~TrackedVehicle();
     void create(Environment *environment);

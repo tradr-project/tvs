@@ -48,6 +48,21 @@ void TrackedVehicle::create(Environment *environment) {
     dJointAttach(this->rightTrackJoint, this->vehicleBody, this->rightTrack->trackBody);
     dJointSetFixed(this->leftTrackJoint);
     dJointSetFixed(this->rightTrackJoint);
+    
+    this->bodyArraySize = (this->leftTrack->numGrousers + 1 + 2) * 2 + 1;
+    this->bodyArray = new dBodyID[this->bodyArraySize];
+    size_t j = 0;
+    this->bodyArray[j++] = this->vehicleBody;
+    this->bodyArray[j++] = this->leftTrack->trackBody;
+    this->bodyArray[j++] = this->rightTrack->trackBody;
+    this->bodyArray[j++] = this->leftTrack->wheel1Body;
+    this->bodyArray[j++] = this->leftTrack->wheel2Body;
+    this->bodyArray[j++] = this->rightTrack->wheel1Body;
+    this->bodyArray[j++] = this->rightTrack->wheel2Body;
+    for(size_t i = 0; i < this->leftTrack->numGrousers; i++) {
+        this->bodyArray[j++] = this->leftTrack->grouserBody[i];
+        this->bodyArray[j++] = this->rightTrack->grouserBody[i];
+    }
 }
 
 void TrackedVehicle::destroy() {
