@@ -28,6 +28,7 @@ public:
     virtual ~Environment();
     void create();
     void destroy();
+    bool isTerrain(dGeomID g);
     void nearCallback(dGeomID o1, dGeomID o2);
     void step(dReal stepSize, int simulationStepsPerFrame);
     void draw();

@@ -56,7 +56,7 @@ void Environment::destroy() {
     pcl->destroy();
 }
 
-static inline bool isTerrain(dGeomID g) {
+bool Environment::isTerrain(dGeomID g) {
     return dGeomGetClass(g) == dPlaneClass
         || dGeomGetClass(g) == dHeightfieldClass
         || dGeomGetClass(g) == dSphereClass;
