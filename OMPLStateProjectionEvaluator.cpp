@@ -7,24 +7,22 @@
 //
 
 #include "OMPLStateProjectionEvaluator.h"
+#include "OMPLStateSpace.h"
 
 OMPLStateProjectionEvaluator::OMPLStateProjectionEvaluator(const ob::StateSpace *space) : ob::ProjectionEvaluator(space) {
+    std::vector<double> cellSizes(3);
+    cellSizes[0] = 0.25;
+    cellSizes[1] = 0.25;
+    cellSizes[2] = 0.25;
+    setCellSizes(cellSizes);
 }
 
 unsigned int OMPLStateProjectionEvaluator::getDimension(void) const {
     return 3;
 }
 
-void OMPLStateProjectionEvaluator::defaultCellSizes() {
-    cellSizes_.resize(3);
-    cellSizes_[0] = 1;
-    cellSizes_[1] = 1;
-    cellSizes_[2] = 1;
-}
-
 void OMPLStateProjectionEvaluator::project(const ob::State *state, ob::EuclideanProjection &projection) const {
-    const double *pos = state->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
-    projection[0] = pos[0];
-    projection[1] = pos[1];
-    projection[2] = pos[2];
+    projection[0] = state->as<ob::RealVectorStateSpace::StateType>()->values[0];
+    projection[1] = state->as<ob::RealVectorStateSpace::StateType>()->values[1];
+    projection[2] = state->as<ob::RealVectorStateSpace::StateType>()->values[2];
 }

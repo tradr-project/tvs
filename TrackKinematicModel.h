@@ -13,8 +13,7 @@
 
 class TrackKinematicModel {
 public:
-    dReal radius1;
-    dReal radius2;
+    dReal radius[2];
     dReal distance;
     size_t numGrousers;
     dReal grouserWidth;
@@ -23,10 +22,8 @@ public:
     dReal radiusDiff;
     dReal pDistance;
     dReal theta;
-    dReal p1x;
-    dReal p1y;
-    dReal p2x;
-    dReal p2y;
+    dReal px[2];
+    dReal py[2];
     dReal arc1Length;
     dReal arc2Length;
     dReal totalLength;

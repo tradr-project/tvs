@@ -37,7 +37,7 @@ void stop() {
 }
 
 void command(int cmd) {
-    const dReal V = 5;
+    const dReal V = 1.5;
 #define MapKey(k,vr,vl) case k: environment->v->setTrackVelocities(vl,vr); break;
     switch(cmd) {
     MapKey('a',  V, -V);
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
 
-#if 0
+#if 1
     environment = new Environment();
     environment->create();
 

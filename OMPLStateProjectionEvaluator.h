@@ -20,7 +20,6 @@ class OMPLStateProjectionEvaluator : public ob::ProjectionEvaluator {
 public:
     OMPLStateProjectionEvaluator(const ob::StateSpace *space);
     virtual unsigned int getDimension(void) const;
-    virtual void defaultCellSizes();
     virtual void project(const ob::State *state, ob::EuclideanProjection &projection) const;
 };
 

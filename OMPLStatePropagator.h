@@ -19,7 +19,7 @@ namespace ob = ompl::base;
 namespace og = ompl::geometric;
 namespace oc = ompl::control;
 
-class OMPLStatePropagator : public oc::OpenDEStatePropagator {
+class OMPLStatePropagator : public oc::StatePropagator {
 public:
     OMPLStatePropagator(const oc::SpaceInformationPtr &si);
     virtual ~OMPLStatePropagator();

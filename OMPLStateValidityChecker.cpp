@@ -8,8 +8,7 @@
 
 #include "OMPLStateValidityChecker.h"
 
-OMPLStateValidityChecker::OMPLStateValidityChecker(const oc::SpaceInformationPtr &si) {
-    stateSpacePtr = si->getStateSpace()->as<OMPLStateSpace>();
+OMPLStateValidityChecker::OMPLStateValidityChecker(const oc::SpaceInformationPtr &si) : ob::StateValidityChecker(si), stateSpacePtr(si->getStateSpace()->as<OMPLStateSpace>()) {
 }
 
 bool OMPLStateValidityChecker::isValid(const ob::State *state) const {

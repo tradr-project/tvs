@@ -13,5 +13,6 @@
 
 void dRigidBodyArraySetPosition(dBodyID *bodyArray, size_t arraySize, dBodyID center, dReal x, dReal y, dReal z);
 void dRigidBodyArraySetRotation(dBodyID *bodyArray, size_t arraySize, dBodyID center, const dReal *Rs);
+const char * dClassGetName(int c);
 
 #endif /* defined(__tvs__ODEUtils__) */

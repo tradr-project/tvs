@@ -47,8 +47,8 @@ void PointCloud::create(Environment *environment) {
         dGeomSetPosition(this->geom[i], this->data[i * 3], this->data[i * 3 + 1], this->data[i * 3 + 2]);
         dMatrix3 R; dRSetIdentity(R);
         dGeomSetRotation(this->geom[i], R);
-        dGeomSetCategoryBits(this->geom[i], 0x4);
-        dGeomSetCollideBits(this->geom[i], 0x2);
+        dGeomSetCategoryBits(this->geom[i], Category::TERRAIN);
+        dGeomSetCollideBits(this->geom[i], Category::GROUSER | Category::OBSTACLE);
     }
 }
 

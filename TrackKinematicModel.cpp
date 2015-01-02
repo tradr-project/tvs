@@ -14,21 +14,21 @@
 #include <drawstuff/drawstuff.h>
 
 TrackKinematicModel::TrackKinematicModel(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_) {
-    this->radius1 = radius1_;
-    this->radius2 = radius2_;
+    this->radius[0] = radius1_;
+    this->radius[1] = radius2_;
     this->distance = distance_;
     this->numGrousers = numGrousers_;
     this->grouserHeight = grouserHeight_;
     this->trackDepth = trackDepth_;
-    this->radiusDiff = this->radius1 - this->radius2;
+    this->radiusDiff = this->radius[0] - this->radius[1];
     this->pDistance = sqrt(pow(this->distance, 2) - pow(this->radiusDiff, 2));
     this->theta = atan2(this->pDistance, this->radiusDiff);
-    this->p1x = this->radius1 * cos(this->theta);
-    this->p1y = this->radius1 * sin(this->theta);
-    this->p2x = this->distance + this->radius2 * cos(this->theta);
-    this->p2y = this->radius2 * sin(this->theta);
-    this->arc1Length = this->radius1 * 2 * (M_PI - this->theta);
-    this->arc2Length = this->radius2 * 2 * this->theta;
+    this->px[0] = this->radius[0] * cos(this->theta);
+    this->py[0] = this->radius[0] * sin(this->theta);
+    this->px[1] = this->distance + this->radius[1] * cos(this->theta);
+    this->py[1] = this->radius[1] * sin(this->theta);
+    this->arc1Length = this->radius[0] * 2 * (M_PI - this->theta);
+    this->arc2Length = this->radius[1] * 2 * this->theta;
     this->totalLength = 0.0;
     this->dlimits[0] = this->arc1Length;
     this->dlimits[1] = this->pDistance;
@@ -60,23 +60,23 @@ void TrackKinematicModel::getPointOnPath(dReal u, dReal *x_, dReal *y_, dReal *t
     switch(section) {
         case 0:
             *theta_ = (1 - v) * (2 * M_PI - this->theta) + v * this->theta;
-            *x_ = this->radius1 * cos(*theta_);
-            *y_ = this->radius1 * sin(*theta_);
+            *x_ = this->radius[0] * cos(*theta_);
+            *y_ = this->radius[0] * sin(*theta_);
             break;
         case 1:
             *theta_ = this->theta;
-            *x_ = (1 - v) * this->p1x + v * this->p2x;
-            *y_ = (1 - v) * this->p1y + v * this->p2y;
+            *x_ = (1 - v) * this->px[0] + v * this->px[1];
+            *y_ = (1 - v) * this->py[0] + v * this->py[1];
             break;
         case 2:
             *theta_ = (1 - v) * this->theta + v * -this->theta;
-            *x_ = this->distance + this->radius2 * cos(*theta_);
-            *y_ = this->radius2 * sin(*theta_);
+            *x_ = this->distance + this->radius[1] * cos(*theta_);
+            *y_ = this->radius[1] * sin(*theta_);
             break;
         case 3:
             *theta_ = -this->theta;
-            *x_ = (1 - v) * this->p2x + v * this->p1x;
-            *y_ = (1 - v) * -this->p2y + v * -this->p1y;
+            *x_ = (1 - v) * this->px[1] + v * this->px[0];
+            *y_ = (1 - v) * -this->py[1] + v * -this->py[0];
             break;
     }
 }

@@ -39,7 +39,11 @@ void OMPLEnvironment::applyControl(const double *control) const {
 }
 
 bool OMPLEnvironment::isValidCollision(dGeomID g1, dGeomID g2, const dContact& contact) const {
-    if(env->isTerrain(g1) || env->isTerrain(g2))
-        return true;
+    unsigned long c1 = dGeomGetCategoryBits(g1);
+    unsigned long c2 = dGeomGetCategoryBits(g2);
+    if((c1 & Category::GROUSER) && (c2 & Category::TERRAIN)) return true;
+    if((c2 & Category::GROUSER) && (c1 & Category::TERRAIN)) return true;
+    if((c1 & Category::WHEEL) && (c2 & Category::GROUSER)) return true;
+    if((c2 & Category::WHEEL) && (c1 & Category::GROUSER)) return true;
     return false;
 }

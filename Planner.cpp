@@ -7,14 +7,15 @@
 //
 
 #include "Planner.h"
-#include <ompl/extensions/opende/OpenDESimpleSetup.h>
 #include <ompl/base/goals/GoalRegion.h>
+#include <ompl/base/spaces/SE3StateSpace.h>
 #include <ompl/geometric/planners/kpiece/KPIECE1.h>
 #include <ompl/config.h>
 #include <iostream>
 #include <ode/ode.h>
 #include "OMPLEnvironment.h"
 #include "OMPLStateSpace.h"
+#include "OMPLStateValidityChecker.h"
 #include "OMPLControlSpace.h"
 #include "OMPLStatePropagator.h"
 #include "OMPLGoalRegion.h"
@@ -26,10 +27,11 @@ namespace oc = ompl::control;
 void plan() {
     OMPLEnvironmentPtr envPtr(new OMPLEnvironment());
     ob::StateSpacePtr stateSpacePtr = ob::StateSpacePtr(new OMPLStateSpace(envPtr));
+    //ob::StateSpacePtr stateSpacePtr = ob::StateSpacePtr(new ob::SE3StateSpace());
     oc::ControlSpacePtr controlSpacePtr = oc::ControlSpacePtr(new OMPLControlSpace(stateSpacePtr));
     oc::SpaceInformationPtr spaceInformationPtr(new oc::SpaceInformation(stateSpacePtr, controlSpacePtr));
     oc::StatePropagatorPtr statePropagatorPtr(new OMPLStatePropagator(spaceInformationPtr));
-    ob::StateValidityCheckerPtr stateValidityCheckerPtr(new oc::OpenDEStateValidityChecker(spaceInformationPtr));
+    ob::StateValidityCheckerPtr stateValidityCheckerPtr(new OMPLStateValidityChecker(spaceInformationPtr));
     spaceInformationPtr->setPropagationStepSize(0.01);
     spaceInformationPtr->setMinMaxControlDuration(1, 10);
     spaceInformationPtr->setStatePropagator(statePropagatorPtr);

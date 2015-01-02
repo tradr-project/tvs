@@ -10,6 +10,7 @@
 #define __tvs__OMPLStateSpace__
 
 #include <ompl/base/StateSpace.h>
+#include <ompl/base/spaces/SE3StateSpace.h>
 #include <ompl/util/ClassForward.h>
 #include <cstdio>
 #include "OMPLEnvironment.h"
@@ -24,15 +25,14 @@ class OMPLStateSpace : public ob::CompoundStateSpace {
 public:
     OMPLStateSpace(const OMPLEnvironmentPtr &env);
     virtual ~OMPLStateSpace();
-
-    //virtual double distance(const ob::State *s1, const ob::State *s2) const;
-    //virtual void registerProjections();
+    virtual void registerProjections();
+    virtual double distance(const ob::State *s1, const ob::State *s2) const;
 
 protected:
     OMPLEnvironmentPtr env;
-    ob::RealVectorBounds volumeBounds;
-    ob::RealVectorBounds linearVelocityBounds;
-    ob::RealVectorBounds angularVelocityBounds;
+    //ob::RealVectorBounds volumeBounds;
+    //ob::RealVectorBounds linearVelocityBounds;
+    //ob::RealVectorBounds angularVelocityBounds;
 };
 
 #endif /* defined(__tvs__OMPLStateSpace__) */

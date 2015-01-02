@@ -19,15 +19,11 @@ public:
     TrackKinematicModel *m;
     dReal density;
     dBodyID trackBody;
-    dBodyID wheel1Body;
-    dBodyID wheel2Body;
     dMass trackMass;
-    dMass wheel1Mass;
-    dMass wheel2Mass;
-    dGeomID wheel1Geom;
-    dGeomID wheel2Geom;
-    dJointID wheel1Joint;
-    dJointID wheel2Joint;
+    dBodyID wheelBody[2];
+    dMass wheelMass[2];
+    dGeomID wheelGeom[2];
+    dJointID wheelJoint[2];
     //dJointID guideJoint;
     dBodyID *grouserBody;
     dGeomID *grouserGeom;
@@ -43,6 +39,7 @@ public:
     void create(Environment *environment);
     void destroy();
     void draw();
+    void setVelocity(dReal velocity);
 };
 
 #endif // TRACK_H_INCLUDED

@@ -10,7 +10,7 @@
 #include "OMPLStateSpace.h"
 #include <ompl/util/Exception.h>
 
-OMPLStatePropagator::OMPLStatePropagator(const oc::SpaceInformationPtr &si) : oc::OpenDEStatePropagator(si) {
+OMPLStatePropagator::OMPLStatePropagator(const oc::SpaceInformationPtr &si) : oc::StatePropagator(si) {
     OMPLStateSpace *oss = dynamic_cast<OMPLStateSpace *>(si->getStateSpace().get());
     if(!oss)
         throw ompl::Exception("OMPLStateSpace needed for OMPLStatePropagator");

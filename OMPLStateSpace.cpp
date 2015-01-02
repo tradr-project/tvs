@@ -11,29 +11,44 @@
 
 OMPLStateSpace::OMPLStateSpace(const OMPLEnvironmentPtr &env) {
     this->env = env;
+
+    // pose:
+    ob::SE3StateSpace *poseSpace = new ob::SE3StateSpace();
+    ob::RealVectorBounds bounds(3);
+    bounds.setLow(-5.0);
+    bounds.setHigh(5.0);
+    poseSpace->setBounds(bounds);
     
-    addSubspace(ob::StateSpacePtr(new ob::SO3StateSpace()), 1.0);
-    addSubspace(ob::StateSpacePtr(new ob::RealVectorStateSpace(2)), 1.0);
+    // tracks velocity:
+    ob::RealVectorStateSpace *tracksVelSpace = new ob::RealVectorStateSpace(2);
+    tracksVelSpace->setBounds(-3, 3);
+    
+    addSubspace(ob::StateSpacePtr(poseSpace), 1.0);
+    addSubspace(ob::StateSpacePtr(tracksVelSpace), 1.0);
     lock();
+    
+    //sanityChecks();
+    
+    registerProjections();
 }
 
 OMPLStateSpace::~OMPLStateSpace() {
 }
 
-/*
-double OMPLStateSpace::distance(const ob::State *s1, const ob::State *s2) const {
-    const double *p1 = s1->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
-    const double *p2 = s2->as<oc::OpenDEStateSpace::StateType>()->getBodyPosition(0);
-    double dx = fabs(p1[0] - p2[0]);
-    double dy = fabs(p1[1] - p2[1]);
-    double dz = fabs(p1[2] - p2[2]);
-    return sqrt(dx * dx + dy * dy + dz * dz);
-}
-
 void OMPLStateSpace::registerProjections() {
     registerDefaultProjection(ob::ProjectionEvaluatorPtr(new OMPLStateProjectionEvaluator(this)));
 }
-*/
+
+double OMPLStateSpace::distance(const ob::State *s1, const ob::State *s2) const {
+    double dx = fabs(s1->as<ob::RealVectorStateSpace::StateType>()->values[0]
+                     - s2->as<ob::RealVectorStateSpace::StateType>()->values[0]);
+    double dy = fabs(s1->as<ob::RealVectorStateSpace::StateType>()->values[1]
+                     - s2->as<ob::RealVectorStateSpace::StateType>()->values[1]);
+    double dz = fabs(s1->as<ob::RealVectorStateSpace::StateType>()->values[2]
+                     - s2->as<ob::RealVectorStateSpace::StateType>()->values[2]);
+    return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
 /*
 bool OMPLStateSpace::evaluateCollision(const ob::State *state) const {
     if (state->as<StateType>()->collision & (1 << STATE_COLLISION_KNOWN_BIT))

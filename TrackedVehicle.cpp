@@ -35,10 +35,10 @@ void TrackedVehicle::create(Environment *environment) {
     this->leftTrack->create(environment);
     this->rightTrack->create(environment);
     this->vehicleBody = dBodyCreate(environment->world);
-    this->vehicleGeom = dCreateBox(environment->space, this->leftTrack->m->distance, this->width, this->leftTrack->m->radius1);
-    dMassSetBox(&this->vehicleMass, this->density, this->leftTrack->m->distance, this->width, this->leftTrack->m->radius1);
-    dGeomSetCategoryBits(this->vehicleGeom, 0x0);
-    dGeomSetCollideBits(this->vehicleGeom, 0x0);
+    this->vehicleGeom = dCreateBox(environment->space, this->leftTrack->m->distance, this->width, this->leftTrack->m->radius[0]);
+    dMassSetBox(&this->vehicleMass, this->density, this->leftTrack->m->distance, this->width, this->leftTrack->m->radius[0]);
+    dGeomSetCategoryBits(this->vehicleGeom, Category::OBSTACLE);
+    dGeomSetCollideBits(this->vehicleGeom, Category::OBSTACLE | Category::TERRAIN);
     dBodySetMass(this->vehicleBody, &this->vehicleMass);
     dBodySetPosition(this->vehicleBody, this->xOffset, this->yOffset, this->zOffset);
     dGeomSetBody(this->vehicleGeom, this->vehicleBody);
@@ -55,10 +55,10 @@ void TrackedVehicle::create(Environment *environment) {
     this->bodyArray[j++] = this->vehicleBody;
     this->bodyArray[j++] = this->leftTrack->trackBody;
     this->bodyArray[j++] = this->rightTrack->trackBody;
-    this->bodyArray[j++] = this->leftTrack->wheel1Body;
-    this->bodyArray[j++] = this->leftTrack->wheel2Body;
-    this->bodyArray[j++] = this->rightTrack->wheel1Body;
-    this->bodyArray[j++] = this->rightTrack->wheel2Body;
+    for(int w = 0; w < 2; w++) {
+        this->bodyArray[j++] = this->leftTrack->wheelBody[w];
+        this->bodyArray[j++] = this->rightTrack->wheelBody[w];
+    }
     for(size_t i = 0; i < this->leftTrack->numGrousers; i++) {
         this->bodyArray[j++] = this->leftTrack->grouserBody[i];
         this->bodyArray[j++] = this->rightTrack->grouserBody[i];
@@ -84,6 +84,6 @@ void TrackedVehicle::draw() {
 }
 
 void TrackedVehicle::setTrackVelocities(dReal left, dReal right) {
-    dJointSetHingeParam(this->leftTrack->wheel2Joint, dParamVel, left);
-    dJointSetHingeParam(this->rightTrack->wheel2Joint, dParamVel, right);
+    this->leftTrack->setVelocity(left);
+    this->rightTrack->setVelocity(right);
 }

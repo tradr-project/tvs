@@ -43,3 +43,21 @@ void dRigidBodyArraySetRotation(dBodyID *bodyArray, size_t arraySize, dBodyID ce
         dBodySetRotation(bodyArray[i], R1);
     }
 }
+
+const char * dClassGetName(int c) {
+    switch(c) {
+        case dSphereClass: return "sphere";
+        case dBoxClass: return "box";
+        case dCapsuleClass: return "capsule";
+        case dCylinderClass: return "cylinder";
+        case dPlaneClass: return "plane";
+        case dRayClass: return "ray";
+        case dConvexClass: return "convex";
+        case dGeomTransformClass: return "geom-transform";
+        case dTriMeshClass: return "tri-mesh";
+        case dHeightfieldClass: return "heightfield";
+    };
+    static char buf[20];
+    snprintf(buf, 20, "class#%d", c);
+    return buf;
+}
