@@ -37,18 +37,16 @@ void stop() {
 }
 
 void command(int cmd) {
-    const dReal V = 1.5;
-#define MapKey(k,vr,vl) case k: environment->v->setTrackVelocities(vl,vr); break;
+    const dReal V = 6.0;
     switch(cmd) {
-    MapKey('a',  V, -V);
-    MapKey('d', -V,  V);
-    MapKey('w', -V, -V);
-    MapKey('s',  V,  V);
-    MapKey('q',  0, -V);
-    MapKey('e', -V,  0);
-    MapKey(' ',  0,  0);
+    case 'd': environment->v->setTrackVelocities( V, -V); break;
+    case 'a': environment->v->setTrackVelocities(-V,  V); break;
+    case 'w': environment->v->setTrackVelocities(-V, -V); break;
+    case 's': environment->v->setTrackVelocities( V,  V); break;
+    case 'e': environment->v->setTrackVelocities( 0, -V); break;
+    case 'q': environment->v->setTrackVelocities(-V,  0); break;
+    case ' ': environment->v->setTrackVelocities( 0,  0); break;
     }
-#undef MapKey
 }
 
 //#include "fe.c"

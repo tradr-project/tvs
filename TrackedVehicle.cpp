@@ -19,8 +19,8 @@ TrackedVehicle::TrackedVehicle(dReal wheelRadius_, dReal wheelBase_, dReal track
     const size_t numGrousers = 30;
     const dReal grouserHeight = 0.01;
     dReal w = this->width + 2 * trackWidth_;
-    this->leftTrack = new Track(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset - 0.5 * w, zOffset);
-    this->rightTrack = new Track(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset + 0.5 * w, zOffset);
+    this->leftTrack = new Track(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset - wheelBase_ * 0.5, yOffset - 0.5 * w, zOffset);
+    this->rightTrack = new Track(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset - wheelBase_ * 0.5, yOffset + 0.5 * w, zOffset);
     this->xOffset = xOffset;
     this->yOffset = yOffset;
     this->zOffset = zOffset;

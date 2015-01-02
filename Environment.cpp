@@ -147,7 +147,6 @@ void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
 }
 
 void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
-    std::cout << "DEFAULT" << std::endl;
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
     dContact contact[MAX_CONTACTS];
