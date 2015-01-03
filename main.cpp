@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
 
-#if 1
+#if 0
     environment = new Environment();
     environment->create();
 
