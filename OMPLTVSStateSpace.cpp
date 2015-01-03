@@ -132,9 +132,9 @@ void ompl::control::OMPLTVSStateSpace::setDefaultBounds()
         double dM = std::max(dx, std::max(dy, dz));
 
         // add 10% in each dimension + 1% of the max dimension
-        dx = dx / 10.0 + dM / 100.0;
-        dy = dy / 10.0 + dM / 100.0;
-        dz = dz / 10.0 + dM / 100.0;
+        dx = dx * 1.10 + dM * 0.01;
+        dy = dy * 1.10 + dM * 0.01;
+        dz = dz * 1.10 + dM * 0.01;
 
         bounds1.low[0] = mX - dx;
         bounds1.high[0] = MX + dx;
