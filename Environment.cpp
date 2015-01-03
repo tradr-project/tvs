@@ -159,6 +159,7 @@ void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
         contact[i].surface.mu = 5.0;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
+        this->badCollision = true;
     }
 }
 
