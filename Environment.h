@@ -44,7 +44,7 @@ public:
     void nearCallbackWheelGrouser(dGeomID o1, dGeomID o2);
     void nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2);
     void nearCallbackDefault(dGeomID o1, dGeomID o2);
-    void step(dReal stepSize, int simulationStepsPerFrame);
+    bool step(dReal stepSize, int simulationStepsPerFrame);
     void evaluateCollisionNearCallback(dGeomID o1, dGeomID o2);
     bool evaluateCollision();
     void draw();

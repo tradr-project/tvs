@@ -189,12 +189,12 @@ void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
         contact[i].surface.mu = 5.0;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
-        //this->badCollision = true; // check moved in another callback
+        this->badCollision = true;
     }
 }
 
-void Environment::step(dReal stepSize, int simulationStepsPerFrame) {
-    badCollision = false;
+bool Environment::step(dReal stepSize, int simulationStepsPerFrame) {
+    this->badCollision = false;
     for(size_t i = 0; i < simulationStepsPerFrame; i++) {
         // find collisions and add contact joints
         dSpaceCollide(this->space, this, &nearCallbackWrapper);
@@ -203,6 +203,7 @@ void Environment::step(dReal stepSize, int simulationStepsPerFrame) {
         // remove all contact joints
         dJointGroupEmpty(this->contactGroup);
     }
+    return this->badCollision;
 }
 
 static void evaluateCollisionNearCallbackWrapper(void *data, dGeomID o1, dGeomID o2) {
