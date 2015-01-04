@@ -38,6 +38,7 @@
 #define OMPL_EXTENSION_OMPLTVS_SIMPLE_SETUP_
 
 #include <ompl/control/SimpleSetup.h>
+#include <ompl/base/goals/GoalRegion.h>
 #include "OMPLTVSStateValidityChecker.h"
 #include "OMPLTVSStatePropagator.h"
 #include "OMPLTVSControlSpace.h"
@@ -47,6 +48,14 @@ namespace ompl
 
     namespace control
     {
+        class OMPLTVSGoalRegion : public base::GoalRegion
+        {
+        public:
+            OMPLTVSGoalRegion(const base::SpaceInformationPtr &si, double x, double y, double z, double threshold);
+            virtual double distanceGoal(const base::State *st) const;
+        protected:
+            double x_, y_, z_;
+        };
 
         /** \brief Create the set of classes typically needed to solve a
             control problem when forward propagation is computed with OMPLTVS. */
@@ -129,6 +138,10 @@ namespace ompl
                 Construct a path representing this action. */
             base::PathPtr simulate(unsigned int steps) const;
 
+            inline void setGoalRegion(double x, double y, double z, double threshold) {
+                setGoal(base::GoalPtr(new OMPLTVSGoalRegion(getSpaceInformation(), x, y, z, threshold)));
+            }
+            
             virtual void setup();
 
         private:

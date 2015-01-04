@@ -38,6 +38,20 @@
 #include <ompl/util/Exception.h>
 #include <boost/thread.hpp>
 
+ompl::control::OMPLTVSGoalRegion::OMPLTVSGoalRegion(const ompl::base::SpaceInformationPtr &si, double x, double y, double z, double threshold) : ompl::base::GoalRegion(si), x_(x), y_(y), z_(z)
+{
+    threshold_ = threshold;
+}
+
+double ompl::control::OMPLTVSGoalRegion::distanceGoal(const ompl::base::State *st) const
+{
+    const double *pos = st->as<ompl::control::OMPLTVSStateSpace::StateType>()->getPosition();
+    double dx = fabs(pos[0] - x_);
+    double dy = fabs(pos[1] - y_);
+    double dz = fabs(pos[2] - z_);
+    return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
 ompl::control::OMPLTVSSimpleSetup::OMPLTVSSimpleSetup(const ControlSpacePtr &space) : SimpleSetup(space)
 {
     if (!dynamic_cast<OMPLTVSControlSpace*>(space.get()))
