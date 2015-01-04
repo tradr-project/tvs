@@ -37,13 +37,13 @@
 #ifndef OMPL_EXTENSION_OMPLTVS_ENVIRONMENT_
 #define OMPL_EXTENSION_OMPLTVS_ENVIRONMENT_
 
+#include "Environment.h"
+
 #include <ompl/config.h>
 #include <ompl/util/ClassForward.h>
 
 #include <ode/ode.h>
 #include <vector>
-#include <string>
-#include <map>
 #include <boost/thread/mutex.hpp>
 
 namespace ompl
@@ -63,31 +63,8 @@ namespace ompl
         class OMPLTVSEnvironment
         {
         public:
-
-            /** \brief The OMPLTVS world where the simulation is performed */
-            dWorldID              world_;
-
-            /** \brief The set of spaces where contacts need to be evaluated before simulation takes place */
-            std::vector<dSpaceID> collisionSpaces_;
-
-            /** \brief The set of bodies that need to be considered
-                part of the state when planning. This is not
-                necessarily all the bodies in the environment.*/
-            std::vector<dBodyID>  stateBodies_;
-
-            /** \brief Optional map of names given to geoms. This is useful when collision checking is verbose */
-            std::map<dGeomID, std::string>
-                                  geomNames_;
-
-            /** \brief Issue debug messages when contacts are found. Default is false. This should only be used for debugging */
-            bool                  verboseContacts_;
-
-            /** \brief The group of joints where contacts are created */
-            dJointGroupID         contactGroup_;
-
-            /** \brief The maximum number of contacts to create between two bodies when a collision occurs */
-            unsigned int          maxContacts_;
-
+            Environment *env_;
+            
             /** \brief The simulation step size */
             double                stepSize_;
 
@@ -100,16 +77,9 @@ namespace ompl
             /** \brief Lock to use when performing simulations in the world. (OMPLTVS simulations are NOT thread safe) */
             mutable boost::mutex  mutex_;
 
-            OMPLTVSEnvironment() : world_(NULL), verboseContacts_(false), maxContacts_(3), stepSize_(0.05), maxControlSteps_(100), minControlSteps_(5)
-            {
-                contactGroup_ = dJointGroupCreate(0);
-            }
+            OMPLTVSEnvironment(Environment *env);
 
-            virtual ~OMPLTVSEnvironment()
-            {
-                if (contactGroup_)
-                    dJointGroupDestroy(contactGroup_);
-            }
+            virtual ~OMPLTVSEnvironment();
 
             /** \brief Number of parameters (double values) needed to specify a control input */
             virtual unsigned int getControlDimension() const = 0;
@@ -126,22 +96,15 @@ namespace ompl
                 not. In some cases, collisions between some bodies can
                 be allowed. By default, this function always returns
                 false, making all collisions invalid */
-            virtual bool isValidCollision(dGeomID geom1, dGeomID geom2, const dContact& contact) const;
+            virtual bool isValidCollision(dGeomID geom1, dGeomID geom2, const dContact& contact) const = 0;
 
             /** \brief Get the maximum number of contacts to set up
                 between two colliding geoms. By default, this just
                 returns the member variable maxContacts */
             virtual unsigned int getMaxContacts(dGeomID geom1, dGeomID geom2) const;
-
+            
             /** \brief Parameters to set when contacts are created between \e geom1 and \e geom2. */
-            virtual void setupContact(dGeomID geom1, dGeomID geom2, dContact &contact) const;
-
-            /** \brief Get the name of a body */
-            std::string getGeomName(dGeomID geom) const;
-
-            /** \brief Set the name of a body */
-            void setGeomName(dGeomID geom, const std::string &name);
-
+            virtual void setupContact(dGeomID geom1, dGeomID geom2, dContact &contact) const = 0;
         };
     }
 }

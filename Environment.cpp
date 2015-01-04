@@ -15,8 +15,6 @@
 #include <iostream>
 #include <drawstuff/drawstuff.h>
 
-#define MAX_CONTACTS 10
-
 static const dVector3 center = {3,3,0};
 static const dVector3 extents = {7,7,7};
 static const dReal limit = 8.0;
@@ -76,11 +74,29 @@ void Environment::destroy() {
     if(this->pcl) this->pcl->destroy();
 }
 
+std::string Environment::getGeomName(dGeomID geom) const
+{
+    std::map<dGeomID, std::string>::const_iterator it = geomNames.find(geom);
+    if (it == geomNames.end())
+        return boost::lexical_cast<std::string>(reinterpret_cast<unsigned long>(geom));
+    else
+        return it->second;
+}
+
+void Environment::setGeomName(dGeomID geom, const std::string &name)
+{
+    geomNames[geom] = name;
+}
+
+int Environment::getMaxContacts(dGeomID o1, dGeomID o2) {
+    return 10;
+}
+
 static void nearCallbackWrapper(void *data, dGeomID o1, dGeomID o2) {
     reinterpret_cast<Environment *>(data)->nearCallback(o1, o2);
 }
 
-inline bool isCatPair(unsigned long cat1, unsigned long cat2, dGeomID *o1, dGeomID *o2) {
+bool Environment::isCatPair(unsigned long cat1, unsigned long cat2, dGeomID *o1, dGeomID *o2) {
     unsigned long catBits1 = dGeomGetCategoryBits(*o1);
     unsigned long catBits2 = dGeomGetCategoryBits(*o2);
 
@@ -109,8 +125,9 @@ void Environment::nearCallback(dGeomID o1, dGeomID o2) {
 void Environment::nearCallbackWheelGrouser(dGeomID o1, dGeomID o2) {
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
-    dContact contact[MAX_CONTACTS];
-    int numc = dCollide(o1, o2, MAX_CONTACTS, &contact[0].geom, sizeof(dContact));
+    int maxc = getMaxContacts(o1, o2);
+    dContact contact[maxc];
+    int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
     for(size_t i = 0; i < numc; i++) {
         const dReal *v = dBodyGetLinearVel(b2); // grouser vel
         dCalcVectorCross3(contact[i].fdir1, contact[i].geom.normal, v);
@@ -129,8 +146,9 @@ void Environment::nearCallbackWheelGrouser(dGeomID o1, dGeomID o2) {
 void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
-    dContact contact[MAX_CONTACTS];
-    int numc = dCollide(o1, o2, MAX_CONTACTS, &contact[0].geom, sizeof(dContact));
+    int maxc = getMaxContacts(o1, o2);
+    dContact contact[maxc];
+    int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
     for(size_t i = 0; i < numc; i++) {
         const dReal *v = dBodyGetLinearVel(b1); // grouser vel
         dCalcVectorCross3(contact[i].fdir1, contact[i].geom.normal, v);
@@ -149,8 +167,9 @@ void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
 void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
-    dContact contact[MAX_CONTACTS];
-    int numc = dCollide(o1, o2, MAX_CONTACTS, &contact[0].geom, sizeof(dContact));
+    int maxc = getMaxContacts(o1, o2);
+    dContact contact[maxc];
+    int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
     for(size_t i = 0; i < numc; i++) {
         contact[i].surface.mode = dContactBounce | dContactSoftCFM;
         contact[i].surface.bounce = 0.5;

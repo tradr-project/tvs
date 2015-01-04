@@ -37,36 +37,47 @@
 #include "OMPLTVSEnvironment.h"
 #include <boost/lexical_cast.hpp>
 
-unsigned int ompl::control::OMPLTVSEnvironment::getMaxContacts(dGeomID /*geom1*/, dGeomID /*geom2*/) const
-{
-    return maxContacts_;
+ompl::control::OMPLTVSEnvironment::OMPLTVSEnvironment(Environment *env)
+: stepSize_(0.05), maxControlSteps_(500), minControlSteps_(10), env_(env) {
 }
 
-bool ompl::control::OMPLTVSEnvironment::isValidCollision(dGeomID /*geom1*/, dGeomID /*geom2*/, const dContact& /*contact*/) const
-{
+ompl::control::OMPLTVSEnvironment::~OMPLTVSEnvironment() {
+}
+
+unsigned int ompl::control::OMPLTVSEnvironment::getControlDimension(void) const {
+    return 2;
+}
+
+void ompl::control::OMPLTVSEnvironment::getControlBounds(std::vector<double> &lower, std::vector<double> &upper) const {
+    static double maxVel = 1.5;
+    lower.resize(2);
+    lower[0] = -maxVel;
+    lower[1] = -maxVel;
+    
+    upper.resize(2);
+    upper[0] = maxVel;
+    upper[1] = maxVel;
+}
+
+void ompl::control::OMPLTVSEnvironment::applyControl(const double *control) const {
+    env_->v->setTrackVelocities(control[0], control[1]);
+}
+
+bool ompl::control::OMPLTVSEnvironment::isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact) const {
+    if(env_->isCatPair(Category::GROUSER, Category::TERRAIN, &o1, &o2))
+        return true;
+    if(env_->isCatPair(Category::WHEEL, Category::GROUSER, &o1, &o2))
+        return true;
     return false;
 }
 
-void ompl::control::OMPLTVSEnvironment::setupContact(dGeomID /*geom1*/, dGeomID /*geom2*/, dContact &contact) const
-{
-    contact.surface.mode = dContactBounce | dContactSoftCFM;
-    contact.surface.mu = 0.1;
-    contact.surface.mu2 = 0;
-    contact.surface.bounce = 0.01;
-    contact.surface.bounce_vel = 0.001;
-    contact.surface.soft_cfm = 0.01;
+unsigned int ompl::control::OMPLTVSEnvironment::getMaxContacts(dGeomID geom1, dGeomID geom2) const {
+    return env_->getMaxContacts(geom1, geom2);
 }
 
-std::string ompl::control::OMPLTVSEnvironment::getGeomName(dGeomID geom) const
-{
-    std::map<dGeomID, std::string>::const_iterator it = geomNames_.find(geom);
-    if (it == geomNames_.end())
-        return boost::lexical_cast<std::string>(reinterpret_cast<unsigned long>(geom));
-    else
-        return it->second;
+void ompl::control::OMPLTVSEnvironment::setupContact(dGeomID o1, dGeomID o2, dContact& contact) const {
+    contact.surface.mode = dContactSoftCFM | dContactApprox1;
+    contact.surface.mu = 0.9;
+    contact.surface.soft_cfm = 0.2;
 }
 
-void ompl::control::OMPLTVSEnvironment::setGeomName(dGeomID geom, const std::string &name)
-{
-    geomNames_[geom] = name;
-}

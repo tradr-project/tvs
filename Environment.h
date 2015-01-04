@@ -10,6 +10,9 @@
 #define WORLD_H_INCLUDED
 
 #include <ode/ode.h>
+#include <string>
+#include <map>
+#include <boost/lexical_cast.hpp>
 #include "TrackedVehicle.h"
 #include "PointCloud.h"
 
@@ -26,10 +29,16 @@ public:
     
     bool badCollision;
     
+    std::map<dGeomID, std::string> geomNames;
+    
     Environment();
     virtual ~Environment();
     void create();
     void destroy();
+    std::string getGeomName(dGeomID geom) const;
+    void setGeomName(dGeomID geom, const std::string &name);
+    int getMaxContacts(dGeomID o1, dGeomID o2);
+    bool isCatPair(unsigned long cat1, unsigned long cat2, dGeomID *o1, dGeomID *o2);
     void nearCallback(dGeomID o1, dGeomID o2);
     void nearCallbackWheelGrouser(dGeomID o1, dGeomID o2);
     void nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2);
