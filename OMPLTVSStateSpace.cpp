@@ -165,10 +165,12 @@ void ompl::control::OMPLTVSStateSpace::setDefaultBounds()
         setVolumeBounds(bounds1);
     }
     
-    // limit all velocities to 1 m/s, 1 rad/s, respectively
-    bounds1.setLow(-1);
-    bounds1.setHigh(1);
+    bounds1.setLow(-2);
+    bounds1.setHigh(2);
     setLinearVelocityBounds(bounds1);
+    
+    bounds1.setLow(-M_PI_2);
+    bounds1.setHigh(M_PI_2);
     setAngularVelocityBounds(bounds1);
 }
 
