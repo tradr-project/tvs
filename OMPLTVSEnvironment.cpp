@@ -64,7 +64,7 @@ void ompl::control::OMPLTVSEnvironment::applyControl(const double *control) cons
 }
 
 bool ompl::control::OMPLTVSEnvironment::isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact) const {
-    return env_->isValidCollision(o1, o2);
+    return env_->isValidCollision(o1, o2, contact);
 }
 
 unsigned int ompl::control::OMPLTVSEnvironment::getMaxContacts(dGeomID geom1, dGeomID geom2) const {
