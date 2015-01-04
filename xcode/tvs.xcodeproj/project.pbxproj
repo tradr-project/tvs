@@ -18,7 +18,6 @@
 		CE7B050B1A4220280022D473 /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE7B05091A4220280022D473 /* Environment.cpp */; };
 		CEA84B841A4219FA000AA8FB /* Heightfield.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B741A4219FA000AA8FB /* Heightfield.cpp */; };
 		CEA84B851A4219FA000AA8FB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B761A4219FA000AA8FB /* main.cpp */; };
-		CEA84B861A4219FA000AA8FB /* Planner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B771A4219FA000AA8FB /* Planner.cpp */; };
 		CEA84B871A4219FA000AA8FB /* PointCloud.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B791A4219FA000AA8FB /* PointCloud.cpp */; };
 		CEA84B881A4219FA000AA8FB /* Track.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7B1A4219FA000AA8FB /* Track.cpp */; };
 		CEA84B891A4219FA000AA8FB /* TrackedVehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7D1A4219FA000AA8FB /* TrackedVehicle.cpp */; };
@@ -64,8 +63,6 @@
 		CEA84B741A4219FA000AA8FB /* Heightfield.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Heightfield.cpp; path = ../Heightfield.cpp; sourceTree = "<group>"; };
 		CEA84B751A4219FA000AA8FB /* Heightfield.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Heightfield.h; path = ../Heightfield.h; sourceTree = "<group>"; };
 		CEA84B761A4219FA000AA8FB /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
-		CEA84B771A4219FA000AA8FB /* Planner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Planner.cpp; path = ../Planner.cpp; sourceTree = "<group>"; };
-		CEA84B781A4219FA000AA8FB /* Planner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Planner.h; path = ../Planner.h; sourceTree = "<group>"; };
 		CEA84B791A4219FA000AA8FB /* PointCloud.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PointCloud.cpp; path = ../PointCloud.cpp; sourceTree = "<group>"; };
 		CEA84B7A1A4219FA000AA8FB /* PointCloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PointCloud.h; path = ../PointCloud.h; sourceTree = "<group>"; };
 		CEA84B7B1A4219FA000AA8FB /* Track.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Track.cpp; path = ../Track.cpp; sourceTree = "<group>"; };
@@ -138,8 +135,6 @@
 				CEA84B741A4219FA000AA8FB /* Heightfield.cpp */,
 				CEA84B751A4219FA000AA8FB /* Heightfield.h */,
 				CEA84B761A4219FA000AA8FB /* main.cpp */,
-				CEA84B771A4219FA000AA8FB /* Planner.cpp */,
-				CEA84B781A4219FA000AA8FB /* Planner.h */,
 				CEA84B791A4219FA000AA8FB /* PointCloud.cpp */,
 				CEA84B7A1A4219FA000AA8FB /* PointCloud.h */,
 				CEA84B7B1A4219FA000AA8FB /* Track.cpp */,
@@ -220,7 +215,6 @@
 				CE067A531A43581F0046E5EF /* ODEUtils.cpp in Sources */,
 				CE7B050B1A4220280022D473 /* Environment.cpp in Sources */,
 				CEA84B881A4219FA000AA8FB /* Track.cpp in Sources */,
-				CEA84B861A4219FA000AA8FB /* Planner.cpp in Sources */,
 				CE46E4281A56F08D00D11EFE /* OMPLTVSSimpleSetup.cpp in Sources */,
 				CEA84B841A4219FA000AA8FB /* Heightfield.cpp in Sources */,
 				CE46E4271A56F08D00D11EFE /* OMPLTVSEnvironment.cpp in Sources */,
