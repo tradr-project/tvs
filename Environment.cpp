@@ -14,13 +14,14 @@
 #include <cmath>
 #include <iostream>
 #include <drawstuff/drawstuff.h>
+#include <ompl/util/Console.h>
 
 static const dVector3 center = {3,3,0};
 static const dVector3 extents = {7,7,7};
 static const dReal limit = 8.0;
 
 Environment::Environment() {
-    this->v = new TrackedVehicle(0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0.4);
+    this->v = new TrackedVehicle("robot", 0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0.4);
 #if defined(USE_PCL)
     this->pcl = new PointCloud("pcd_0000.ds.0.3.xyz");
     this->pcl->filterFar(center, limit);
@@ -38,7 +39,11 @@ Environment::~Environment() {
 
 void Environment::create() {
     this->world = dWorldCreate();
+#if 0
     this->space = dQuadTreeSpaceCreate(0, center, extents, 6);
+#else
+    this->space = dHashSpaceCreate(0);
+#endif
     this->contactGroup = dJointGroupCreate(0);
     dWorldSetGravity(this->world, 0, 0, -9.81);
     //dWorldSetERP(this->world, 0.7);
@@ -48,6 +53,7 @@ void Environment::create() {
     dWorldSetAutoDisableFlag(this->world, 1);
 
     this->planeGeom = dCreatePlane(this->space, 0, 0, 1, 0); // (a, b, c)' (x, y, z) = d
+    setGeomName(this->planeGeom, "worldPlane");
     dGeomSetCategoryBits(this->planeGeom, Category::TERRAIN);
     dGeomSetCollideBits(this->planeGeom, Category::GROUSER | Category::OBSTACLE);
 
@@ -217,8 +223,12 @@ void Environment::evaluateCollisionNearCallback(dGeomID o1, dGeomID o2) {
     dContact contact[1];  // one contact is sufficient
     int numc = dCollide(o1, o2, 1, &contact[0].geom, sizeof(dContact));
     // flag collision is there is really a collision and is of those not allowed
-    if(numc > 0 && !isValidCollision(o1, o2, contact[0]))
+    if(numc > 0 && !isValidCollision(o1, o2, contact[0])) {
         badCollision = true;
+        OMPL_INFORM("Collision between %s (%s) and %s (%s)",
+                    getGeomName(o1).c_str(), dClassGetName(dGeomGetClass(o1)),
+                    getGeomName(o2).c_str(), dClassGetName(dGeomGetClass(o2)));
+    }
 }
 
 bool Environment::evaluateCollision() {

@@ -16,7 +16,7 @@
 
 #define DRIVING_WHEEL_FRONT
 
-Track::Track(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset) {
+Track::Track(const std::string& name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset) : name(name_) {
     this->m = new TrackKinematicModel(radius1_, radius2_, distance_, numGrousers_, grouserHeight_, trackDepth_);
     this->density = 1.0;
     this->grouserBody = new dBodyID[numGrousers_];
@@ -44,6 +44,7 @@ void Track::create(Environment *environment) {
 
     for(int w = 0; w < 2; w++) {
         this->wheelGeom[w] = dCreateCylinder(environment->space, this->m->radius[w], this->m->trackDepth);
+        environment->setGeomName(this->wheelGeom[w], this->name + ".wheel" + boost::lexical_cast<std::string>(w));
         dGeomSetCategoryBits(this->wheelGeom[w], Category::WHEEL);
         dGeomSetCollideBits(this->wheelGeom[w], Category::GROUSER);
         dMassSetCylinder(&this->wheelMass[w], this->density, 3, this->m->radius[w], this->m->trackDepth);
@@ -72,6 +73,7 @@ void Track::create(Environment *environment) {
 
     for(size_t i = 0; i < this->m->numGrousers; i++) {
         this->grouserGeom[i] = dCreateBox(environment->space, this->m->grouserHeight, this->m->trackDepth, f * this->m->grouserWidth);
+        environment->setGeomName(this->grouserGeom[i], this->name + ".grouser" + boost::lexical_cast<std::string>(i));
         dGeomSetCategoryBits(this->grouserGeom[i], Category::GROUSER);
         dGeomSetCollideBits(this->grouserGeom[i], Category::TERRAIN | Category::WHEEL | Category::OBSTACLE);
         dMassSetBox(&this->grouserMass[i], 10 * this->density, this->m->grouserHeight, this->m->trackDepth, f * this->m->grouserWidth);

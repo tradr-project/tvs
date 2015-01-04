@@ -40,6 +40,32 @@
 #include <limits>
 #include <queue>
 
+ompl::control::OMPLTVSStateProjectionEvaluator::OMPLTVSStateProjectionEvaluator(const ompl::base::StateSpace *space) : base::ProjectionEvaluator(space)
+{
+}
+
+unsigned int ompl::control::OMPLTVSStateProjectionEvaluator::getDimension(void) const
+{
+    return 3;
+}
+
+void ompl::control::OMPLTVSStateProjectionEvaluator::defaultCellSizes(void)
+{
+    cellSizes_.resize(3);
+    cellSizes_[0] = 1;
+    cellSizes_[1] = 1;
+    cellSizes_[2] = 1;
+}
+
+void ompl::control::OMPLTVSStateProjectionEvaluator::project(const ompl::base::State *state, ompl::base::EuclideanProjection &projection) const
+{
+    const double *pos = state->as<OMPLTVSStateSpace::StateType>()->getPosition();
+    projection[0] = pos[0];
+    projection[1] = pos[1];
+    projection[2] = pos[2];
+}
+
+
 ompl::control::OMPLTVSStateSpace::OMPLTVSStateSpace(const OMPLTVSEnvironmentPtr &env,
                                                   double positionWeight, double linVelWeight, double angVelWeight, double orientationWeight) :
     base::CompoundStateSpace(), env_(env)
@@ -176,15 +202,15 @@ bool ompl::control::OMPLTVSStateSpace::satisfiesBoundsExceptRotation(const State
 }
 
 void ompl::control::OMPLTVSStateSpace::setVolumeBounds(const base::RealVectorBounds &bounds) {
-    components_[0 /* position */]->as<base::RealVectorStateSpace>()->setBounds(bounds);
+    components_[COMPONENT_POSITION]->as<base::RealVectorStateSpace>()->setBounds(bounds);
 }
 
 void ompl::control::OMPLTVSStateSpace::setLinearVelocityBounds(const base::RealVectorBounds &bounds) {
-    components_[1 /* lin vel */]->as<base::RealVectorStateSpace>()->setBounds(bounds);
+    components_[COMPONENT_LINEAR_VELOCITY]->as<base::RealVectorStateSpace>()->setBounds(bounds);
 }
 
 void ompl::control::OMPLTVSStateSpace::setAngularVelocityBounds(const base::RealVectorBounds &bounds) {
-    components_[2 /* ang vel */]->as<base::RealVectorStateSpace>()->setBounds(bounds);
+    components_[COMPONENT_ANGULAR_VELOCITY]->as<base::RealVectorStateSpace>()->setBounds(bounds);
 }
 
 ompl::base::State* ompl::control::OMPLTVSStateSpace::allocState() const
@@ -267,10 +293,10 @@ void ompl::control::OMPLTVSStateSpace::readState(base::State *state) const
     const dReal *vel = env_->env_->v->getLinearVel();
     const dReal *ang = env_->env_->v->getAngularVel();
     const dReal *rot = env_->env_->v->getQuaternion();
-    double *s_pos = s->as<base::RealVectorStateSpace::StateType>(0)->values;
-    double *s_vel = s->as<base::RealVectorStateSpace::StateType>(1)->values;
-    double *s_ang = s->as<base::RealVectorStateSpace::StateType>(2)->values;
-    base::SO3StateSpace::StateType &s_rot = *s->as<base::SO3StateSpace::StateType>(3);
+    double *s_pos = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_POSITION)->values;
+    double *s_vel = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_LINEAR_VELOCITY)->values;
+    double *s_ang = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_ANGULAR_VELOCITY)->values;
+    base::SO3StateSpace::StateType &s_rot = *s->as<base::SO3StateSpace::StateType>(COMPONENT_ROTATION);
 
     for (int j = 0; j < 3; ++j)
     {
@@ -291,10 +317,10 @@ void ompl::control::OMPLTVSStateSpace::writeState(const base::State *state) cons
 {
     const StateType *s = state->as<StateType>();
 
-    double *s_pos = s->as<base::RealVectorStateSpace::StateType>(0)->values;
-    double *s_vel = s->as<base::RealVectorStateSpace::StateType>(1)->values;
-    double *s_ang = s->as<base::RealVectorStateSpace::StateType>(2)->values;
-    const base::SO3StateSpace::StateType &s_rot = *s->as<base::SO3StateSpace::StateType>(3);
+    double *s_pos = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_POSITION)->values;
+    double *s_vel = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_LINEAR_VELOCITY)->values;
+    double *s_ang = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_ANGULAR_VELOCITY)->values;
+    const base::SO3StateSpace::StateType &s_rot = *s->as<base::SO3StateSpace::StateType>(COMPONENT_ROTATION);
     
     dQuaternion q;
     q[0] = s_rot.w;
@@ -305,4 +331,19 @@ void ompl::control::OMPLTVSStateSpace::writeState(const base::State *state) cons
     env_->env_->v->setPosition(s_pos);
     env_->env_->v->setVel(s_vel, s_ang);
     env_->env_->v->setQuaternion(q);
+}
+
+double ompl::control::OMPLTVSStateSpace::distance(const base::State *s1, const base::State *s2) const
+{
+    const double *p1 = s1->as<OMPLTVSStateSpace::StateType>()->getPosition();
+    const double *p2 = s2->as<OMPLTVSStateSpace::StateType>()->getPosition();
+    double dx = fabs(p1[0] - p2[0]);
+    double dy = fabs(p1[1] - p2[1]);
+    double dz = fabs(p1[2] - p2[2]);
+    return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+void ompl::control::OMPLTVSStateSpace::registerProjections(void)
+{
+    registerDefaultProjection(base::ProjectionEvaluatorPtr(new OMPLTVSStateProjectionEvaluator(this)));
 }

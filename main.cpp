@@ -57,10 +57,10 @@ int main(int argc, char **argv) {
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
 
-#if 0
     environment = new Environment();
     environment->create();
 
+#if 0
     dsFunctions fn;
     fn.version = DS_VERSION;
     fn.start = &start;
@@ -69,13 +69,12 @@ int main(int argc, char **argv) {
     fn.command = &command;
     fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
     dsSimulationLoop(argc, argv, 800, 600, &fn);
+#else
+    plan(environment);
+#endif
     
     environment->destroy();
     delete environment;
-    
-#else
-    plan();
-#endif
     
     dCloseODE();
 

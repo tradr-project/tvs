@@ -46,23 +46,41 @@ namespace ompl
 {
     namespace control
     {
+        /** \brief Defines how we project a state to a lower dimensional (euclidean) space */
+        class OMPLTVSStateProjectionEvaluator : public base::ProjectionEvaluator
+        {
+        public:
+            OMPLTVSStateProjectionEvaluator(const base::StateSpace *space);
+            virtual unsigned int getDimension(void) const;
+            virtual void defaultCellSizes(void);
+            virtual void project(const base::State *state, base::EuclideanProjection &projection) const;
+        };
 
+        
         /** \brief State space representing OMPLTVS states */
         class OMPLTVSStateSpace : public base::CompoundStateSpace
         {
         public:
 
-            enum
-                {
-                    /** \brief Index of bit in StateType::collision indicating whether it is known if a state is in collision or not. Initially this is 0. The value of this bit is updated by OMPLTVSStateSpace::evaluateCollision() and OMPLTVSControlSpace::propagate(). */
-                    STATE_COLLISION_KNOWN_BIT = 0,
-                    /** \brief Index of bit in StateType::collision indicating whether a state is in collision or not. Initially the value of this field is unspecified. The value gains meaning (1 or 0) when OMPLTVSStateSpace::STATE_COLLISION_KNOWN_BIT becomes 1. The value of this bit is updated by OMPLTVSStateSpace::evaluateCollision() and OMPLTVSControlSpace::propagate(). A value of 1 implies that there is no collision for which OMPLTVSEnvironment::isValidCollision() returns false. */
-                    STATE_COLLISION_VALUE_BIT = 1,
-                    /** \brief Index of bit in StateType::collision indicating whether it is known if a state is in valid or not. Initially this is 0. The value of this bit is updated by OMPLTVSStateValidityChecker::isValid(). This bit is only used if the OMPLTVSStateValidityChecker is used. */
-                    STATE_VALIDITY_KNOWN_BIT = 2,
-                    /** \brief Index of bit in StateType::collision indicating whether a state is valid or not. Initially the value of this field is unspecified. The value gains meaning (1 or 0) when OMPLTVSStateSpace::STATE_VALIDITY_KNOWN_BIT becomes 1. The value of this bit is updated by OMPLTVSEnvironment::isValid(). A value of 1 implies that a state is valid. This bit is only used if the OMPLTVSStateValidityChecker is used. */
-                    STATE_VALIDITY_VALUE_BIT = 3,
-                };
+            enum {
+                /** \brief Index of bit in StateType::collision indicating whether it is known if a state is in collision or not. Initially this is 0. The value of this bit is updated by OMPLTVSStateSpace::evaluateCollision() and OMPLTVSControlSpace::propagate(). */
+                STATE_COLLISION_KNOWN_BIT = 0,
+                /** \brief Index of bit in StateType::collision indicating whether a state is in collision or not. Initially the value of this field is unspecified. The value gains meaning (1 or 0) when OMPLTVSStateSpace::STATE_COLLISION_KNOWN_BIT becomes 1. The value of this bit is updated by OMPLTVSStateSpace::evaluateCollision() and OMPLTVSControlSpace::propagate(). A value of 1 implies that there is no collision for which OMPLTVSEnvironment::isValidCollision() returns false. */
+                STATE_COLLISION_VALUE_BIT = 1,
+                /** \brief Index of bit in StateType::collision indicating whether it is known if a state is in valid or not. Initially this is 0. The value of this bit is updated by OMPLTVSStateValidityChecker::isValid(). This bit is only used if the OMPLTVSStateValidityChecker is used. */
+                STATE_VALIDITY_KNOWN_BIT = 2,
+                /** \brief Index of bit in StateType::collision indicating whether a state is valid or not. Initially the value of this field is unspecified. The value gains meaning (1 or 0) when OMPLTVSStateSpace::STATE_VALIDITY_KNOWN_BIT becomes 1. The value of this bit is updated by OMPLTVSEnvironment::isValid(). A value of 1 implies that a state is valid. This bit is only used if the OMPLTVSStateValidityChecker is used. */
+                STATE_VALIDITY_VALUE_BIT = 3,
+            };
+            
+            enum {
+                COMPONENT_POSITION = 0,
+                COMPONENT_LINEAR_VELOCITY,
+                COMPONENT_ANGULAR_VELOCITY,
+                COMPONENT_ROTATION,
+                
+                NUM_COMPONENTS
+            };
 
             /** \brief OMPLTVS State. This is a compound state that allows accessing the properties of the bodies the state space is constructed for. */
             class StateType : public base::CompoundStateSpace::StateType
@@ -72,52 +90,52 @@ namespace ompl
                 {
                 }
 
-                /** \brief Get the position (x, y, z) of the body at index \e body */
-                const double* getBodyPosition(unsigned int body) const
+                /** \brief Get the position (x, y, z) */
+                const double* getPosition() const
                 {
-                    return as<base::RealVectorStateSpace::StateType>(body * 4)->values;
+                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_POSITION)->values;
                 }
 
-                /** \brief Get the position (x, y, z) of the body at index \e body */
-                double* getBodyPosition(unsigned int body)
+                /** \brief Get the position (x, y, z) */
+                double* getPosition()
                 {
-                    return as<base::RealVectorStateSpace::StateType>(body * 4)->values;
+                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_POSITION)->values;
                 }
 
-                /** \brief Get the quaternion of the body at index \e body */
-                const base::SO3StateSpace::StateType& getBodyRotation(unsigned int body) const
+                /** \brief Get the quaternion */
+                const base::SO3StateSpace::StateType& getRotation() const
                 {
-                    return *as<base::SO3StateSpace::StateType>(body * 4 + 3);
+                    return *as<base::SO3StateSpace::StateType>(COMPONENT_ROTATION);
                 }
 
-                /** \brief Get the quaternion of the body at index \e body */
-                base::SO3StateSpace::StateType& getBodyRotation(unsigned int body)
+                /** \brief Get the quaternion */
+                base::SO3StateSpace::StateType& getRotation()
                 {
-                    return *as<base::SO3StateSpace::StateType>(body * 4 + 3);
+                    return *as<base::SO3StateSpace::StateType>(COMPONENT_ROTATION);
                 }
 
-                /** \brief Get the linear velocity (x, y, z) of the body at index \e body */
-                const double* getBodyLinearVelocity(unsigned int body) const
+                /** \brief Get the linear velocity (x, y, z) */
+                const double* getLinearVelocity() const
                 {
-                    return as<base::RealVectorStateSpace::StateType>(body * 4 + 1)->values;
+                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_LINEAR_VELOCITY)->values;
                 }
 
-                /** \brief Get the linear velocity (x, y, z) of the body at index \e body */
-                double* getBodyLinearVelocity(unsigned int body)
+                /** \brief Get the linear velocity (x, y, z) */
+                double* getLinearVelocity()
                 {
-                    return as<base::RealVectorStateSpace::StateType>(body * 4 + 1)->values;
+                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_LINEAR_VELOCITY)->values;
                 }
 
-                /** \brief Get the angular velocity (x, y, z) of the body at index \e body */
-                const double* getBodyAngularVelocity(unsigned int body) const
+                /** \brief Get the angular velocity (x, y, z) */
+                const double* getAngularVelocity() const
                 {
-                    return as<base::RealVectorStateSpace::StateType>(body * 4 + 2)->values;
+                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_ANGULAR_VELOCITY)->values;
                 }
 
-                /** \brief Get the angular velocity (x, y, z) of the body at index \e body */
-                double* getBodyAngularVelocity(unsigned int body)
+                /** \brief Get the angular velocity (x, y, z) */
+                double* getAngularVelocity()
                 {
-                    return as<base::RealVectorStateSpace::StateType>(body * 4 + 2)->values;
+                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_ANGULAR_VELOCITY)->values;
                 }
 
                 /** \brief Flag containing information about state validity.
@@ -200,6 +218,9 @@ namespace ompl
             /** \brief Fill the OMPLTVSStateSpace::STATE_COLLISION_VALUE_BIT of StateType::collision member of a state, if unspecified.
                 Return the value value of that bit. */
             virtual bool evaluateCollision(const base::State *source) const;
+            
+            virtual double distance(const base::State *s1, const base::State *s2) const;
+            virtual void registerProjections(void);
 
         protected:
 

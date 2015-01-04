@@ -9,6 +9,7 @@
 #ifndef TRACK_H_INCLUDED
 #define TRACK_H_INCLUDED
 
+#include <string>
 #include <ode/ode.h>
 #include "TrackKinematicModel.h"
 
@@ -16,6 +17,7 @@ class Environment;
 
 class Track {
 public:
+    std::string name;
     TrackKinematicModel *m;
     dReal density;
     dBodyID trackBody;
@@ -34,7 +36,7 @@ public:
     dReal zOffset;
     size_t numGrousers;
 
-    Track(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset);
+    Track(const std::string& name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~Track();
     void create(Environment *environment);
     void destroy();

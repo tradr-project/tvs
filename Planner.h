@@ -9,7 +9,9 @@
 #ifndef PLANNER_H_INCLUDED
 #define PLANNER_H_INCLUDED
 
-void plan();
+#include "Environment.h"
+
+void plan(Environment *penv);
 
 #endif // PLANNER_H_INCLUDED
 

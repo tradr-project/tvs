@@ -9,6 +9,7 @@
 #ifndef TRACKED_VEHICLE_H_INCLUDED
 #define TRACKED_VEHICLE_H_INCLUDED
 
+#include <string>
 #include <ode/ode.h>
 #include "Track.h"
 
@@ -16,6 +17,7 @@ class Environment;
 
 class TrackedVehicle {
 public:
+    std::string name;
     Track *leftTrack;
     Track *rightTrack;
     dReal density;
@@ -32,7 +34,7 @@ public:
     dBodyID *bodyArray;
     size_t bodyArraySize;
     
-    TrackedVehicle(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset);
+    TrackedVehicle(const std::string& name_, dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~TrackedVehicle();
     void create(Environment *environment);
     void destroy();

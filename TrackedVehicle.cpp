@@ -14,14 +14,14 @@
 #include <drawstuff/drawstuff.h>
 #include "ODEUtils.h"
 
-TrackedVehicle::TrackedVehicle(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset) {
+TrackedVehicle::TrackedVehicle(const std::string& name_, dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset) : name(name_) {
     this->density = 1.0;
     this->width = vehicleWidth_;
     const size_t numGrousers = 30;
     const dReal grouserHeight = 0.01;
     dReal w = this->width + 2 * trackWidth_;
-    this->leftTrack = new Track(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset - wheelBase_ * 0.5, yOffset - 0.5 * w, zOffset);
-    this->rightTrack = new Track(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset - wheelBase_ * 0.5, yOffset + 0.5 * w, zOffset);
+    this->leftTrack = new Track(name + ".leftTrack", wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset - wheelBase_ * 0.5, yOffset - 0.5 * w, zOffset);
+    this->rightTrack = new Track(name + ".rightTrack", wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset - wheelBase_ * 0.5, yOffset + 0.5 * w, zOffset);
     this->xOffset = xOffset;
     this->yOffset = yOffset;
     this->zOffset = zOffset;
@@ -37,6 +37,7 @@ void TrackedVehicle::create(Environment *environment) {
     this->rightTrack->create(environment);
     this->vehicleBody = dBodyCreate(environment->world);
     this->vehicleGeom = dCreateBox(environment->space, this->leftTrack->m->distance, this->width, this->leftTrack->m->radius[0]);
+    environment->setGeomName(this->vehicleGeom, name + ".vehicleGeom");
     dMassSetBox(&this->vehicleMass, this->density, this->leftTrack->m->distance, this->width, this->leftTrack->m->radius[0]);
     dGeomSetCategoryBits(this->vehicleGeom, Category::OBSTACLE);
     dGeomSetCollideBits(this->vehicleGeom, Category::OBSTACLE | Category::TERRAIN);
