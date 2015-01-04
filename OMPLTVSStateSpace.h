@@ -185,6 +185,10 @@ namespace ompl
                 (position, linear and agular velocities) */
             bool satisfiesBoundsExceptRotation(const StateType *state) const;
 
+            void setVolumeBounds(const base::RealVectorBounds &bounds);
+            void setLinearVelocityBounds(const base::RealVectorBounds &bounds);
+            void setAngularVelocityBounds(const base::RealVectorBounds &bounds);
+
             virtual base::State* allocState() const;
             virtual void freeState(base::State *state) const;
             virtual void copyState(base::State *destination, const base::State *source) const;

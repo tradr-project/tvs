@@ -136,14 +136,14 @@ void ompl::control::OMPLTVSStateSpace::setDefaultBounds()
         bounds1.low[2] = mZ - dz;
         bounds1.high[2] = MZ + dz;
 
-        components_[0 /* position */]->as<base::RealVectorStateSpace>()->setBounds(bounds1);
+        setVolumeBounds(bounds1);
     }
     
     // limit all velocities to 1 m/s, 1 rad/s, respectively
     bounds1.setLow(-1);
     bounds1.setHigh(1);
-    components_[1 /* lin vel */]->as<base::RealVectorStateSpace>()->setBounds(bounds1);
-    components_[2 /* ang vel */]->as<base::RealVectorStateSpace>()->setBounds(bounds1);
+    setLinearVelocityBounds(bounds1);
+    setAngularVelocityBounds(bounds1);
 }
 
 void ompl::control::OMPLTVSStateSpace::copyState(base::State *destination, const base::State *source) const
@@ -173,6 +173,18 @@ bool ompl::control::OMPLTVSStateSpace::satisfiesBoundsExceptRotation(const State
             if (!components_[i]->satisfiesBounds(state->components[i]))
                 return false;
     return true;
+}
+
+void ompl::control::OMPLTVSStateSpace::setVolumeBounds(const base::RealVectorBounds &bounds) {
+    components_[0 /* position */]->as<base::RealVectorStateSpace>()->setBounds(bounds);
+}
+
+void ompl::control::OMPLTVSStateSpace::setLinearVelocityBounds(const base::RealVectorBounds &bounds) {
+    components_[1 /* lin vel */]->as<base::RealVectorStateSpace>()->setBounds(bounds);
+}
+
+void ompl::control::OMPLTVSStateSpace::setAngularVelocityBounds(const base::RealVectorBounds &bounds) {
+    components_[2 /* ang vel */]->as<base::RealVectorStateSpace>()->setBounds(bounds);
 }
 
 ompl::base::State* ompl::control::OMPLTVSStateSpace::allocState() const
