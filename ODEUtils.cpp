@@ -2,7 +2,7 @@
 //  ODEUtils.cpp
 //  tvs
 //
-//  Created by Main User on 18/12/2014.
+//  Created by Federico Ferri on 18/12/2014.
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
@@ -40,6 +40,12 @@ void dRigidBodyArraySetRotation(dBodyID *bodyArray, size_t arraySize, dBodyID ce
         dBodySetPosition(bodyArray[i], p1[0], p1[1], p1[2]);
         dBodySetRotation(bodyArray[i], R1);
     }
+}
+
+void dRigidBodyArraySetQuaternion(dBodyID *bodyArray, size_t arraySize, dBodyID center, const dReal *q) {
+    dMatrix3 R;
+    dRfromQ(R, q);
+    dRigidBodyArraySetRotation(bodyArray, arraySize, center, R);
 }
 
 void dRigidBodyArraySetLinearVel(dBodyID *bodyArray, size_t arraySize, dBodyID center, dReal lx, dReal ly, dReal lz) {
