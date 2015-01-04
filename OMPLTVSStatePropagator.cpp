@@ -48,55 +48,6 @@ ompl::control::OMPLTVSStatePropagator::OMPLTVSStatePropagator(const SpaceInforma
         throw Exception("OMPLTVS State Space needed for OMPLTVSStatePropagator");
 }
 
-/// @cond IGNORE
-namespace ompl
-{
-
-    struct CallbackParam
-    {
-        const control::OMPLTVSEnvironment *env;
-        bool                              collision;
-    };
-
-    void nearCallback(void *data, dGeomID o1, dGeomID o2)
-    {
-        dBodyID b1 = dGeomGetBody(o1);
-        dBodyID b2 = dGeomGetBody(o2);
-
-        if (b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
-
-        CallbackParam *cp = reinterpret_cast<CallbackParam*>(data);
-
-        const unsigned int maxContacts = cp->env->getMaxContacts(o1, o2);
-        if (maxContacts <= 0) return;
-
-        dContact *contact = new dContact[maxContacts];
-
-        for (unsigned int i = 0; i < maxContacts; ++i)
-            cp->env->setupContact(o1, o2, contact[i]);
-
-        if (int numc = dCollide(o1, o2, maxContacts, &contact[0].geom, sizeof(dContact)))
-        {
-            for (int i = 0; i < numc; ++i)
-            {
-                dJointID c = dJointCreateContact(cp->env->world_, cp->env->contactGroup_, contact + i);
-                dJointAttach(c, b1, b2);
-                bool valid = cp->env->isValidCollision(o1, o2, contact[i]);
-                if (!valid)
-                    cp->collision = true;
-                if (cp->env->verboseContacts_)
-                {
-                    OMPL_DEBUG("%s contact between %s and %s", (valid ? "Valid" : "Invalid"),
-                             cp->env->getGeomName(o1).c_str(), cp->env->getGeomName(o1).c_str());
-                }
-            }
-        }
-
-        delete[] contact;
-    }
-}
-/// @endcond
-
 void ompl::control::OMPLTVSStatePropagator::propagate(const base::State *state, const Control *control, const double duration, base::State *result) const
 {
     env_->mutex_.lock();
@@ -107,16 +58,13 @@ void ompl::control::OMPLTVSStatePropagator::propagate(const base::State *state, 
     // apply the controls
     env_->applyControl(control->as<RealVectorControlSpace::ControlType>()->values);
 
-    // created contacts as needed
-    CallbackParam cp = { env_.get(), false };
-    for (unsigned int i = 0 ; i < env_->collisionSpaces_.size() ; ++i)
-        dSpaceCollide(env_->collisionSpaces_[i],  &cp, &nearCallback);
-
-    // propagate one step forward
-    dWorldQuickStep(env_->world_, (const dReal)duration);
-
-    // remove created contacts
-    dJointGroupEmpty(env_->contactGroup_);
+    bool collision = false;
+    for(double t = 0; t < duration; t += env_->stepSize_) {
+        if(env_->env_->step(env_->stepSize_, 1)) {
+            collision = true;
+            break;
+        }
+    }
 
     // read the final state from the OMPLTVS world
     si_->getStateSpace()->as<OMPLTVSStateSpace>()->readState(result);
@@ -126,7 +74,7 @@ void ompl::control::OMPLTVSStatePropagator::propagate(const base::State *state, 
     // update the collision flag for the start state, if needed
     if (!(state->as<OMPLTVSStateSpace::StateType>()->collision & (1 << OMPLTVSStateSpace::STATE_COLLISION_KNOWN_BIT)))
     {
-        if (cp.collision)
+        if (collision)
             state->as<OMPLTVSStateSpace::StateType>()->collision &= (1 << OMPLTVSStateSpace::STATE_COLLISION_VALUE_BIT);
         state->as<OMPLTVSStateSpace::StateType>()->collision &= (1 << OMPLTVSStateSpace::STATE_COLLISION_KNOWN_BIT);
     }
