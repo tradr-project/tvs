@@ -13,7 +13,7 @@
 #include <ode/ode.h>
 #include <drawstuff/drawstuff.h>
 #include "Environment.h"
-#include "Planner.h"
+#include "OMPLTVSSimpleSetup.h"
 
 Environment *environment;
 
@@ -70,7 +70,18 @@ int main(int argc, char **argv) {
     fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
     dsSimulationLoop(argc, argv, 800, 600, &fn);
 #else
-    plan(environment);
+    ompl::control::OMPLTVSEnvironmentPtr env(new ompl::control::OMPLTVSEnvironment(environment));
+    ompl::base::StateSpacePtr stateSpace(new ompl::control::OMPLTVSStateSpace(env));
+    ompl::control::OMPLTVSSimpleSetup ss(stateSpace);
+    ss.setGoalRegion(2, 2, 0, 0.1);
+    ompl::base::RealVectorBounds bounds(3);
+    bounds.setLow(-4);
+    bounds.setHigh(4);
+    stateSpace->as<ompl::control::OMPLTVSStateSpace>()->setVolumeBounds(bounds);
+    ss.setup();
+    if (ss.solve(10)) {
+        ss.getSolutionPath().asGeometric().printAsMatrix(std::cout);
+    }
 #endif
     
     environment->destroy();
