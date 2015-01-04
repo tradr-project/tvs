@@ -42,7 +42,8 @@ CXXFLAGS = $(CFLAGS)
 
 .PHONY: clean all
 
-OBJS := Heightfield.o PointCloud.o Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o Planner.o ODEUtils.o OMPLEnvironment.o OMPLGoalRegion.o OMPLStateProjectionEvaluator.o OMPLStateSpace.o OMPLStatePropagator.o main.o
+OBJS := Heightfield.o PointCloud.o Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o main.o OMPLTVSControlSpace.o OMPLTVSEnvironment.o OMPLTVSSimpleSetup.o OMPLTVSStatePropagator.o OMPLTVSStateSpace.o OMPLTVSStateValidityChecker.o
+
 TARGET = main
 
 all: $(TARGET)
