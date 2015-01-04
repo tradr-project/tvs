@@ -64,11 +64,7 @@ void ompl::control::OMPLTVSEnvironment::applyControl(const double *control) cons
 }
 
 bool ompl::control::OMPLTVSEnvironment::isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact) const {
-    if(env_->isCatPair(Category::GROUSER, Category::TERRAIN, &o1, &o2))
-        return true;
-    if(env_->isCatPair(Category::WHEEL, Category::GROUSER, &o1, &o2))
-        return true;
-    return false;
+    return env_->isValidCollision(o1, o2);
 }
 
 unsigned int ompl::control::OMPLTVSEnvironment::getMaxContacts(dGeomID geom1, dGeomID geom2) const {

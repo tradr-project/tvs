@@ -38,6 +38,13 @@ public:
     void destroy();
     void draw();
     void setTrackVelocities(dReal left, dReal right);
+    const dReal * getPosition();
+    const dReal * getLinearVel();
+    const dReal * getAngularVel();
+    const dReal * getQuaternion();
+    void setPosition(const dReal *p);
+    void setVel(const dReal *linear, const dReal *angular);
+    void setQuaternion(const dReal *q);
 };
 
 #endif // TRACKED_VEHICLE_H_INCLUDED

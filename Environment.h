@@ -39,11 +39,14 @@ public:
     void setGeomName(dGeomID geom, const std::string &name);
     int getMaxContacts(dGeomID o1, dGeomID o2);
     bool isCatPair(unsigned long cat1, unsigned long cat2, dGeomID *o1, dGeomID *o2);
+    bool isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact);
     void nearCallback(dGeomID o1, dGeomID o2);
     void nearCallbackWheelGrouser(dGeomID o1, dGeomID o2);
     void nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2);
     void nearCallbackDefault(dGeomID o1, dGeomID o2);
     void step(dReal stepSize, int simulationStepsPerFrame);
+    void evaluateCollisionNearCallback(dGeomID o1, dGeomID o2);
+    bool evaluateCollision();
     void draw();
 };
 

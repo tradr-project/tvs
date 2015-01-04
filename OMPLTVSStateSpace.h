@@ -159,27 +159,12 @@ namespace ompl
                 return env_;
             }
 
-            /** \brief Get the number of bodies state is maintained for */
-            unsigned int getNrBodies() const
-            {
-                return env_->stateBodies_.size();
-            }
-
             /** \brief By default, the volume bounds enclosing the
               geometry of the environment are computed to include all
               objects in the spaces collision checking is performed
               (env.collisionSpaces_). The linear and angular velocity
               bounds are set as -1 to 1 for each dimension. */
             void setDefaultBounds();
-
-            /** \brief Set the bounds for each of the position subspaces */
-            void setVolumeBounds(const base::RealVectorBounds &bounds);
-
-            /** \brief Set the bounds for each of the linear velocity subspaces */
-            void setLinearVelocityBounds(const base::RealVectorBounds &bounds);
-
-            /** \brief Set the bounds for each of the angular velocity subspaces */
-            void setAngularVelocityBounds(const base::RealVectorBounds &bounds);
 
             /** \brief Read the parameters of the OMPLTVS bodies and store
                 them in \e state. */

@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <drawstuff/drawstuff.h>
+#include "ODEUtils.h"
 
 TrackedVehicle::TrackedVehicle(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset) {
     this->density = 1.0;
@@ -86,4 +87,32 @@ void TrackedVehicle::draw() {
 void TrackedVehicle::setTrackVelocities(dReal left, dReal right) {
     this->leftTrack->setVelocity(left);
     this->rightTrack->setVelocity(right);
+}
+
+const dReal * TrackedVehicle::getPosition() {
+    return dBodyGetPosition(this->vehicleBody);
+}
+
+const dReal * TrackedVehicle::getLinearVel() {
+    return dBodyGetLinearVel(this->vehicleBody);
+}
+
+const dReal * TrackedVehicle::getAngularVel() {
+    return dBodyGetAngularVel(this->vehicleBody);
+}
+
+const dReal * TrackedVehicle::getQuaternion() {
+    return dBodyGetQuaternion(this->vehicleBody);
+}
+
+void TrackedVehicle::setPosition(const dReal *p) {
+    dRigidBodyArraySetPosition(this->bodyArray, this->bodyArraySize, this->vehicleBody, p[0], p[1], p[2]);
+}
+
+void TrackedVehicle::setVel(const dReal *linear, const dReal *angular) {
+    dRigidBodyArraySetVel(this->bodyArray, this->bodyArraySize, this->vehicleBody, linear[0], linear[1], linear[2], angular[0], angular[1], angular[2]);
+}
+
+void TrackedVehicle::setQuaternion(const dReal *q) {
+    dRigidBodyArraySetQuaternion(this->bodyArray, this->bodyArraySize, this->vehicleBody, q);
 }

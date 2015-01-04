@@ -92,10 +92,6 @@ int Environment::getMaxContacts(dGeomID o1, dGeomID o2) {
     return 10;
 }
 
-static void nearCallbackWrapper(void *data, dGeomID o1, dGeomID o2) {
-    reinterpret_cast<Environment *>(data)->nearCallback(o1, o2);
-}
-
 bool Environment::isCatPair(unsigned long cat1, unsigned long cat2, dGeomID *o1, dGeomID *o2) {
     unsigned long catBits1 = dGeomGetCategoryBits(*o1);
     unsigned long catBits2 = dGeomGetCategoryBits(*o2);
@@ -113,6 +109,18 @@ bool Environment::isCatPair(unsigned long cat1, unsigned long cat2, dGeomID *o1,
     return false;
 }
 
+bool Environment::isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact) {
+    if(isCatPair(Category::GROUSER, Category::TERRAIN, &o1, &o2))
+        return true;
+    if(isCatPair(Category::WHEEL, Category::GROUSER, &o1, &o2))
+        return true;
+    return false;
+}
+
+static void nearCallbackWrapper(void *data, dGeomID o1, dGeomID o2) {
+    reinterpret_cast<Environment *>(data)->nearCallback(o1, o2);
+}
+
 void Environment::nearCallback(dGeomID o1, dGeomID o2) {
     if(isCatPair(Category::WHEEL, Category::GROUSER, &o1, &o2))
         nearCallbackWheelGrouser(o1, o2);
@@ -125,6 +133,7 @@ void Environment::nearCallback(dGeomID o1, dGeomID o2) {
 void Environment::nearCallbackWheelGrouser(dGeomID o1, dGeomID o2) {
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
+    if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
     int maxc = getMaxContacts(o1, o2);
     dContact contact[maxc];
     int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
@@ -146,6 +155,7 @@ void Environment::nearCallbackWheelGrouser(dGeomID o1, dGeomID o2) {
 void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
+    if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
     int maxc = getMaxContacts(o1, o2);
     dContact contact[maxc];
     int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
@@ -167,6 +177,7 @@ void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
 void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
+    if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
     int maxc = getMaxContacts(o1, o2);
     dContact contact[maxc];
     int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
@@ -178,7 +189,7 @@ void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
         contact[i].surface.mu = 5.0;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
-        this->badCollision = true;
+        //this->badCollision = true; // check moved in another callback
     }
 }
 
@@ -192,6 +203,27 @@ void Environment::step(dReal stepSize, int simulationStepsPerFrame) {
         // remove all contact joints
         dJointGroupEmpty(this->contactGroup);
     }
+}
+
+static void evaluateCollisionNearCallbackWrapper(void *data, dGeomID o1, dGeomID o2) {
+    reinterpret_cast<Environment *>(data)->evaluateCollisionNearCallback(o1, o2);
+}
+
+void Environment::evaluateCollisionNearCallback(dGeomID o1, dGeomID o2) {
+    dBodyID b1 = dGeomGetBody(o1);
+    dBodyID b2 = dGeomGetBody(o2);
+    if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
+    dContact contact[1];  // one contact is sufficient
+    int numc = dCollide(o1, o2, 1, &contact[0].geom, sizeof(dContact));
+    // flag collision is there is really a collision and is of those not allowed
+    if(numc > 0 && !isValidCollision(o1, o2, contact[0]))
+        badCollision = true;
+}
+
+bool Environment::evaluateCollision() {
+    this->badCollision = false;
+    dSpaceCollide(this->space, this, &evaluateCollisionNearCallbackWrapper);
+    return this->badCollision;
 }
 
 void Environment::draw() {
