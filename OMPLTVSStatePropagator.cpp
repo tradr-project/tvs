@@ -60,7 +60,7 @@ void ompl::control::OMPLTVSStatePropagator::propagate(const base::State *state, 
 
     bool collision = false;
     for(double t = 0; t < duration; t += env_->stepSize_) {
-        if(env_->env_->step(env_->stepSize_ / 4.0, 4)) {
+        if(env_->env_->step(env_->stepSize_, 4)) {
             collision = true;
             break;
         }

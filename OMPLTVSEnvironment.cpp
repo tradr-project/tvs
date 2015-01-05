@@ -38,7 +38,7 @@
 #include <boost/lexical_cast.hpp>
 
 ompl::control::OMPLTVSEnvironment::OMPLTVSEnvironment(Environment *env)
-: stepSize_(0.04), maxControlSteps_(500), minControlSteps_(10), env_(env) {
+: stepSize_(0.01), maxControlSteps_(100), minControlSteps_(10), env_(env) {
 }
 
 ompl::control::OMPLTVSEnvironment::~OMPLTVSEnvironment() {
