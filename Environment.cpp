@@ -21,7 +21,7 @@ static const dVector3 extents = {7,7,7};
 static const dReal limit = 8.0;
 
 Environment::Environment() {
-    this->v = new TrackedVehicle("robot", 0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0.4);
+    this->v = new TrackedVehicle("robot", 0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0*0.4);
 #if defined(USE_PCL)
     this->pcl = new PointCloud("pcd_0000.ds.0.3.xyz");
     this->pcl->filterFar(center, limit);
@@ -155,6 +155,8 @@ void Environment::nearCallbackWheelGrouser(dGeomID o1, dGeomID o2) {
         contact[i].surface.mu2 = dInfinity;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
+        if(!isValidCollision(o1, o2, contact[i]))
+            this->badCollision = true;
     }
 }
 
@@ -177,6 +179,8 @@ void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
         contact[i].surface.mu2 = 1.3;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
+        if(!isValidCollision(o1, o2, contact[i]))
+            this->badCollision = true;
     }
 }
 
@@ -195,7 +199,8 @@ void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
         contact[i].surface.mu = 5.0;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
-        this->badCollision = true;
+        if(!isValidCollision(o1, o2, contact[i]))
+            this->badCollision = true;
     }
 }
 
