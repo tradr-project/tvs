@@ -21,7 +21,7 @@ void dRigidBodyArraySetPosition(dBodyID *bodyArray, size_t arraySize, dBodyID ce
     }
 }
 
-void dRigidBodyArraySetRotation(dBodyID *bodyArray, size_t arraySize, dBodyID center, const dReal *Rs) {
+void dRigidBodyArraySetRotationRelative(dBodyID *bodyArray, size_t arraySize, dBodyID center, const dReal *Rs) {
     const dReal *p0 = dBodyGetPosition(center);
     const dReal *R0 = dBodyGetRotation(center);
     dMatrix3 R0Rs;
@@ -36,6 +36,25 @@ void dRigidBodyArraySetRotation(dBodyID *bodyArray, size_t arraySize, dBodyID ce
         dVector3 p1, pi_p0, R0RsR0t__pi_p0;
         dOP(pi_p0, -, pi, p0);
         dMULTIPLY0_331(R0RsR0t__pi_p0, R0RsR0t, pi_p0);
+        dOP(p1, +, R0RsR0t__pi_p0, p0);
+        dBodySetPosition(bodyArray[i], p1[0], p1[1], p1[2]);
+        dBodySetRotation(bodyArray[i], R1);
+    }
+}
+
+void dRigidBodyArraySetRotation(dBodyID *bodyArray, size_t arraySize, dBodyID center, const dReal *Rs) {
+    const dReal *p0 = dBodyGetPosition(center);
+    const dReal *R0 = dBodyGetRotation(center);
+    dMatrix3 RsR0t;
+    dMULTIPLY2_333(RsR0t, Rs, R0);
+    for(size_t i = 0; i < arraySize; i++) {
+        const dReal *pi = dBodyGetPosition(bodyArray[i]);
+        const dReal *Ri = dBodyGetRotation(bodyArray[i]);
+        dMatrix3 R1;
+        dMULTIPLY0_333(R1, RsR0t, Ri);
+        dVector3 p1, pi_p0, R0RsR0t__pi_p0;
+        dOP(pi_p0, -, pi, p0);
+        dMULTIPLY0_331(R0RsR0t__pi_p0, RsR0t, pi_p0);
         dOP(p1, +, R0RsR0t__pi_p0, p0);
         dBodySetPosition(bodyArray[i], p1[0], p1[1], p1[2]);
         dBodySetRotation(bodyArray[i], R1);
