@@ -38,7 +38,7 @@
 #include <boost/lexical_cast.hpp>
 
 ompl::control::OMPLTVSEnvironment::OMPLTVSEnvironment(Environment *env)
-: stepSize_(0.01), maxControlSteps_(100), minControlSteps_(10), env_(env) {
+: stepSize_(0.5), maxControlSteps_(5), minControlSteps_(1), env_(env) {
 }
 
 ompl::control::OMPLTVSEnvironment::~OMPLTVSEnvironment() {
@@ -49,7 +49,7 @@ unsigned int ompl::control::OMPLTVSEnvironment::getControlDimension(void) const 
 }
 
 void ompl::control::OMPLTVSEnvironment::getControlBounds(std::vector<double> &lower, std::vector<double> &upper) const {
-    static double maxVel = 1.5;
+    static double maxVel = 5.0;
     lower.resize(2);
     lower[0] = -maxVel;
     lower[1] = -maxVel;
@@ -62,18 +62,3 @@ void ompl::control::OMPLTVSEnvironment::getControlBounds(std::vector<double> &lo
 void ompl::control::OMPLTVSEnvironment::applyControl(const double *control) const {
     env_->v->setTrackVelocities(control[0], control[1]);
 }
-
-bool ompl::control::OMPLTVSEnvironment::isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact) const {
-    return env_->isValidCollision(o1, o2, contact);
-}
-
-unsigned int ompl::control::OMPLTVSEnvironment::getMaxContacts(dGeomID geom1, dGeomID geom2) const {
-    return env_->getMaxContacts(geom1, geom2);
-}
-
-void ompl::control::OMPLTVSEnvironment::setupContact(dGeomID o1, dGeomID o2, dContact& contact) const {
-    contact.surface.mode = dContactSoftCFM | dContactApprox1;
-    contact.surface.mu = 0.9;
-    contact.surface.soft_cfm = 0.2;
-}
-
