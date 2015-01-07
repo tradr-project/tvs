@@ -20,4 +20,8 @@ void dRigidBodyArrayAddLinearVel(dBodyID *bodyArray, size_t arraySize, dBodyID c
 void dRigidBodyArraySetVel(dBodyID *bodyArray, size_t arraySize, dBodyID center, dReal lx, dReal ly, dReal lz, dReal ax, dReal ay, dReal az);
 const char * dClassGetName(int c);
 
+struct dLine {
+    dVector3 a, b;
+};
+
 #endif /* defined(__tvs__ODEUtils__) */
