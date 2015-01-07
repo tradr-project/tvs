@@ -132,6 +132,8 @@ void Environment::nearCallback(dGeomID o1, dGeomID o2) {
         nearCallbackWheelGrouser(o1, o2);
     else if(isCatPair(Category::GROUSER, Category::TERRAIN, &o1, &o2))
         nearCallbackGrouserTerrain(o1, o2);
+    else if(isCatPair(Category::GROUSER, Category::G_GUIDE, &o1, &o2))
+        nearCallbackGrouserGuide(o1, o2);
     else
         nearCallbackDefault(o1, o2);
 }
@@ -181,6 +183,24 @@ void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
         dJointAttach(c, b1, b2);
         if(!isValidCollision(o1, o2, contact[i]))
             this->badCollision = true;
+    }
+}
+
+void Environment::nearCallbackGrouserGuide(dGeomID o1, dGeomID o2) {
+    dBodyID b1 = dGeomGetBody(o1);
+    dBodyID b2 = dGeomGetBody(o2);
+    if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
+    int maxc = 3; // 3 should be enough  //getMaxContacts(o1, o2);
+    dContact contact[maxc];
+    int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
+    for(size_t i = 0; i < numc; i++) {
+        contact[i].surface.mode = dContactBounce | dContactSoftCFM;
+        contact[i].surface.bounce = 0.5;
+        contact[i].surface.bounce_vel = 0.2;
+        contact[i].surface.soft_cfm = 0.0001;
+        contact[i].surface.mu = 0;
+        dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
+        dJointAttach(c, b1, b2);
     }
 }
 

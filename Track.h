@@ -26,7 +26,7 @@ public:
     dMass wheelMass[2];
     dGeomID wheelGeom[2];
     dJointID wheelJoint[2];
-    //dJointID guideJoint;
+    dGeomID guideGeom[2];
     dBodyID *grouserBody;
     dGeomID *grouserGeom;
     dJointID *grouserJoint;

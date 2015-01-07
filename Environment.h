@@ -43,6 +43,7 @@ public:
     void nearCallback(dGeomID o1, dGeomID o2);
     void nearCallbackWheelGrouser(dGeomID o1, dGeomID o2);
     void nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2);
+    void nearCallbackGrouserGuide(dGeomID o1, dGeomID o2);
     void nearCallbackDefault(dGeomID o1, dGeomID o2);
     bool step(dReal stepSize, int simulationStepsPerFrame);
     void evaluateCollisionNearCallback(dGeomID o1, dGeomID o2);
@@ -53,8 +54,9 @@ public:
 enum Category {
     TERRAIN  = 1 << 0,
     GROUSER  = 1 << 1,
-    WHEEL    = 1 << 2,
-    OBSTACLE = 1 << 3
+    G_GUIDE  = 1 << 2,
+    WHEEL    = 1 << 3,
+    OBSTACLE = 1 << 4
 };
 
 #endif // WORLD_H_INCLUDED

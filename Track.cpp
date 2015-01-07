@@ -41,6 +41,7 @@ void Track::create(Environment *environment) {
     this->trackBody = dBodyCreate(environment->world);
     dMassSetBox(&this->trackMass, this->density, this->m->distance, this->m->radius[1], this->m->trackDepth);
     dBodySetMass(this->trackBody, &this->trackMass);
+    dBodySetPosition(this->trackBody, this->xOffset, this->yOffset, this->zOffset);
 
     for(int w = 0; w < 2; w++) {
         this->wheelGeom[w] = dCreateCylinder(environment->space, this->m->radius[w], this->m->trackDepth);
@@ -59,6 +60,14 @@ void Track::create(Environment *environment) {
         dJointAttach(this->wheelJoint[w], this->trackBody, this->wheelBody[w]);
         dJointSetHingeAnchor(this->wheelJoint[w], this->xOffset + w * this->m->distance, this->yOffset, this->zOffset);
         dJointSetHingeAxis(this->wheelJoint[w], 0, 1, 0);
+        // this guide should avoid tracks slipping out of their designed place
+        dReal gh = 2 * (0.2 + std::max(this->m->radius[0], this->m->radius[1]));
+        dReal gw = gh + this->m->distance;
+        this->guideGeom[w] = dCreateBox(environment->space, gw, 0.01, gh);
+        dGeomSetCategoryBits(this->guideGeom[w], Category::G_GUIDE);
+        dGeomSetCollideBits(this->guideGeom[w], Category::GROUSER);
+        dGeomSetBody(this->guideGeom[w], this->trackBody);
+        dGeomSetOffsetPosition(this->guideGeom[w], 0.5 * this->m->distance, (0.02 + this->m->trackDepth) * (w - 0.5), 0.0);
     }
     
 #ifdef DRIVING_WHEEL_FRONT
@@ -124,6 +133,16 @@ void Track::draw() {
         dGeomCylinderGetParams(this->wheelGeom[w], &radius, &length);
         dsDrawCylinderD(pos, R, length, radius);
     }
+    
+#ifdef DEBUG_DRAW_GROUSER_GUIDES
+    for(int w = 0; w < 2; w++) {
+        const dReal *pos = dGeomGetPosition(this->guideGeom[w]);
+        const dReal *R = dGeomGetRotation(this->guideGeom[w]);
+        dReal sides[3];
+        dGeomBoxGetLengths(this->guideGeom[w], sides);
+        dsDrawBoxD(pos, R, sides);
+    }
+#endif
 
     for(size_t i = 0; i < this->m->numGrousers; i++) {
         const dReal *pos = dGeomGetPosition(this->grouserGeom[i]);

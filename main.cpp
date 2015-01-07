@@ -59,8 +59,8 @@ void command(int cmd) {
             case 'a': environment->v->setTrackVelocities(-V,  V); break;
             case 'w': environment->v->setTrackVelocities(-V, -V); break;
             case 's': environment->v->setTrackVelocities( V,  V); break;
-            case 'e': environment->v->setTrackVelocities( 0, -V); break;
-            case 'q': environment->v->setTrackVelocities(-V,  0); break;
+            case 'e': environment->v->setTrackVelocities(-0.5*V, -2.0*V); break;
+            case 'q': environment->v->setTrackVelocities(-2.0*V, -0.5*V); break;
             case ' ': environment->v->setTrackVelocities( 0,  0); break;
         }
     } else if(mode == PLANNER) {
