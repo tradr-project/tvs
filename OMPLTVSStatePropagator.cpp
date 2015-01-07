@@ -59,8 +59,9 @@ void ompl::control::OMPLTVSStatePropagator::propagate(const base::State *state, 
     env_->applyControl(control->as<RealVectorControlSpace::ControlType>()->values);
 
     bool collision = false;
-    for(double t = 0; t < duration; t += env_->stepSize_) {
-        if(env_->env_->step(env_->stepSize_, 4)) {
+    const double simStepSize = 0.01;
+    for(double t = 0; t < duration; t += simStepSize) {
+        if(env_->env_->step(simStepSize, 10)) {
             collision = true;
             break;
         }
@@ -69,6 +70,17 @@ void ompl::control::OMPLTVSStatePropagator::propagate(const base::State *state, 
     // read the final state from the OMPLTVS world
     si_->getStateSpace()->as<OMPLTVSStateSpace>()->readState(result);
 
+    std::cout << "u=("
+    << control->as<RealVectorControlSpace::ControlType>()->values[0] << ", "
+    << control->as<RealVectorControlSpace::ControlType>()->values[1] << ") "
+    << "for DT=" << duration << " from xt=("
+    << state->as<OMPLTVSStateSpace::StateType>()->getPosition()[0] << ", "
+    << state->as<OMPLTVSStateSpace::StateType>()->getPosition()[1] << ", "
+    << state->as<OMPLTVSStateSpace::StateType>()->getPosition()[2] << ") to xt+1=("
+    << result->as<OMPLTVSStateSpace::StateType>()->getPosition()[0] << ", "
+    << result->as<OMPLTVSStateSpace::StateType>()->getPosition()[1] << ", "
+    << result->as<OMPLTVSStateSpace::StateType>()->getPosition()[2] << ")" << std::endl;
+    
     env_->mutex_.unlock();
 
     // update the collision flag for the start state, if needed
