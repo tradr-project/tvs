@@ -71,10 +71,10 @@ void Track::create(Environment *environment) {
     }
     
 #ifdef DRIVING_WHEEL_FRONT
-    dJointSetHingeParam(this->wheelJoint[0], dParamFMax, 10);
+    dJointSetHingeParam(this->wheelJoint[0], dParamFMax, 2.5);
 #endif
 #ifdef DRIVING_WHEEL_BACK
-    dJointSetHingeParam(this->wheelJoint[1], dParamFMax, 10);
+    dJointSetHingeParam(this->wheelJoint[1], dParamFMax, 2.5);
 #endif
 
     // grouser shrink/grow factor
@@ -93,15 +93,6 @@ void Track::create(Environment *environment) {
         this->m->computeGrouserTransform3D(i, pos, R);
         dBodySetPosition(this->grouserBody[i], this->xOffset + pos[0], this->yOffset + pos[1], this->zOffset + pos[2]);
         dBodySetRotation(this->grouserBody[i], R);
-
-        // Disregard for now.
-        // if(i == 0) {
-        //     t->guideJoint = dJointCreateDHinge(environment->world, 0);
-        //     dJointAttach(t->guideJoint, t->wheel1Body, t->grouserBody[i]);
-        //     dJointSetDHingeAxis(t->guideJoint, 0, 1, 0);
-        //     dJointSetDHingeAnchor1(t->guideJoint, xOffset, yOffset, zOffset);
-        //     dJointSetDHingeAnchor2(t->guideJoint, xOffset + pos[0], yOffset + pos[1], zOffset + pos[2]);
-        // }
     }
 
     for(size_t i = 0; i < this->m->numGrousers; i++) {

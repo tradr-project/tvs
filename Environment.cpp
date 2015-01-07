@@ -178,7 +178,7 @@ void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
         contact[i].surface.bounce_vel = 0.1;
         contact[i].surface.soft_cfm = 0.0001;
         contact[i].surface.mu = 5.0;
-        contact[i].surface.mu2 = 1.3;
+        contact[i].surface.mu2 = 0.5;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
         if(!isValidCollision(o1, o2, contact[i]))
