@@ -349,3 +349,9 @@ void ompl::control::OMPLTVSStateSpace::registerProjections(void)
 {
     registerDefaultProjection(base::ProjectionEvaluatorPtr(new OMPLTVSStateProjectionEvaluator(this)));
 }
+
+double ompl::control::OMPLTVSStateSpace::getMeasure() const
+{
+    ompl::base::RealVectorBounds b = components_[COMPONENT_POSITION]->as<base::RealVectorStateSpace>()->getBounds();
+    return b.getVolume();
+}

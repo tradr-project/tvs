@@ -222,6 +222,8 @@ namespace ompl
             virtual double distance(const base::State *s1, const base::State *s2) const;
             virtual void registerProjections(void);
 
+            virtual double getMeasure() const;
+            
         protected:
 
             /** \brief Representation of the OMPLTVS parameters OMPL needs to plan */
