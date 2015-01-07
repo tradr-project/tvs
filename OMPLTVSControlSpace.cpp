@@ -38,6 +38,21 @@
 #include <ompl/util/Exception.h>
 #include <ompl/util/Console.h>
 
+void ompl::control::OMPLTVSControlSampler::sample(ompl::control::Control *control)
+{
+    const ompl::base::RealVectorBounds &bounds = space_->as<ompl::control::RealVectorControlSpace>()->getBounds();
+    ompl::control::RealVectorControlSpace::ControlType *rcontrol = control->as<ompl::control::RealVectorControlSpace::ControlType>();
+    int l = 0, r = 0;
+    while(l == 0 && r == 0) {
+        l = rng_.uniformInt(-1, 1);
+        r = rng_.uniformInt(-1, 1);
+    }
+    double f = (bounds.high[0] - bounds.low[0]) / 2.0;
+    rcontrol->values[0] = f * l;
+    rcontrol->values[1] = f * r;
+    std::cout << "OMPLTVSControlSampler sampled (" << rcontrol->values[0] << ", " << rcontrol->values[1] << ")" << std::endl;
+}
+
 /// @cond IGNORE
 namespace ompl
 {

@@ -45,7 +45,19 @@ namespace ompl
 
     namespace control
     {
+        class OMPLTVSControlSampler : public ompl::control::ControlSampler
+        {
+        public:
+            OMPLTVSControlSampler(const ompl::control::ControlSpace *space) : ompl::control::ControlSampler(space)
+            {
+            }
+            
+            virtual void sample(ompl::control::Control *control);
 
+        protected:
+            ompl::RNG rng_;
+        };
+        
         /** \brief Representation of controls applied in OMPLTVS
             environments. This is an array of double values. */
         class OMPLTVSControlSpace : public RealVectorControlSpace
@@ -66,7 +78,11 @@ namespace ompl
             {
                 return stateSpace_->as<OMPLTVSStateSpace>()->getEnvironment();
             }
-
+            
+            virtual ControlSamplerPtr allocDefaultControlSampler(void) const
+            {
+                return ControlSamplerPtr(new OMPLTVSControlSampler(this));
+            }
         };
     }
 
