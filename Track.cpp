@@ -64,6 +64,7 @@ void Track::create(Environment *environment) {
         dReal gh = 2 * (0.2 + std::max(this->m->radius[0], this->m->radius[1]));
         dReal gw = gh + this->m->distance;
         this->guideGeom[w] = dCreateBox(environment->space, gw, 0.01, gh);
+        environment->setGeomName(this->guideGeom[w], this->name + ".grouser_guide" + boost::lexical_cast<std::string>(w));
         dGeomSetCategoryBits(this->guideGeom[w], Category::G_GUIDE);
         dGeomSetCollideBits(this->guideGeom[w], Category::GROUSER);
         dGeomSetBody(this->guideGeom[w], this->trackBody);
