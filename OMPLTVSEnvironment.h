@@ -91,20 +91,6 @@ namespace ompl
                 the forces/torques/velocities for bodies in the
                 simulation based on control inputs.*/
             virtual void applyControl(const double *control) const;
-
-            /** \brief Decide whether a collision is a valid one or
-                not. In some cases, collisions between some bodies can
-                be allowed. By default, this function always returns
-                false, making all collisions invalid */
-            virtual bool isValidCollision(dGeomID geom1, dGeomID geom2, const dContact& contact) const;
-
-            /** \brief Get the maximum number of contacts to set up
-                between two colliding geoms. By default, this just
-                returns the member variable maxContacts */
-            virtual unsigned int getMaxContacts(dGeomID geom1, dGeomID geom2) const;
-            
-            /** \brief Parameters to set when contacts are created between \e geom1 and \e geom2. */
-            virtual void setupContact(dGeomID geom1, dGeomID geom2, dContact &contact) const;
         };
     }
 }
