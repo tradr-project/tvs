@@ -70,6 +70,7 @@ void ompl::control::OMPLTVSStatePropagator::propagate(const base::State *state, 
     // read the final state from the OMPLTVS world
     si_->getStateSpace()->as<OMPLTVSStateSpace>()->readState(result);
 
+#if 0
     std::cout << "u=("
     << control->as<RealVectorControlSpace::ControlType>()->values[0] << ", "
     << control->as<RealVectorControlSpace::ControlType>()->values[1] << ") "
@@ -80,6 +81,9 @@ void ompl::control::OMPLTVSStatePropagator::propagate(const base::State *state, 
     << result->as<OMPLTVSStateSpace::StateType>()->getPosition()[0] << ", "
     << result->as<OMPLTVSStateSpace::StateType>()->getPosition()[1] << ", "
     << result->as<OMPLTVSStateSpace::StateType>()->getPosition()[2] << ")" << std::endl;
+#endif
+    
+    env_->addToSearchTree(state, result); // vor visualization purposes
     
     env_->mutex_.unlock();
 

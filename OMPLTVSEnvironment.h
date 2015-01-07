@@ -38,8 +38,10 @@
 #define OMPL_EXTENSION_OMPLTVS_ENVIRONMENT_
 
 #include "Environment.h"
+#include "ODEUtils.h"
 
 #include <ompl/config.h>
+#include <ompl/base/State.h>
 #include <ompl/util/ClassForward.h>
 
 #include <ode/ode.h>
@@ -50,7 +52,6 @@ namespace ompl
 {
     namespace control
     {
-
         /// @cond IGNORE
         /** \brief Forward declaration of ompl::control::OMPLTVSEnvironment */
         OMPL_CLASS_FORWARD(OMPLTVSEnvironment);
@@ -91,6 +92,9 @@ namespace ompl
                 the forces/torques/velocities for bodies in the
                 simulation based on control inputs.*/
             virtual void applyControl(const double *control) const;
+            
+            std::vector<dLine> searchTree;
+            void addToSearchTree(const base::State *s1, const base::State *s2);
         };
     }
 }

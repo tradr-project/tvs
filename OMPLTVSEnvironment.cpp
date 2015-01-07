@@ -35,6 +35,7 @@
 /* Author: Ioan Sucan */
 
 #include "OMPLTVSEnvironment.h"
+#include "OMPLTVSStateSpace.h"
 #include <boost/lexical_cast.hpp>
 
 ompl::control::OMPLTVSEnvironment::OMPLTVSEnvironment(Environment *env)
@@ -61,4 +62,11 @@ void ompl::control::OMPLTVSEnvironment::getControlBounds(std::vector<double> &lo
 
 void ompl::control::OMPLTVSEnvironment::applyControl(const double *control) const {
     env_->v->setTrackVelocities(control[0], control[1]);
+}
+
+void ompl::control::OMPLTVSEnvironment::addToSearchTree(const ompl::base::State *s1, const ompl::base::State *s2)
+{
+    searchTree.resize(searchTree.size() + 1);
+    memcpy(searchTree.back().a, s1->as<ompl::control::OMPLTVSStateSpace::StateType>()->getPosition(), sizeof(dReal) * 3);
+    memcpy(searchTree.back().b, s2->as<ompl::control::OMPLTVSStateSpace::StateType>()->getPosition(), sizeof(dReal) * 3);
 }

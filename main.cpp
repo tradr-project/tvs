@@ -20,8 +20,9 @@ Environment *environment;
 int nstep = 0;
 ompl::control::PathControl *path;
 ompl::control::OMPLTVSStateSpace *ss;
+ompl::control::OMPLTVSEnvironmentPtr ompl_env;
 
-enum {SIMULATOR, PLANNER} mode = SIMULATOR;
+enum {SIMULATOR, PLANNER} mode = PLANNER;
 
 void start() {
     static float xyz[3] = {6.3286,-5.9263,1.7600};
@@ -31,6 +32,14 @@ void start() {
 
 void step(int pause) {
     environment->draw();
+    
+    if(mode == PLANNER) {
+        // draw search tree
+        for(std::vector<dLine>::iterator i = ompl_env->searchTree.begin(); i != ompl_env->searchTree.end(); i++) {
+            dsDrawLineD(i->a, i->b);
+        }
+    }
+    
     if(mode == SIMULATOR && !pause) {
         environment->step(0.01, 4);
         nstep++;
@@ -85,20 +94,20 @@ int main(int argc, char **argv) {
     bool run = true;
     
     if(mode == PLANNER) {
-        ompl::control::OMPLTVSEnvironmentPtr env(new ompl::control::OMPLTVSEnvironment(environment));
-        ompl::base::StateSpacePtr stateSpace(ss = new ompl::control::OMPLTVSStateSpace(env));
+        ompl_env = ompl::control::OMPLTVSEnvironmentPtr(new ompl::control::OMPLTVSEnvironment(environment));
+        ompl::base::StateSpacePtr stateSpace(ss = new ompl::control::OMPLTVSStateSpace(ompl_env));
         ompl::control::OMPLTVSSimpleSetup setup(stateSpace);
-        setup.setGoalRegion(2, 2, 0.301, 0.01);
+        setup.setGoalRegion(2, -4, 0.301, 0.1);
         ompl::base::RealVectorBounds bounds(3);
         bounds.setLow(-4);
         bounds.setHigh(4);
         stateSpace->as<ompl::control::OMPLTVSStateSpace>()->setVolumeBounds(bounds);
         setup.setup();
         if (setup.solve(60)) {
-            ompl::control::PathControl path1 = setup.getSolutionPath();
-            path = &path1;
+            path = new ompl::control::PathControl(setup.getSolutionPath());
+            std::cout << "SOLUTION LENGTH: " << path->getStateCount() << std::endl;
             setFrame(0);
-            //path.printAsMatrix(std::cout);
+            //path->printAsMatrix(std::cout);
         } else {
             std::cout << "SOLUTION NOT FOUND" << std::endl;
             run = false;
@@ -116,6 +125,7 @@ int main(int argc, char **argv) {
         dsSimulationLoop(argc, argv, 800, 600, &fn);
     }
     
+    if(path) delete path;
     environment->destroy();
     delete environment;
     
