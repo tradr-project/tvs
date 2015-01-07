@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
         ompl_env = ompl::control::OMPLTVSEnvironmentPtr(new ompl::control::OMPLTVSEnvironment(environment));
         ompl::base::StateSpacePtr stateSpace(ss = new ompl::control::OMPLTVSStateSpace(ompl_env));
         ompl::control::OMPLTVSSimpleSetup setup(stateSpace);
-        setup.setGoalRegion(2, -4, 0.301, 0.1);
+        setup.setGoalRegion(2, -4, 0.301, 0.75);
         ompl::base::RealVectorBounds bounds(3);
         bounds.setLow(-4);
         bounds.setHigh(4);
