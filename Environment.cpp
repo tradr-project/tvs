@@ -118,6 +118,8 @@ bool Environment::isCatPair(unsigned long cat1, unsigned long cat2, dGeomID *o1,
 bool Environment::isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact) {
     if(isCatPair(Category::GROUSER, Category::TERRAIN, &o1, &o2))
         return true;
+    if(isCatPair(Category::GROUSER, Category::G_GUIDE, &o1, &o2))
+        return true;
     if(isCatPair(Category::WHEEL, Category::GROUSER, &o1, &o2))
         return true;
     return false;
