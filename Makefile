@@ -1,5 +1,5 @@
-CFLAGS := -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -DPOINTCLOUDS_PATH=\"$(PWD)/pointclouds\" -I$(PWD)/../ode/include -I/opt/local/include
-LDLIBS := -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff -lstdc++ -L/opt/local/lib -lboost_system-mt -lompl
+CFLAGS := -std=c++11 -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -DPOINTCLOUDS_PATH=\"$(PWD)/pointclouds\" -I$(PWD)/../ode/include -I/opt/local/include
+LDLIBS := -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff -lstdc++ -L/opt/local/lib -lompl
 
 ifeq ($(OS),Windows_NT)
     CFLAGS += -DWIN32
@@ -23,7 +23,7 @@ else
 		ifneq ($(filter arm%,$(UNAME_P)),)
 			CFLAGS += -DARM
 		endif
-        LDLIBS += -lGL -lGLU -lglut -lX11 -lXxf86vm -lXrandr -lpthread -lXi
+        LDLIBS += -lGL -lGLU -lglut -lX11 -lXxf86vm -lXrandr -lpthread -lXi -lboost_system -lboost_thread
     endif
     ifeq ($(UNAME_S),Darwin)
         CFLAGS += -DOSX
@@ -34,7 +34,7 @@ else
 		ifneq ($(filter %86,$(UNAME_M)),)
 			CFLAGS += -DIA32
 		endif
-        LDLIBS += -framework Cocoa -framework CoreVideo -framework IOKit -framework OpenGL -framework GLUT
+        LDLIBS += -framework Cocoa -framework CoreVideo -framework IOKit -framework OpenGL -framework GLUT -lboost_system-mt -lboost_thread-mt
     endif
 endif
 
