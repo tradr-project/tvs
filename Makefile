@@ -24,6 +24,8 @@ else
 			CFLAGS += -DARM
 		endif
         LDLIBS += -lGL -lGLU -lglut -lX11 -lXxf86vm -lXrandr -lpthread -lXi -lboost_system -lboost_thread
+        CFLAGS += -I$(HOME)/omplapp/ompl/src
+        LDLIBS += -L$(HOME)/omplapp/build/Release/lib
     endif
     ifeq ($(UNAME_S),Darwin)
         CFLAGS += -DOSX
