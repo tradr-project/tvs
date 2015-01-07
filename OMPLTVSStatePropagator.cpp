@@ -56,7 +56,7 @@ void ompl::control::OMPLTVSStatePropagator::propagate(const base::State *state, 
     si_->getStateSpace()->as<OMPLTVSStateSpace>()->writeState(state);
 
     // apply the controls
-    env_->applyControl(control->as<RealVectorControlSpace::ControlType>()->values);
+    env_->applyControl(control->as<DiscreteControlSpace::ControlType>()->value);
 
     bool collision = false;
     const double simStepSize = 0.01;

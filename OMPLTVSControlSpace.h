@@ -37,7 +37,7 @@
 #ifndef OMPL_EXTENSION_OMPLTVS_CONTROL_SPACE_
 #define OMPL_EXTENSION_OMPLTVS_CONTROL_SPACE_
 
-#include <ompl/control/spaces/RealVectorControlSpace.h>
+#include <ompl/control/spaces/DiscreteControlSpace.h>
 #include "OMPLTVSStateSpace.h"
 
 namespace ompl
@@ -47,8 +47,8 @@ namespace ompl
     {
 
         /** \brief Representation of controls applied in OMPLTVS
-            environments. This is an array of double values. */
-        class OMPLTVSControlSpace : public RealVectorControlSpace
+            environments. This is a set of discrete motion primitives */
+        class OMPLTVSControlSpace : public DiscreteControlSpace
         {
         public:
 

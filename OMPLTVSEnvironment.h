@@ -82,16 +82,10 @@ namespace ompl
 
             virtual ~OMPLTVSEnvironment();
 
-            /** \brief Number of parameters (double values) needed to specify a control input */
-            virtual unsigned int getControlDimension() const;
-
-            /** \brief Get the control bounds -- the bounding box in which to sample controls */
-            virtual void getControlBounds(std::vector<double> &lower, std::vector<double> &upper) const;
-
             /** \brief Application of a control. This function sets
                 the forces/torques/velocities for bodies in the
-                simulation based on control inputs.*/
-            virtual void applyControl(const double *control) const;
+                simulation based on the specified control primitive (discrete).*/
+            virtual void applyControl(int control) const;
             
             std::vector<dLine> searchTree;
             void addToSearchTree(const base::State *s1, const base::State *s2);

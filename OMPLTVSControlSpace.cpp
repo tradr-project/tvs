@@ -51,11 +51,8 @@ namespace ompl
 /// @endcond
 
 ompl::control::OMPLTVSControlSpace::OMPLTVSControlSpace(const base::StateSpacePtr &stateSpace) :
-    RealVectorControlSpace(stateSpace, getOMPLTVSStateSpaceEnvironmentWithCheck(stateSpace)->getControlDimension())
+    DiscreteControlSpace(stateSpace, 0, 7)
 {
     setName("OMPLTVS" + getName());
     type_ = CONTROL_SPACE_TYPE_COUNT + 1;
-    base::RealVectorBounds bounds(dimension_);
-    getEnvironment()->getControlBounds(bounds.low, bounds.high);
-    setBounds(bounds);
 }

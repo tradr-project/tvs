@@ -143,10 +143,10 @@ void ompl::control::OMPLTVSSimpleSetup::playPath(const base::PathPtr &path, doub
     }
 }
 
-ompl::base::PathPtr ompl::control::OMPLTVSSimpleSetup::simulateControl(const double *control, unsigned int steps) const
+ompl::base::PathPtr ompl::control::OMPLTVSSimpleSetup::simulateControl(int control, unsigned int steps) const
 {
     Control *c = si_->allocControl();
-    memcpy(c->as<OMPLTVSControlSpace::ControlType>()->values, control, sizeof(double) * getControlSpace()->getDimension());
+    c->as<OMPLTVSControlSpace::ControlType>()->value = control;
     base::PathPtr path = simulateControl(c, steps);
     si_->freeControl(c);
     return path;

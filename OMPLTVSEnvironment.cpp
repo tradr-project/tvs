@@ -45,23 +45,23 @@ ompl::control::OMPLTVSEnvironment::OMPLTVSEnvironment(Environment *env)
 ompl::control::OMPLTVSEnvironment::~OMPLTVSEnvironment() {
 }
 
-unsigned int ompl::control::OMPLTVSEnvironment::getControlDimension(void) const {
-    return 2;
-}
-
-void ompl::control::OMPLTVSEnvironment::getControlBounds(std::vector<double> &lower, std::vector<double> &upper) const {
-    static double maxVel = 5.0;
-    lower.resize(2);
-    lower[0] = -maxVel;
-    lower[1] = -maxVel;
-    
-    upper.resize(2);
-    upper[0] = maxVel;
-    upper[1] = maxVel;
-}
-
-void ompl::control::OMPLTVSEnvironment::applyControl(const double *control) const {
-    env_->v->setTrackVelocities(control[0], control[1]);
+void ompl::control::OMPLTVSEnvironment::applyControl(int control) const {
+    double l = 0.0, r = 0.0;
+    const double k = 5.0;
+    switch(control) {
+        case 0: l=-k; r= k; break;
+        case 1: l= 0; r= k; break;
+        case 2: l= k; r= 0; break;
+        case 3: l= k; r= k; break;
+        case 4: l= k; r=-k; break;
+        case 5: l= 0; r=-k; break;
+        case 6: l=-k; r= 0; break;
+        case 7: l=-k; r=-k; break;
+        default:
+            std::cout << "BAD CONTROL INPUT" << std::endl;
+            break;
+    }
+    env_->v->setTrackVelocities(l,r);
 }
 
 void ompl::control::OMPLTVSEnvironment::addToSearchTree(const ompl::base::State *s1, const ompl::base::State *s2)

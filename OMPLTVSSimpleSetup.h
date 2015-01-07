@@ -126,7 +126,7 @@ namespace ompl
 
             /** \brief Simulate the OMPLTVS environment forward for \e steps simulation steps, using the control \e control.
                 Construct a path representing this action. */
-            base::PathPtr simulateControl(const double *control, unsigned int steps) const;
+            base::PathPtr simulateControl(int control, unsigned int steps) const;
 
             /** \brief Simulate the OMPLTVS environment forward for \e steps simulation steps, using the control \e control.
                 Construct a path representing this action. */
