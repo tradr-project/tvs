@@ -35,7 +35,6 @@ void TriMesh::create(Environment *environment, const char *inputfile) {
 
     f.read(header, 80);
     header[79] = '\0';
-    std::cout << "STL header: " << header << std::endl;
 
     if(!f) {
         std::cout << "STL read error (1)" << std::endl;
@@ -44,7 +43,6 @@ void TriMesh::create(Environment *environment, const char *inputfile) {
 
     f.read(buf4, 4);
     ntri = *((unsigned int *)buf4);
-    std::cout << "num triangles: " << ntri << std::endl;
 
     if(!f) {
         std::cout << "STL read error (2)" << std::endl;
