@@ -63,7 +63,12 @@ void Environment::create() {
 
     this->v->create(this);
     if(this->pcl) this->pcl->create(this);
-    if(this->mesh) {this->mesh->create(this, "models/maze.stl"); dGeomSetPosition(this->mesh->geom, 4, 4, 0);}
+    if(this->mesh) {
+        this->mesh->create(this, "models/maze.stl");
+        dGeomSetPosition(this->mesh->geom, 4, 4, -0.001);
+        dMatrix3 R; dRFromAxisAndAngle(R, 1, 0, 0, M_PI_2);
+        dGeomSetRotation(this->mesh->geom, R);
+    }
     
 #if 0
     dVector3 sides = {1,1,1};

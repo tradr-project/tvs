@@ -83,11 +83,7 @@ void TriMesh::create(Environment *environment, const char *inputfile) {
 
     this->data = dGeomTriMeshDataCreate();
     dGeomTriMeshDataBuildSingle(this->data, this->vertices, sizeof(Vertex), this->vertex_count, this->triangles, this->triangle_count, sizeof(Triangle));
-
     this->geom = dCreateTriMesh(environment->space, this->data, 0, 0, 0);
-    dMatrix3 R;
-    dRFromAxisAndAngle(R, 1, 0, 0, /* angle: */ M_PI_2);
-    dGeomSetRotation(this->geom, R);
     dGeomSetCategoryBits(this->geom, Category::TERRAIN);
     dGeomSetCollideBits(this->geom, Category::GROUSER | Category::OBSTACLE);
 }
