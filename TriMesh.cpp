@@ -81,8 +81,6 @@ void TriMesh::create(Environment *environment, const char *inputfile) {
         k++;
     }
 
-    std::cout << "read " << k << "/" << ntri << " triangles" << std::endl;
-
     this->data = dGeomTriMeshDataCreate();
     dGeomTriMeshDataBuildSingle(this->data, this->vertices, sizeof(Vertex), this->vertex_count, this->triangles, this->triangle_count, sizeof(Triangle));
 
