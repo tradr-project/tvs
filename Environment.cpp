@@ -29,12 +29,16 @@ Environment::Environment() {
 #else
     this->pcl = 0L;
 #endif
+    this->mesh = new TriMesh();
 }
 
 Environment::~Environment() {
     dJointGroupDestroy(this->contactGroup);
     dSpaceDestroy(this->space);
     dWorldDestroy(this->world);
+    delete this->v;
+    if(this->pcl) delete this->pcl;
+    if(this->mesh) delete this->mesh;
 }
 
 void Environment::create() {
@@ -57,8 +61,9 @@ void Environment::create() {
     dGeomSetCategoryBits(this->planeGeom, Category::TERRAIN);
     dGeomSetCollideBits(this->planeGeom, Category::GROUSER | Category::OBSTACLE);
 
-    v->create(this);
-    if(this->pcl) pcl->create(this);
+    this->v->create(this);
+    if(this->pcl) this->pcl->create(this);
+    if(this->mesh) {this->mesh->create(this, "models/maze.stl"); dGeomSetPosition(this->mesh->geom, 4, 4, 0);}
     
 #if 0
     dVector3 sides = {1,1,1};
@@ -78,6 +83,7 @@ void Environment::create() {
 void Environment::destroy() {
     this->v->destroy();
     if(this->pcl) this->pcl->destroy();
+    if(this->mesh) this->mesh->destroy();
 }
 
 std::string Environment::getGeomName(dGeomID geom) const
@@ -266,6 +272,7 @@ bool Environment::evaluateCollision() {
 
 void Environment::draw() {
     if(this->pcl) this->pcl->draw();
+    if(this->mesh) this->mesh->draw();
     this->v->draw();
 }
 

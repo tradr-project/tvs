@@ -15,6 +15,7 @@
 #include <boost/lexical_cast.hpp>
 #include "TrackedVehicle.h"
 #include "PointCloud.h"
+#include "TriMesh.h"
 
 class Environment {
 public:
@@ -26,6 +27,7 @@ public:
 
     TrackedVehicle *v;
     PointCloud *pcl;
+    TriMesh *mesh;
     
     bool badCollision;
     
