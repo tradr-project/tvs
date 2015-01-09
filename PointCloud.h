@@ -10,23 +10,32 @@
 #define POINT_CLOUD_H_INCLUDED
 
 #include <ode/ode.h>
+#include <pcl/point_types.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
 class Environment;
 
-class PointCloud {
-public:
+struct Points {
     dReal *data;
     size_t size;
+};
+
+class PointCloud {
+public:
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_flat;
+    pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtree;
     dReal point_radius;
     dGeomID *geom;
     
-    PointCloud();
-    PointCloud(const char *filename);
+    Points all;
+    Points near;
+    
+    PointCloud(const char *filename, dReal downsampling_radius);
     virtual ~PointCloud();
-    void create(Environment *environment);
+    void create(Environment *environment, const dReal *pos, dReal radius);
     void destroy();
     void draw();
-    void filterFar(const dReal *center, dReal distance);
 };
 
 #endif // POINT_CLOUD_H_INCLUDED

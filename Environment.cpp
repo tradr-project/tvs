@@ -18,14 +18,12 @@
 
 static const dVector3 center = {3,3,0};
 static const dVector3 extents = {7,7,7};
-static const dReal limit = 8.0;
+static const dReal limit = 2.0;
 
 Environment::Environment() {
 #if defined(USE_PCL)
 #define vehicleZoffset 0.4
-    this->pcl = new PointCloud("pcd_0000.ds.0.3.xyz");
-    this->pcl->filterFar(center, limit);
-    this->pcl->point_radius = 0.3 * sqrt(3) / 2.0;
+    this->pcl = new PointCloud("pcd_0000.ds.0.05.pcd", 0.1);
     this->mesh = 0L;
 #else
 #define vehicleZoffset 0.0
@@ -65,7 +63,7 @@ void Environment::create() {
     dGeomSetCollideBits(this->planeGeom, Category::GROUSER | Category::OBSTACLE);
 
     this->v->create(this);
-    if(this->pcl) this->pcl->create(this);
+    if(this->pcl) this->pcl->create(this, this->v->getPosition(), limit);
     if(this->mesh) {
         this->mesh->create(this, "models/maze.stl");
         dGeomSetPosition(this->mesh->geom, 4, 4, -0.001);
@@ -241,6 +239,9 @@ void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
 }
 
 bool Environment::step(dReal stepSize, int simulationStepsPerFrame) {
+    stepNum++;
+    if(!(stepNum % 10) && this->pcl) this->pcl->create(this, this->v->getPosition(), limit);
+
     this->badCollision = false;
     for(size_t i = 0; i < simulationStepsPerFrame; i++) {
         // find collisions and add contact joints

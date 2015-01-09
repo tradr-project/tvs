@@ -30,6 +30,8 @@ public:
     TriMesh *mesh;
     
     bool badCollision;
+
+    size_t stepNum;
     
     std::map<dGeomID, std::string> geomNames;
     
@@ -53,12 +55,12 @@ public:
     void draw();
 };
 
-enum Category {
+namespace Category { enum Category {
     TERRAIN  = 1 << 0,
     GROUSER  = 1 << 1,
     G_GUIDE  = 1 << 2,
     WHEEL    = 1 << 3,
     OBSTACLE = 1 << 4
-};
+}; };
 
 #endif // WORLD_H_INCLUDED
