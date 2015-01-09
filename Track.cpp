@@ -114,7 +114,16 @@ void Track::create(Environment *environment) {
 }
 
 void Track::destroy() {
-    // TODO
+    dBodyDestroy(this->trackBody);
+    for(int w = 0; w < 2; w++) {
+        dBodyDestroy(this->wheelBody[w]);
+        dGeomDestroy(this->wheelGeom[w]);
+        dGeomDestroy(this->guideGeom[w]);
+    }
+    for(size_t i = 0; i < this->m->numGrousers; i++) {
+        dBodyDestroy(this->grouserBody[i]);
+        dGeomDestroy(this->grouserGeom[i]);
+    }
 }
 
 void Track::draw() {

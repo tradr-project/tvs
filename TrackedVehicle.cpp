@@ -70,6 +70,9 @@ void TrackedVehicle::create(Environment *environment) {
 void TrackedVehicle::destroy() {
     this->leftTrack->destroy();
     this->rightTrack->destroy();
+
+    dBodyDestroy(this->vehicleBody);
+    dGeomDestroy(this->vehicleGeom);
 }
 
 void TrackedVehicle::draw() {
