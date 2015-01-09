@@ -145,7 +145,7 @@ void Track::draw() {
         dsDrawBoxD(pos, R, sides);
     }
     
-#ifndef DEBUG_DRAW_GROUSER_GUIDES
+#ifdef DEBUG_DRAW_GROUSER_GUIDES
     dsSetColorAlpha(0, 1, 0, 0.3);
     for(int w = 0; w < 2; w++) {
         const dReal *pos = dGeomGetPosition(this->guideGeom[w]);
