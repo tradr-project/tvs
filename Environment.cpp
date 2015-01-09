@@ -21,15 +21,18 @@ static const dVector3 extents = {7,7,7};
 static const dReal limit = 8.0;
 
 Environment::Environment() {
-    this->v = new TrackedVehicle("robot", 0.3, 0.8, 0.2, 0.5, 0, 0, 0.301+0*0.4);
 #if defined(USE_PCL)
+#define vehicleZoffset 0.4
     this->pcl = new PointCloud("pcd_0000.ds.0.3.xyz");
     this->pcl->filterFar(center, limit);
     this->pcl->point_radius = 0.3 * sqrt(3) / 2.0;
+    this->mesh = 0L;
 #else
+#define vehicleZoffset 0.0
     this->pcl = 0L;
-#endif
     this->mesh = new TriMesh();
+#endif
+    this->v = new TrackedVehicle("robot", 0.3, 1.5, 0.3, 0.5, 1, 0, 0.301+vehicleZoffset);
 }
 
 Environment::~Environment() {
