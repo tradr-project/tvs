@@ -135,17 +135,6 @@ void Track::draw() {
         dGeomCylinderGetParams(this->wheelGeom[w], &radius, &length);
         dsDrawCylinderD(pos, R, length, radius);
     }
-    
-#ifdef DEBUG_DRAW_GROUSER_GUIDES
-    dsSetColorAlpha(0, 1, 0, 0.3);
-    for(int w = 0; w < 2; w++) {
-        const dReal *pos = dGeomGetPosition(this->guideGeom[w]);
-        const dReal *R = dGeomGetRotation(this->guideGeom[w]);
-        dReal sides[3];
-        dGeomBoxGetLengths(this->guideGeom[w], sides);
-        dsDrawBoxD(pos, R, sides);
-    }
-#endif
 
     dsSetColor(1, 0, 0);
     for(size_t i = 0; i < this->m->numGrousers; i++) {
@@ -155,6 +144,17 @@ void Track::draw() {
         dGeomBoxGetLengths(this->grouserGeom[i], sides);
         dsDrawBoxD(pos, R, sides);
     }
+    
+#ifndef DEBUG_DRAW_GROUSER_GUIDES
+    dsSetColorAlpha(0, 1, 0, 0.3);
+    for(int w = 0; w < 2; w++) {
+        const dReal *pos = dGeomGetPosition(this->guideGeom[w]);
+        const dReal *R = dGeomGetRotation(this->guideGeom[w]);
+        dReal sides[3];
+        dGeomBoxGetLengths(this->guideGeom[w], sides);
+        dsDrawBoxD(pos, R, sides);
+    }
+#endif
 }
 
 void Track::setVelocity(dReal velocity) {
