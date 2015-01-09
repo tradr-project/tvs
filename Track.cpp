@@ -127,6 +127,7 @@ void Track::destroy() {
 }
 
 void Track::draw() {
+    dsSetColor(1, 1, 0);
     for(int w = 0; w < 2; w++) {
         const dReal *pos = dGeomGetPosition(this->wheelGeom[w]);
         const dReal *R = dGeomGetRotation(this->wheelGeom[w]);
@@ -136,6 +137,7 @@ void Track::draw() {
     }
     
 #ifdef DEBUG_DRAW_GROUSER_GUIDES
+    dsSetColorAlpha(0, 1, 0, 0.3);
     for(int w = 0; w < 2; w++) {
         const dReal *pos = dGeomGetPosition(this->guideGeom[w]);
         const dReal *R = dGeomGetRotation(this->guideGeom[w]);
@@ -145,6 +147,7 @@ void Track::draw() {
     }
 #endif
 
+    dsSetColor(1, 0, 0);
     for(size_t i = 0; i < this->m->numGrousers; i++) {
         const dReal *pos = dGeomGetPosition(this->grouserGeom[i]);
         const dReal *R = dGeomGetRotation(this->grouserGeom[i]);

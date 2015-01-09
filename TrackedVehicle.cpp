@@ -44,6 +44,7 @@ void TrackedVehicle::create(Environment *environment) {
     dBodySetMass(this->vehicleBody, &this->vehicleMass);
     dBodySetPosition(this->vehicleBody, this->xOffset, this->yOffset, this->zOffset);
     dGeomSetBody(this->vehicleGeom, this->vehicleBody);
+    dGeomSetOffsetPosition(this->vehicleGeom, 0, 0, this->leftTrack->m->radius[0]);
     this->leftTrackJoint = dJointCreateFixed(environment->world, 0);
     this->rightTrackJoint = dJointCreateFixed(environment->world, 0);
     dJointAttach(this->leftTrackJoint, this->vehicleBody, this->leftTrack->trackBody);
@@ -77,6 +78,7 @@ void TrackedVehicle::destroy() {
 
 void TrackedVehicle::draw() {
     {
+        dsSetColor(0, 0, 1);
         const dReal *pos = dGeomGetPosition(this->vehicleGeom);
         const dReal *R = dGeomGetRotation(this->vehicleGeom);
         dReal sides[3];
