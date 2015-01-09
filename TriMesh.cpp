@@ -66,18 +66,15 @@ void TriMesh::create(Environment *environment, const char *inputfile) {
         this->vertices[h].v[0] = ((float *)buf50)[3];
         this->vertices[h].v[1] = ((float *)buf50)[4];
         this->vertices[h].v[2] = ((float *)buf50)[5];
-        this->triangles[k].i[0] = h;
-        h++;
+        this->triangles[k].i[2] = h++;
         this->vertices[h].v[0] = ((float *)buf50)[6];
         this->vertices[h].v[1] = ((float *)buf50)[7];
         this->vertices[h].v[2] = ((float *)buf50)[8];
-        this->triangles[k].i[1] = h;
-        h++;
+        this->triangles[k].i[1] = h++;
         this->vertices[h].v[0] = ((float *)buf50)[9];
         this->vertices[h].v[1] = ((float *)buf50)[10];
         this->vertices[h].v[2] = ((float *)buf50)[11];
-        this->triangles[k].i[2] = h;
-        h++;
+        this->triangles[k].i[0] = h++;
         k++;
     }
 
@@ -99,9 +96,9 @@ void TriMesh::draw() {
     dsDrawTrianglesD(pos, R, v, n, 1);
 #else
     for(size_t i = 0; i < this->triangle_count; i++) {
-        const dReal *p1 = this->vertices[this->triangles[i].i[0]].v;
+        const dReal *p1 = this->vertices[this->triangles[i].i[2]].v;
         const dReal *p2 = this->vertices[this->triangles[i].i[1]].v;
-        const dReal *p3 = this->vertices[this->triangles[i].i[2]].v;
+        const dReal *p3 = this->vertices[this->triangles[i].i[0]].v;
         dsDrawTriangleD(pos, R, p1, p2, p3, 1);
     }
 #endif // HAVE_DSDRAWTRIANGLES_FUNCTION
