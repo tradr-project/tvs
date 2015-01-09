@@ -53,6 +53,11 @@ void PointCloud::create(Environment *environment) {
 }
 
 void PointCloud::destroy() {
+    if(this->geom) {
+        for(size_t i = 0; i < this->size; i++) {
+            dGeomDestroy(this->geom[i]);
+        }
+    }
 }
 
 void PointCloud::draw() {
