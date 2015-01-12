@@ -11,14 +11,19 @@
 
 #include <ode/ode.h>
 #include <string>
+#include <vector>
 #include <map>
 #include <boost/lexical_cast.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 #include "TrackedVehicle.h"
 #include "PointCloud.h"
 #include "TriMesh.h"
 
 class Environment {
 public:
+    boost::property_tree::ptree config;
+
     dWorldID world;
     dSpaceID space;
     dJointGroupID contactGroup;
@@ -28,6 +33,8 @@ public:
     TrackedVehicle *v;
     PointCloud *pcl;
     TriMesh *mesh;
+
+    std::vector<dGeomID> boxes;
     
     bool badCollision;
 

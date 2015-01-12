@@ -21,16 +21,19 @@ static const dVector3 extents = {7,7,7};
 static const dReal limit = 2.0;
 
 Environment::Environment() {
-#if defined(USE_PCL)
+    boost::property_tree::ini_parser::read_ini("simulator.ini", this->config);
+
+#define vehicleZoffset 0.0
+#if 0
 #define vehicleZoffset 0.4
-    this->pcl = new PointCloud("pcd_0000.ds.0.05.pcd", 0.1);
+    this->pcl = new PointCloud("problem01-ds.pcd", 0.25);
     this->mesh = 0L;
-#else
+#elif 0
 #define vehicleZoffset 0.0
     this->pcl = 0L;
     this->mesh = new TriMesh();
 #endif
-    this->v = new TrackedVehicle("robot", 0.3, 1.5, 0.3, 0.5, 1, 0, 0.301+vehicleZoffset);
+    this->v = new TrackedVehicle("robot", 1, -2, 0.301+vehicleZoffset);
 }
 
 Environment::~Environment() {
@@ -40,6 +43,17 @@ Environment::~Environment() {
     delete this->v;
     if(this->pcl) delete this->pcl;
     if(this->mesh) delete this->mesh;
+}
+
+inline dGeomID createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y2, dReal z2, dReal rx = 1.0, dReal ry = 0.0, dReal rz = 0.0, dReal rAngle = 0.0) {
+    dGeomID g = dCreateBox(e->space, x2 - x1, y2 - y1, z2 - z1);
+    dGeomSetPosition(g, x1 + 0.5 * (x2 - x1), y1 + 0.5 * (y2 - y1), z1 + 0.5 * (z2 - z1));
+    dMatrix3 R;
+    dRFromAxisAndAngle(R, rx, ry, rz, rAngle);
+    dGeomSetRotation(g, R);
+    dGeomSetCategoryBits(g, Category::OBSTACLE);
+    dGeomSetCollideBits(g, Category::GROUSER);
+    return g;
 }
 
 void Environment::create() {
@@ -66,9 +80,9 @@ void Environment::create() {
     if(this->pcl) this->pcl->create(this, this->v->getPosition(), limit);
     if(this->mesh) {
         this->mesh->create(this, "models/maze.stl");
-        dGeomSetPosition(this->mesh->geom, 4, 4, -0.001);
-        dMatrix3 R; dRFromAxisAndAngle(R, 1, 0, 0, M_PI_2);
-        dGeomSetRotation(this->mesh->geom, R);
+        //dGeomSetPosition(this->mesh->geom, 4, 4, -0.001);
+        //dMatrix3 R; dRFromAxisAndAngle(R, 1, 0, 0, M_PI_2);
+        //dGeomSetRotation(this->mesh->geom, R);
     }
     
 #if 0
@@ -84,6 +98,24 @@ void Environment::create() {
     dRFromAxisAndAngle(R, 1, 2, 2, 0.3);
     dBodySetRotation(b, R);
 #endif
+
+    const dReal h = 1.3; // wall height
+    const dReal t = 0.1; // wall thickness
+    const dReal T = 0.25; // arch thickness
+    const dReal l = 4; // ramp length
+    const dReal W = 9; // total width
+    const dReal D = 8; // total depth
+    const dReal O = 3; // arch width
+    const dReal w = 2; // ramp width
+    dReal a = atan2(h,l), l2 = hypot(h,l);
+    this->boxes.push_back(createAABox(this, 0,   0,   0,   W-O, t,   h));
+    this->boxes.push_back(createAABox(this, 0,   D-t, 0,   W,   D,   h));
+    this->boxes.push_back(createAABox(this, 0,   0,   0,   t,   D,   h));
+    this->boxes.push_back(createAABox(this, W-t, 0,   0,   W,   D,   h));
+    this->boxes.push_back(createAABox(this, W-O, 0,   0,   W-O+T, w, h));
+    this->boxes.push_back(createAABox(this, W-T, 0,   0,   W,   w, h));
+    this->boxes.push_back(createAABox(this, W-O, 0,   h-t, W,   w, h));
+    this->boxes.push_back(createAABox(this, W-O-0.5*l-0.5*l2, 0, 0.5*h-0.5*t-0.5*t, W-O-0.5*l+0.5*l2, 1.5, 0.5*h+0.5*t-0.5*t, 0, 1, 0, -a));
 }
 
 void Environment::destroy() {
@@ -191,7 +223,7 @@ void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
         contact[i].surface.bounce = 0.5;
         contact[i].surface.bounce_vel = 0.1;
         contact[i].surface.soft_cfm = 0.0001;
-        contact[i].surface.mu = 5.0;
+        contact[i].surface.mu = 2.0;
         contact[i].surface.mu2 = 0.5;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
@@ -283,5 +315,15 @@ void Environment::draw() {
     if(this->pcl) this->pcl->draw();
     if(this->mesh) this->mesh->draw();
     this->v->draw();
+
+
+    for(std::vector<dGeomID>::iterator it = boxes.begin(); it != boxes.end(); it++) {
+        dsSetColor(0.6, 0.6, 0.7);
+        const dReal *pos = dGeomGetPosition(*it);
+        const dReal *R = dGeomGetRotation(*it);
+        dReal sides[3];
+        dGeomBoxGetLengths(*it, sides);
+        dsDrawBoxD(pos, R, sides);
+    }
 }
 
