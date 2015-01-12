@@ -14,14 +14,20 @@
 #include <drawstuff/drawstuff.h>
 #include "ODEUtils.h"
 
-TrackedVehicle::TrackedVehicle(const std::string& name_, dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset) : name(name_) {
-    this->density = 1.0;
-    this->width = vehicleWidth_;
+TrackedVehicle::TrackedVehicle(const std::string& name_, dReal xOffset, dReal yOffset, dReal zOffset) : name(name_) {
+    const dReal wheelRadius = 0.078;
+    const dReal wheelBase = 0.4997;
+    const dReal trackWidth = 0.097;
+    const dReal vehicleBodyWidth = 0.254;
     const size_t numGrousers = 30;
-    const dReal grouserHeight = 0.01;
-    dReal w = this->width + 2 * trackWidth_;
-    this->leftTrack = new Track(name + ".leftTrack", wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset - wheelBase_ * 0.5, yOffset - 0.5 * w, zOffset);
-    this->rightTrack = new Track(name + ".rightTrack", wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset - wheelBase_ * 0.5, yOffset + 0.5 * w, zOffset);
+    const dReal linkThickness = 0.01;
+    const dReal grouserHeight = 0.015;
+    const dReal trackVehicleSpace = 0.024;
+    this->density = 1.4;
+    this->width = vehicleBodyWidth;
+    dReal w = this->width + trackWidth + 2 * trackVehicleSpace;
+    this->leftTrack = new Track(name + ".leftTrack", wheelRadius, wheelRadius, wheelBase, numGrousers, linkThickness, grouserHeight, trackWidth, xOffset - wheelBase * 0.5, yOffset - 0.5 * w, zOffset);
+    this->rightTrack = new Track(name + ".rightTrack", wheelRadius, wheelRadius, wheelBase, numGrousers, linkThickness, grouserHeight, trackWidth, xOffset - wheelBase * 0.5, yOffset + 0.5 * w, zOffset);
     this->xOffset = xOffset;
     this->yOffset = yOffset;
     this->zOffset = zOffset;
@@ -63,8 +69,8 @@ void TrackedVehicle::create(Environment *environment) {
         this->bodyArray[j++] = this->rightTrack->wheelBody[w];
     }
     for(size_t i = 0; i < this->leftTrack->numGrousers; i++) {
-        this->bodyArray[j++] = this->leftTrack->grouserBody[i];
-        this->bodyArray[j++] = this->rightTrack->grouserBody[i];
+        this->bodyArray[j++] = this->leftTrack->linkBody[i];
+        this->bodyArray[j++] = this->rightTrack->linkBody[i];
     }
 }
 

@@ -34,7 +34,7 @@ public:
     dBodyID *bodyArray;
     size_t bodyArraySize;
     
-    TrackedVehicle(const std::string& name_, dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset);
+    TrackedVehicle(const std::string& name_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~TrackedVehicle();
     void create(Environment *environment);
     void destroy();
