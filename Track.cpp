@@ -16,24 +16,28 @@
 
 #define DRIVING_WHEEL_FRONT
 
-Track::Track(const std::string& name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset) : name(name_) {
+Track::Track(const std::string& name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal linkThickness_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset) : name(name_) {
     this->m = new TrackKinematicModel(radius1_, radius2_, distance_, numGrousers_, grouserHeight_, trackDepth_);
     this->density = 1.0;
-    this->grouserBody = new dBodyID[numGrousers_];
+    this->linkBody = new dBodyID[numGrousers_];
+    this->linkGeom = new dGeomID[numGrousers_];
     this->grouserGeom = new dGeomID[numGrousers_];
-    this->grouserJoint = new dJointID[numGrousers_];
-    this->grouserMass = new dMass[numGrousers_];
+    this->linkJoint = new dJointID[numGrousers_];
+    this->linkMass = new dMass[numGrousers_];
     this->xOffset = xOffset;
     this->yOffset = yOffset;
     this->zOffset = zOffset;
     this->numGrousers = numGrousers_;
+    this->linkThickness = linkThickness_;
+    this->grouserHeight = grouserHeight_;
 }
 
 Track::~Track() {
-    delete [] this->grouserBody;
+    delete [] this->linkBody;
+    delete [] this->linkGeom;
     delete [] this->grouserGeom;
-    delete [] this->grouserJoint;
-    delete [] this->grouserMass;
+    delete [] this->linkJoint;
+    delete [] this->linkMass;
     delete this->m;
 }
 
@@ -71,29 +75,40 @@ void Track::create(Environment *environment) {
         dGeomSetOffsetPosition(this->guideGeom[w], 0.5 * this->m->distance, (0.02 + this->m->trackDepth) * (w - 0.5), 0.0);
     }
     
+    const dReal fMax = 5.0;
 #ifdef DRIVING_WHEEL_FRONT
-    dJointSetHingeParam(this->wheelJoint[0], dParamFMax, 2.5);
+    dJointSetHingeParam(this->wheelJoint[0], dParamFMax, fMax);
 #endif
 #ifdef DRIVING_WHEEL_BACK
-    dJointSetHingeParam(this->wheelJoint[1], dParamFMax, 2.5);
+    dJointSetHingeParam(this->wheelJoint[1], dParamFMax, fMax);
 #endif
 
     // grouser shrink/grow factor
     const dReal f = 1.03;
 
     for(size_t i = 0; i < this->m->numGrousers; i++) {
-        this->grouserGeom[i] = dCreateBox(environment->space, this->m->grouserHeight, this->m->trackDepth, f * this->m->grouserWidth);
-        environment->setGeomName(this->grouserGeom[i], this->name + ".grouser" + boost::lexical_cast<std::string>(i));
-        dGeomSetCategoryBits(this->grouserGeom[i], Category::GROUSER);
-        dGeomSetCollideBits(this->grouserGeom[i], Category::TERRAIN | Category::WHEEL | Category::OBSTACLE);
-        dMassSetBox(&this->grouserMass[i], 10 * this->density, this->m->grouserHeight, this->m->trackDepth, f * this->m->grouserWidth);
-        this->grouserBody[i] = dBodyCreate(environment->world);
-        dBodySetMass(this->grouserBody[i], &this->grouserMass[i]);
-        dGeomSetBody(this->grouserGeom[i], this->grouserBody[i]);
+        this->linkBody[i] = dBodyCreate(environment->world);
+        dMassSetBox(&this->linkMass[i], 10 * this->density, this->m->grouserHeight, this->m->trackDepth, f * this->m->grouserWidth);
+        dBodySetMass(this->linkBody[i], &this->linkMass[i]);
+
         dVector3 pos; dMatrix3 R;
         this->m->computeGrouserTransform3D(i, pos, R);
-        dBodySetPosition(this->grouserBody[i], this->xOffset + pos[0], this->yOffset + pos[1], this->zOffset + pos[2]);
-        dBodySetRotation(this->grouserBody[i], R);
+
+        this->linkGeom[i] = dCreateBox(environment->space, this->linkThickness, this->m->trackDepth, f * this->m->grouserWidth);
+        environment->setGeomName(this->linkGeom[i], this->name + ".grouser" + boost::lexical_cast<std::string>(i));
+        dGeomSetCategoryBits(this->linkGeom[i], Category::GROUSER);
+        dGeomSetCollideBits(this->linkGeom[i], Category::TERRAIN | Category::WHEEL | Category::OBSTACLE);
+        dGeomSetBody(this->linkGeom[i], this->linkBody[i]);
+
+        this->grouserGeom[i] = dCreateBox(environment->space, this->m->grouserHeight, this->m->trackDepth, this->linkThickness);
+        environment->setGeomName(this->grouserGeom[i], this->name + ".grouserTooth" + boost::lexical_cast<std::string>(i));
+        dGeomSetCategoryBits(this->grouserGeom[i], Category::GROUSER);
+        dGeomSetCollideBits(this->grouserGeom[i], Category::TERRAIN | Category::WHEEL | Category::OBSTACLE);
+        dGeomSetBody(this->grouserGeom[i], this->linkBody[i]);
+        dGeomSetOffsetPosition(this->grouserGeom[i], 0.5 * (this->linkThickness + this->m->grouserHeight), 0, 0);
+
+        dBodySetPosition(this->linkBody[i], this->xOffset + pos[0], this->yOffset + pos[1], this->zOffset + pos[2]);
+        dBodySetRotation(this->linkBody[i], R);
     }
 
     for(size_t i = 0; i < this->m->numGrousers; i++) {
@@ -106,10 +121,10 @@ void Track::create(Environment *environment) {
         qz = pz - this->m->grouserWidth * f * 0.5 * dz;
         px = px + this->m->grouserWidth * f * 0.5 * dx;
         pz = pz + this->m->grouserWidth * f * 0.5 * dz;
-        this->grouserJoint[i] = dJointCreateHinge(environment->world, 0);
-        dJointAttach(this->grouserJoint[i], this->grouserBody[i], this->grouserBody[j]);
-        dJointSetHingeAnchor(this->grouserJoint[i], this->xOffset + px, this->yOffset, this->zOffset + pz);
-        dJointSetHingeAxis(this->grouserJoint[i], 0, 1, 0);
+        this->linkJoint[i] = dJointCreateHinge(environment->world, 0);
+        dJointAttach(this->linkJoint[i], this->linkBody[i], this->linkBody[j]);
+        dJointSetHingeAnchor(this->linkJoint[i], this->xOffset + px, this->yOffset, this->zOffset + pz);
+        dJointSetHingeAxis(this->linkJoint[i], 0, 1, 0);
     }
 }
 
@@ -121,7 +136,8 @@ void Track::destroy() {
         dGeomDestroy(this->guideGeom[w]);
     }
     for(size_t i = 0; i < this->m->numGrousers; i++) {
-        dBodyDestroy(this->grouserBody[i]);
+        dBodyDestroy(this->linkBody[i]);
+        dGeomDestroy(this->linkGeom[i]);
         dGeomDestroy(this->grouserGeom[i]);
     }
 }
@@ -137,6 +153,13 @@ void Track::draw() {
     }
 
     dsSetColor(1, 0, 0);
+    for(size_t i = 0; i < this->m->numGrousers; i++) {
+        const dReal *pos = dGeomGetPosition(this->linkGeom[i]);
+        const dReal *R = dGeomGetRotation(this->linkGeom[i]);
+        dReal sides[3];
+        dGeomBoxGetLengths(this->linkGeom[i], sides);
+        dsDrawBoxD(pos, R, sides);
+    }
     for(size_t i = 0; i < this->m->numGrousers; i++) {
         const dReal *pos = dGeomGetPosition(this->grouserGeom[i]);
         const dReal *R = dGeomGetRotation(this->grouserGeom[i]);

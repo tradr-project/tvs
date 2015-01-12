@@ -27,16 +27,19 @@ public:
     dGeomID wheelGeom[2];
     dJointID wheelJoint[2];
     dGeomID guideGeom[2];
-    dBodyID *grouserBody;
+    dBodyID *linkBody;
+    dGeomID *linkGeom;
     dGeomID *grouserGeom;
-    dJointID *grouserJoint;
-    dMass *grouserMass;
+    dJointID *linkJoint;
+    dMass *linkMass;
     dReal xOffset;
     dReal yOffset;
     dReal zOffset;
     size_t numGrousers;
+    dReal linkThickness;
+    dReal grouserHeight;
 
-    Track(const std::string& name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset);
+    Track(const std::string& name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal linkThickness_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~Track();
     void create(Environment *environment);
     void destroy();
