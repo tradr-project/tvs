@@ -22,12 +22,16 @@ ompl::control::PathControl *path;
 ompl::control::OMPLTVSStateSpace *ss;
 ompl::control::OMPLTVSEnvironmentPtr ompl_env;
 
-enum {SIMULATOR, PLANNER} mode = PLANNER;
+enum {SIMULATOR, PLANNER} mode = SIMULATOR;
 
 void start() {
-    static float xyz[3] = {6.3286,-5.9263,1.7600};
-    static float hpr[3] = {102.5000,-16.0000,0.0000};
+    static float xyz[3] = {9.3812,4.5702,3.1600}; // {6.3286,-5.9263,1.7600};
+    static float hpr[3] = {-142.5000,-34.5000,0.0000}; // {102.5000,-16.0000,0.0000};
     dsSetViewpoint(xyz,hpr);
+    static dVector3 p = {2.08086,3.39581,0.102089};
+    static dQuaternion q = {-0.229659,-0.00088334,0.00010361,0.973271};
+    environment->v->setPosition(p);
+    environment->v->setQuaternion(q);
 }
 
 void step(int pause) {
@@ -60,6 +64,13 @@ void setFrame(int d) {
     ss->writeState(state);
 }
 
+void printInfo() {
+    const dReal *p = environment->v->getPosition();
+    const dReal *q = environment->v->getQuaternion();
+    std::cout << "position: " << p[0] << ", " << p[1] << ", " << p[2] << std::endl;
+    std::cout << "orientation: " << q[0] << ", " << q[1] << ", " << q[2] << ", " << q[3] << std::endl;
+}
+
 void command(int cmd) {
     if(mode == SIMULATOR) {
         const dReal V = 6.0;
@@ -71,6 +82,7 @@ void command(int cmd) {
             case 'e': environment->v->setTrackVelocities(-0.5*V, -2.0*V); break;
             case 'q': environment->v->setTrackVelocities(-2.0*V, -0.5*V); break;
             case ' ': environment->v->setTrackVelocities( 0,  0); break;
+            case 'p': printInfo(); break;
         }
     } else if(mode == PLANNER) {
         switch(cmd) {
@@ -103,7 +115,7 @@ int main(int argc, char **argv) {
         bounds.setHigh(4);
         stateSpace->as<ompl::control::OMPLTVSStateSpace>()->setVolumeBounds(bounds);
         setup.setup();
-        if (setup.solve(60)) {
+        if (setup.solve(600)) {
             path = new ompl::control::PathControl(setup.getSolutionPath());
             std::cout << "SOLUTION LENGTH: " << path->getStateCount() << std::endl;
             setFrame(0);
