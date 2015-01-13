@@ -59,28 +59,27 @@ void ompl::control::OMPLTVSStatePropagator::propagate(const base::State *state, 
     env_->applyControl(control->as<RealVectorControlSpace::ControlType>()->values);
 
     bool collision = false;
-    const double simStepSize = 0.01;
-    for(double t = 0; t < duration; t += simStepSize) {
-        if(env_->env_->step(simStepSize, 10)) {
-            collision = true;
-            break;
-        }
+    for(double t = 0; t < duration; t += env_->env_->stepSize) {
+        collision = env_->env_->step() || collision;
+        if(collision) break;
     }
 
     // read the final state from the OMPLTVS world
     si_->getStateSpace()->as<OMPLTVSStateSpace>()->readState(result);
 
-#if 0
-    std::cout << "u=("
-    << control->as<RealVectorControlSpace::ControlType>()->values[0] << ", "
-    << control->as<RealVectorControlSpace::ControlType>()->values[1] << ") "
-    << "for DT=" << duration << " from xt=("
-    << state->as<OMPLTVSStateSpace::StateType>()->getPosition()[0] << ", "
-    << state->as<OMPLTVSStateSpace::StateType>()->getPosition()[1] << ", "
-    << state->as<OMPLTVSStateSpace::StateType>()->getPosition()[2] << ") to xt+1=("
-    << result->as<OMPLTVSStateSpace::StateType>()->getPosition()[0] << ", "
-    << result->as<OMPLTVSStateSpace::StateType>()->getPosition()[1] << ", "
-    << result->as<OMPLTVSStateSpace::StateType>()->getPosition()[2] << ")" << std::endl;
+#if 1
+    const dReal *a = state->as<OMPLTVSStateSpace::StateType>()->getBodyPosition(0);
+    const dReal *b = result->as<OMPLTVSStateSpace::StateType>()->getBodyPosition(0);
+    std::cout
+    << control->as<RealVectorControlSpace::ControlType>()->values[0] << " "
+    << control->as<RealVectorControlSpace::ControlType>()->values[1] << " "
+    << "   "
+    << duration
+    << "   "
+    << a[0] << " " << a[1] << " " << a[2]
+    << "   "
+    << b[0] << " " << b[1] << " " << b[2]
+    << std::endl;
 #endif
     
     env_->addToSearchTree(state, result); // vor visualization purposes
