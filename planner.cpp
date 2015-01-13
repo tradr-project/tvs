@@ -1,0 +1,112 @@
+//
+//  planner.cpp
+//  tvs
+//
+//  Created by Federico Ferri on 13/01/2015.
+//  Copyright (c) 2014 Federico Ferri. All rights reserved.
+//
+
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <cassert>
+#include <ode/ode.h>
+#include <drawstuff/drawstuff.h>
+#include "Environment.h"
+#include "OMPLTVSSimpleSetup.h"
+
+Environment *environment;
+
+int nstep = 0;
+ompl::control::PathControl *path;
+OMPLTVSStateSpace *ss;
+OMPLTVSEnvironmentPtr ompl_env;
+
+void start() {
+    static float xyz[3] = {9.3812,4.5702,3.1600}; // {6.3286,-5.9263,1.7600};
+    static float hpr[3] = {-142.5000,-34.5000,0.0000}; // {102.5000,-16.0000,0.0000};
+    dsSetViewpoint(xyz,hpr);
+}
+
+void step(int pause) {
+    environment->draw();
+    
+    // draw search tree
+    for(std::vector<dLine>::iterator i = ompl_env->searchTree.begin(); i != ompl_env->searchTree.end(); i++) {
+        dsDrawLineD(i->a, i->b);
+    }
+}
+
+void stop() {
+}
+
+void setFrame(int d) {
+    if(!path) return;
+    int newnstep = nstep + d;
+    if(newnstep < 0 || newnstep >= path->getStateCount() || newnstep == nstep)
+        return;
+    nstep = newnstep;
+    std::cout << "STEP " << (1+nstep) << "/" << path->getStateCount() << std::endl;
+    
+    ompl::base::State *state = path->getState(nstep);
+    ss->writeState(state);
+}
+
+void command(int cmd) {
+    switch(cmd) {
+        case '+':case '=': setFrame(1); break;
+        case '-':case '_': setFrame(-1); break;
+    }
+}
+
+int main(int argc, char **argv) {
+    dInitODE2(0);
+    dAllocateODEDataForThread(dAllocateMaskAll);
+
+    environment = new Environment();
+    environment->create();
+
+    // set initial robot pose:
+    static dVector3 p = {2.08086,3.39581,0.102089};
+    static dQuaternion q = {-0.229659,-0.00088334,0.00010361,0.973271};
+    environment->v->setPosition(p);
+    environment->v->setQuaternion(q);
+
+    // set up planning environment:
+    ompl_env = OMPLTVSEnvironmentPtr(new OMPLTVSEnvironment(environment));
+    ompl::base::StateSpacePtr stateSpace(ss = new OMPLTVSStateSpace(ompl_env));
+    OMPLTVSSimpleSetup setup(stateSpace);
+    setup.setGoalRegion(7.74, 0.95, 1.4, 0.4);
+    ompl::base::RealVectorBounds bounds(3);
+    bounds.setLow(0, -2); bounds.setHigh(0, 8);
+    bounds.setLow(1,  0); bounds.setHigh(1, 9);
+    bounds.setLow(2,  -0.1); bounds.setHigh(2, 2);
+    stateSpace->as<OMPLTVSStateSpace>()->setVolumeBounds(bounds);
+    setup.setup();
+    if (setup.solve(600)) {
+        path = new ompl::control::PathControl(setup.getSolutionPath());
+        std::cout << "SOLUTION LENGTH: " << path->getStateCount() << std::endl;
+        setFrame(0);
+        //path->printAsMatrix(std::cout);
+    } else {
+        std::cout << "SOLUTION NOT FOUND" << std::endl;
+        path = 0L;
+    }
+    
+    dsFunctions fn;
+    fn.version = DS_VERSION;
+    fn.start = &start;
+    fn.step = &step;
+    fn.stop = &stop;
+    fn.command = &command;
+    fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
+    dsSimulationLoop(argc, argv, 800, 600, &fn);
+    
+    if(path) delete path;
+    environment->destroy();
+    delete environment;
+    
+    dCloseODE();
+
+    return 0;
+}
