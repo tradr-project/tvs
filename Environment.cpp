@@ -290,9 +290,7 @@ void Environment::evaluateCollisionNearCallback(dGeomID o1, dGeomID o2) {
     // flag collision is there is really a collision and is of those not allowed
     if(numc > 0 && !isValidCollision(o1, o2, contact[0])) {
         badCollision = true;
-        OMPL_INFORM("Collision between %s (%s) and %s (%s)",
-                    getGeomName(o1).c_str(), dClassGetName(dGeomGetClass(o1)),
-                    getGeomName(o2).c_str(), dClassGetName(dGeomGetClass(o2)));
+        std::cout << "collision between " << getGeomName(o1) << "[" << dClassGetName(dGeomGetClass(o1)) << "] and " << getGeomName(o2) << "[" << dClassGetName(dGeomGetClass(o2)) << "]" << std::endl;
     }
 }
 

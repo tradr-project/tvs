@@ -17,8 +17,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include "TrackedVehicle.h"
-#include "PointCloud.h"
-#include "TriMesh.h"
 
 struct ContactParams {
     int max_contacts;

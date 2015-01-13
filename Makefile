@@ -1,7 +1,10 @@
 PCL_MODULES=common filters io kdtree sample_consensus
 PCL_VERSION=1.7
-CFLAGS := -std=c++03 -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -DPOINTCLOUDS_PATH=\"$(PWD)/pointclouds\" -I$(PWD)/../ode/include -I/opt/local/include $(shell sh -c 'for i in $(PCL_MODULES); do pkg-config pcl_$${i}-$(PCL_VERSION) --cflags; done') $(OPT_CFLAGS)
-LDLIBS := -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff -lstdc++ -L/opt/local/lib -lompl $(shell sh -c 'for i in $(PCL_MODULES); do pkg-config pcl_$${i}-$(PCL_VERSION) --libs; done')
+PCL_CFLAGS = $(shell sh -c 'for i in $(PCL_MODULES); do pkg-config pcl_$${i}-$(PCL_VERSION) --cflags; done')
+PCL_LDLIBS = $(shell sh -c 'for i in $(PCL_MODULES); do pkg-config pcl_$${i}-$(PCL_VERSION) --libs; done')
+
+CFLAGS := -std=c++03 -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -DPOINTCLOUDS_PATH=\"$(PWD)/pointclouds\" -I$(PWD)/../ode/include -I/opt/local/include $(OPT_CFLAGS)
+LDLIBS := -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff -lstdc++ -L/opt/local/lib
 
 ifeq ($(OS),Windows_NT)
     CFLAGS += -DWIN32
@@ -46,14 +49,19 @@ CXXFLAGS = $(CFLAGS)
 
 .PHONY: clean all
 
-OBJS := Heightfield.o TriMesh.o PointCloud.o Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o main.o OMPLTVSControlSpace.o OMPLTVSEnvironment.o OMPLTVSSimpleSetup.o OMPLTVSStatePropagator.o OMPLTVSStateSpace.o OMPLTVSStateValidityChecker.o
+# Heightfield.o TriMesh.o PointCloud.o
+TVS_OBJS := Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o simulator.o
+OMPL_OBJS := OMPLTVSControlSpace.o OMPLTVSEnvironment.o OMPLTVSSimpleSetup.o OMPLTVSStatePropagator.o OMPLTVSStateSpace.o OMPLTVSStateValidityChecker.o planner.o
+OBJS = $(TVS_OBJS) $(OMPL_OBJS)
 
-TARGET = main
 
-all: $(TARGET)
+all: simulator planner
 
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) $(LDLIBS) -o $(TARGET)
+simulator: Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o simulator.o
+	$(CC) $^ $(LDLIBS) -o $@
+
+planner: Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o OMPLTVSControlSpace.o OMPLTVSEnvironment.o OMPLTVSSimpleSetup.o OMPLTVSStatePropagator.o OMPLTVSStateSpace.o OMPLTVSStateValidityChecker.o planner.o
+	$(CC) $^ $(LDLIBS) -lompl -o $@
 
 -include $(OBJS:.o=.d)
 
@@ -66,4 +74,5 @@ $(TARGET): $(OBJS)
 	@rm -f $*.d.tmp
 
 clean:
-	rm -f $(OBJS) $(OBJS:.o=.d) $(TARGET)
+	rm -f $(OBJS) $(OBJS:.o=.d) simulator planner
+

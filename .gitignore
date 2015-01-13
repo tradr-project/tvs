@@ -1,4 +1,6 @@
 main
+planner
+simulator
 *.o
 *.d
 **/UserInterfaceState.xcuserstate
