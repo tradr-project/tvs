@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Federico Ferri. All rights reserved.
 //
 
+#include <iostream>
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
