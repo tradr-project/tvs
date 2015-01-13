@@ -22,7 +22,7 @@ ompl::control::PathControl *path;
 ompl::control::OMPLTVSStateSpace *ss;
 ompl::control::OMPLTVSEnvironmentPtr ompl_env;
 
-enum {SIMULATOR, PLANNER} mode = SIMULATOR;
+enum {SIMULATOR, PLANNER} mode = PLANNER;
 
 void start() {
     static float xyz[3] = {9.3812,4.5702,3.1600}; // {6.3286,-5.9263,1.7600};
@@ -54,6 +54,7 @@ void stop() {
 }
 
 void setFrame(int d) {
+    if(!path) return;
     int newnstep = nstep + d;
     if(newnstep < 0 || newnstep >= path->getStateCount() || newnstep == nstep)
         return;
@@ -79,8 +80,8 @@ void command(int cmd) {
             case 'a': environment->v->setTrackVelocities(-V,  V); break;
             case 'w': environment->v->setTrackVelocities(-V, -V); break;
             case 's': environment->v->setTrackVelocities( V,  V); break;
-            case 'e': environment->v->setTrackVelocities(-0.5*V, -2.0*V); break;
-            case 'q': environment->v->setTrackVelocities(-2.0*V, -0.5*V); break;
+            case 'e': environment->v->setTrackVelocities(-0.25*V, -V); break;
+            case 'q': environment->v->setTrackVelocities(-V, -0.25*V); break;
             case ' ': environment->v->setTrackVelocities( 0,  0); break;
             case 'p': printInfo(); break;
         }
@@ -103,16 +104,19 @@ int main(int argc, char **argv) {
     environment = new Environment();
     environment->create();
 
-    bool run = true;
-    
     if(mode == PLANNER) {
+        static dVector3 p = {2.08086,3.39581,0.102089};
+        static dQuaternion q = {-0.229659,-0.00088334,0.00010361,0.973271};
+        environment->v->setPosition(p);
+        environment->v->setQuaternion(q);
         ompl_env = ompl::control::OMPLTVSEnvironmentPtr(new ompl::control::OMPLTVSEnvironment(environment));
         ompl::base::StateSpacePtr stateSpace(ss = new ompl::control::OMPLTVSStateSpace(ompl_env));
         ompl::control::OMPLTVSSimpleSetup setup(stateSpace);
-        setup.setGoalRegion(2, -4, 0.301, 0.75);
+        setup.setGoalRegion(7.74, 0.95, 1.4, 0.4);
         ompl::base::RealVectorBounds bounds(3);
-        bounds.setLow(-4);
-        bounds.setHigh(4);
+        bounds.setLow(0, -2); bounds.setHigh(0, 8);
+        bounds.setLow(1,  0); bounds.setHigh(1, 9);
+        bounds.setLow(2,  0); bounds.setHigh(2, 2);
         stateSpace->as<ompl::control::OMPLTVSStateSpace>()->setVolumeBounds(bounds);
         setup.setup();
         if (setup.solve(600)) {
@@ -122,20 +126,18 @@ int main(int argc, char **argv) {
             //path->printAsMatrix(std::cout);
         } else {
             std::cout << "SOLUTION NOT FOUND" << std::endl;
-            run = false;
+            path = 0L;
         }
     }
     
-    if(run) {
-        dsFunctions fn;
-        fn.version = DS_VERSION;
-        fn.start = &start;
-        fn.step = &step;
-        fn.stop = &stop;
-        fn.command = &command;
-        fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
-        dsSimulationLoop(argc, argv, 800, 600, &fn);
-    }
+    dsFunctions fn;
+    fn.version = DS_VERSION;
+    fn.start = &start;
+    fn.step = &step;
+    fn.stop = &stop;
+    fn.command = &command;
+    fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
+    dsSimulationLoop(argc, argv, 800, 600, &fn);
     
     if(path) delete path;
     environment->destroy();
