@@ -19,8 +19,8 @@ Environment *environment;
 
 int nstep = 0;
 ompl::control::PathControl *path;
-ompl::control::OMPLTVSStateSpace *ss;
-ompl::control::OMPLTVSEnvironmentPtr ompl_env;
+OMPLTVSStateSpace *ss;
+OMPLTVSEnvironmentPtr ompl_env;
 
 enum {SIMULATOR, PLANNER} mode = PLANNER;
 
@@ -109,15 +109,15 @@ int main(int argc, char **argv) {
         static dQuaternion q = {-0.229659,-0.00088334,0.00010361,0.973271};
         environment->v->setPosition(p);
         environment->v->setQuaternion(q);
-        ompl_env = ompl::control::OMPLTVSEnvironmentPtr(new ompl::control::OMPLTVSEnvironment(environment));
-        ompl::base::StateSpacePtr stateSpace(ss = new ompl::control::OMPLTVSStateSpace(ompl_env));
-        ompl::control::OMPLTVSSimpleSetup setup(stateSpace);
+        ompl_env = OMPLTVSEnvironmentPtr(new OMPLTVSEnvironment(environment));
+        ompl::base::StateSpacePtr stateSpace(ss = new OMPLTVSStateSpace(ompl_env));
+        OMPLTVSSimpleSetup setup(stateSpace);
         setup.setGoalRegion(7.74, 0.95, 1.4, 0.4);
         ompl::base::RealVectorBounds bounds(3);
         bounds.setLow(0, -2); bounds.setHigh(0, 8);
         bounds.setLow(1,  0); bounds.setHigh(1, 9);
         bounds.setLow(2,  -0.1); bounds.setHigh(2, 2);
-        stateSpace->as<ompl::control::OMPLTVSStateSpace>()->setVolumeBounds(bounds);
+        stateSpace->as<OMPLTVSStateSpace>()->setVolumeBounds(bounds);
         setup.setup();
         if (setup.solve(600)) {
             path = new ompl::control::PathControl(setup.getSolutionPath());

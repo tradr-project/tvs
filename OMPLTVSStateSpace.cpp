@@ -1,38 +1,10 @@
-/*********************************************************************
-* Software License Agreement (BSD License)
-*
-*  Copyright (c) 2010, Rice University
-*  All rights reserved.
-*
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions
-*  are met:
-*
-*   * Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   * Redistributions in binary form must reproduce the above
-*     copyright notice, this list of conditions and the following
-*     disclaimer in the documentation and/or other materials provided
-*     with the distribution.
-*   * Neither the name of the Rice University nor the names of its
-*     contributors may be used to endorse or promote products derived
-*     from this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*********************************************************************/
-
-/* Author: Ioan Sucan */
+//
+//  OMPLTVSStateSpace.cpp
+//  tvs
+//
+//  Created by Federico Ferri on 03/01/2015.
+//  Copyright (c) 2014 Federico Ferri. All rights reserved.
+//
 
 #include "OMPLTVSStateSpace.h"
 #include <ompl/util/Console.h>
@@ -40,25 +12,21 @@
 #include <limits>
 #include <queue>
 
-ompl::control::OMPLTVSStateProjectionEvaluator::OMPLTVSStateProjectionEvaluator(const ompl::base::StateSpace *space) : base::ProjectionEvaluator(space)
-{
+OMPLTVSStateProjectionEvaluator::OMPLTVSStateProjectionEvaluator(const ompl::base::StateSpace *space) : ompl::base::ProjectionEvaluator(space) {
 }
 
-unsigned int ompl::control::OMPLTVSStateProjectionEvaluator::getDimension(void) const
-{
+unsigned int OMPLTVSStateProjectionEvaluator::getDimension(void) const {
     return 3;
 }
 
-void ompl::control::OMPLTVSStateProjectionEvaluator::defaultCellSizes(void)
-{
+void OMPLTVSStateProjectionEvaluator::defaultCellSizes(void) {
     cellSizes_.resize(3);
     cellSizes_[0] = 0.333;
     cellSizes_[1] = 0.333;
     cellSizes_[2] = 0.2;
 }
 
-void ompl::control::OMPLTVSStateProjectionEvaluator::project(const ompl::base::State *state, ompl::base::EuclideanProjection &projection) const
-{
+void OMPLTVSStateProjectionEvaluator::project(const ompl::base::State *state, ompl::base::EuclideanProjection &projection) const {
     const double *pos = state->as<OMPLTVSStateSpace::StateType>()->getBodyPosition(0);
     projection[0] = pos[0];
     projection[1] = pos[1];
@@ -66,28 +34,26 @@ void ompl::control::OMPLTVSStateProjectionEvaluator::project(const ompl::base::S
 }
 
 
-ompl::control::OMPLTVSStateSpace::OMPLTVSStateSpace(const OMPLTVSEnvironmentPtr &env,
-                                                  double positionWeight, double linVelWeight, double angVelWeight, double orientationWeight) :
-    base::CompoundStateSpace(), env_(env)
-{
+OMPLTVSStateSpace::OMPLTVSStateSpace(const OMPLTVSEnvironmentPtr &env, double positionWeight, double linVelWeight, double angVelWeight, double orientationWeight)
+: ompl::base::CompoundStateSpace(), env_(env) {
     setName("OMPLTVS" + getName());
-    type_ = base::STATE_SPACE_TYPE_COUNT + 1;
+    type_ = ompl::base::STATE_SPACE_TYPE_COUNT + 1;
 
     std::string body = ""; // unused
 
     for(size_t i = 0; i < env_->env_->v->bodyArraySize; i++) {
         std::string body = ":B" + boost::lexical_cast<std::string>(i);
 
-        addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), positionWeight); // position
+        addSubspace(ompl::base::StateSpacePtr(new ompl::base::RealVectorStateSpace(3)), positionWeight); // position
         components_.back()->setName(components_.back()->getName() + body + ":position");
         
-        addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), linVelWeight);   // linear velocity
+        addSubspace(ompl::base::StateSpacePtr(new ompl::base::RealVectorStateSpace(3)), linVelWeight);   // linear velocity
         components_.back()->setName(components_.back()->getName() + body + ":linvel");
         
-        addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), angVelWeight);   // angular velocity
+        addSubspace(ompl::base::StateSpacePtr(new ompl::base::RealVectorStateSpace(3)), angVelWeight);   // angular velocity
         components_.back()->setName(components_.back()->getName() + body + ":angvel");
         
-        addSubspace(base::StateSpacePtr(new base::SO3StateSpace()), orientationWeight);      // orientation
+        addSubspace(ompl::base::StateSpacePtr(new ompl::base::SO3StateSpace()), orientationWeight);      // orientation
         components_.back()->setName(components_.back()->getName() + body + ":orientation");
     }
 
@@ -95,9 +61,8 @@ ompl::control::OMPLTVSStateSpace::OMPLTVSStateSpace(const OMPLTVSEnvironmentPtr 
     setDefaultBounds();
 }
 
-void ompl::control::OMPLTVSStateSpace::setDefaultBounds()
-{
-    base::RealVectorBounds bounds1(3);
+void OMPLTVSStateSpace::setDefaultBounds() {
+    ompl::base::RealVectorBounds bounds1(3);
 
     // find the bounding box that contains all geoms included in the collision spaces
     double mX, mY, mZ, MX, MY, MZ;
@@ -108,33 +73,28 @@ void ompl::control::OMPLTVSStateSpace::setDefaultBounds()
     std::queue<dSpaceID> spaces;
     spaces.push(env_->env_->space);
 
-    while (!spaces.empty())
-    {
+    while(!spaces.empty()) {
         dSpaceID space = spaces.front();
         spaces.pop();
 
         int n = dSpaceGetNumGeoms(space);
 
-        for (int j = 0 ; j < n ; ++j)
-        {
+        for(int j = 0 ; j < n ; ++j) {
             dGeomID geom = dSpaceGetGeom(space, j);
-            if (dGeomIsSpace(geom))
+            if(dGeomIsSpace(geom)) {
                 spaces.push((dSpaceID)geom);
-            else
-            {
+            } else {
                 bool valid = true;
                 dReal aabb[6];
                 dGeomGetAABB(geom, aabb);
 
                 // things like planes are infinite; we want to ignore those
-                for (int k = 0 ; k < 6 ; ++k)
-                    if (fabs(aabb[k]) >= std::numeric_limits<dReal>::max())
-                    {
+                for(int k = 0 ; k < 6 ; ++k)
+                    if(fabs(aabb[k]) >= std::numeric_limits<dReal>::max()) {
                         valid = false;
                         break;
                     }
-                if (valid)
-                {
+                if(valid) {
                     found = true;
                     if (aabb[0] < mX) mX = aabb[0];
                     if (aabb[1] > MX) MX = aabb[1];
@@ -147,8 +107,7 @@ void ompl::control::OMPLTVSStateSpace::setDefaultBounds()
         }
     }
 
-    if (found)
-    {
+    if(found) {
         double dx = MX - mX;
         double dy = MY - mY;
         double dz = MZ - mZ;
@@ -178,28 +137,25 @@ void ompl::control::OMPLTVSStateSpace::setDefaultBounds()
     setAngularVelocityBounds(bounds1);
 }
 
-void ompl::control::OMPLTVSStateSpace::copyState(base::State *destination, const base::State *source) const
-{
+void OMPLTVSStateSpace::copyState(ompl::base::State *destination, const ompl::base::State *source) const {
     CompoundStateSpace::copyState(destination, source);
     destination->as<StateType>()->collision = source->as<StateType>()->collision;
 }
 
-bool ompl::control::OMPLTVSStateSpace::evaluateCollision(const base::State *state) const
-{
-    if (state->as<StateType>()->collision & (1 << STATE_COLLISION_KNOWN_BIT))
+bool OMPLTVSStateSpace::evaluateCollision(const ompl::base::State *state) const {
+    if(state->as<StateType>()->collision & (1 << STATE_COLLISION_KNOWN_BIT))
         return state->as<StateType>()->collision & (1 << STATE_COLLISION_VALUE_BIT);
     env_->mutex_.lock();
     writeState(state);
     bool collision = env_->env_->evaluateCollision();
     env_->mutex_.unlock();
-    if (collision)
+    if(collision)
         state->as<StateType>()->collision &= (1 << STATE_COLLISION_VALUE_BIT);
     state->as<StateType>()->collision &= (1 << STATE_COLLISION_KNOWN_BIT);
     return collision;
 }
 
-bool ompl::control::OMPLTVSStateSpace::satisfiesBoundsExceptRotation(const StateType *state) const
-{
+bool OMPLTVSStateSpace::satisfiesBoundsExceptRotation(const StateType *state) const {
     static const char *comp_name[] = {"position", "linear_vel", "angular_vel", "rotation"};
     for(unsigned int i = 0 ; i < componentCount_ ; ++i) {
         int body = i / NUM_COMPONENTS;
@@ -213,95 +169,76 @@ bool ompl::control::OMPLTVSStateSpace::satisfiesBoundsExceptRotation(const State
     return true;
 }
 
-void ompl::control::OMPLTVSStateSpace::setVolumeBounds(const base::RealVectorBounds &bounds) {
+void OMPLTVSStateSpace::setVolumeBounds(const ompl::base::RealVectorBounds &bounds) {
     for(size_t i = 0; i < env_->env_->v->bodyArraySize; i++)
-        components_[i * NUM_COMPONENTS + COMPONENT_POSITION]->as<base::RealVectorStateSpace>()->setBounds(bounds);
+        components_[i * NUM_COMPONENTS + COMPONENT_POSITION]->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
 }
 
-void ompl::control::OMPLTVSStateSpace::setLinearVelocityBounds(const base::RealVectorBounds &bounds) {
+void OMPLTVSStateSpace::setLinearVelocityBounds(const ompl::base::RealVectorBounds &bounds) {
     for(size_t i = 0; i < env_->env_->v->bodyArraySize; i++)
-        components_[i * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY]->as<base::RealVectorStateSpace>()->setBounds(bounds);
+        components_[i * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY]->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
 }
 
-void ompl::control::OMPLTVSStateSpace::setAngularVelocityBounds(const base::RealVectorBounds &bounds) {
+void OMPLTVSStateSpace::setAngularVelocityBounds(const ompl::base::RealVectorBounds &bounds) {
     for(size_t i = 0; i < env_->env_->v->bodyArraySize; i++)
-        components_[i * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY]->as<base::RealVectorStateSpace>()->setBounds(bounds);
+        components_[i * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY]->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
 }
 
-ompl::base::State* ompl::control::OMPLTVSStateSpace::allocState() const
-{
+ompl::base::State* OMPLTVSStateSpace::allocState() const {
     StateType *state = new StateType();
     allocStateComponents(state);
     return state;
 }
 
-void ompl::control::OMPLTVSStateSpace::freeState(base::State *state) const
-{
+void OMPLTVSStateSpace::freeState(ompl::base::State *state) const {
     CompoundStateSpace::freeState(state);
 }
 
 // this function should most likely not be used with OMPLTVS propagations, but just in case it is called, we need to make sure the collision information
 // is cleared from the resulting state
-void ompl::control::OMPLTVSStateSpace::interpolate(const base::State *from, const base::State *to, const double t, base::State *state) const
-{
+void OMPLTVSStateSpace::interpolate(const ompl::base::State *from, const ompl::base::State *to, const double t, ompl::base::State *state) const {
     CompoundStateSpace::interpolate(from, to, t, state);
     state->as<StateType>()->collision = 0;
 }
 
-/// @cond IGNORE
-namespace ompl
-{
-    namespace control
-    {
-        // we need to make sure any collision information is cleared when states are sampled (just in case this ever happens)
-        class WrapperForOMPLTVSSampler : public ompl::base::StateSampler
-        {
-        public:
-            WrapperForOMPLTVSSampler(const base::StateSpace *space, const base::StateSamplerPtr &wrapped) : base::StateSampler(space), wrapped_(wrapped)
-            {
-            }
+// we need to make sure any collision information is cleared when states are sampled (just in case this ever happens)
+class WrapperForOMPLTVSSampler : public ompl::base::StateSampler {
+public:
+    WrapperForOMPLTVSSampler(const ompl::base::StateSpace *space, const ompl::base::StateSamplerPtr &wrapped) : ompl::base::StateSampler(space), wrapped_(wrapped) {}
 
-            virtual void sampleUniform(ompl::base::State *state)
-            {
-                wrapped_->sampleUniform(state);
-                state->as<OMPLTVSStateSpace::StateType>()->collision = 0;
-            }
-
-            virtual void sampleUniformNear(base::State *state, const base::State *near, const double distance)
-            {
-                wrapped_->sampleUniformNear(state, near, distance);
-                state->as<OMPLTVSStateSpace::StateType>()->collision = 0;
-            }
-
-            virtual void sampleGaussian(base::State *state, const base::State *mean, const double stdDev)
-            {
-                wrapped_->sampleGaussian(state, mean, stdDev);
-                state->as<OMPLTVSStateSpace::StateType>()->collision = 0;
-            }
-        private:
-            base::StateSamplerPtr wrapped_;
-        };
+    virtual void sampleUniform(ompl::base::State *state) {
+        wrapped_->sampleUniform(state);
+        state->as<OMPLTVSStateSpace::StateType>()->collision = 0;
     }
-}
-/// @endcond
 
-ompl::base::StateSamplerPtr ompl::control::OMPLTVSStateSpace::allocDefaultStateSampler() const
-{
-    base::StateSamplerPtr sampler = base::CompoundStateSpace::allocDefaultStateSampler();
-    return base::StateSamplerPtr(new WrapperForOMPLTVSSampler(this, sampler));
+    virtual void sampleUniformNear(ompl::base::State *state, const ompl::base::State *near, const double distance) {
+        wrapped_->sampleUniformNear(state, near, distance);
+        state->as<OMPLTVSStateSpace::StateType>()->collision = 0;
+    }
+
+    virtual void sampleGaussian(ompl::base::State *state, const ompl::base::State *mean, const double stdDev) {
+        wrapped_->sampleGaussian(state, mean, stdDev);
+        state->as<OMPLTVSStateSpace::StateType>()->collision = 0;
+    }
+
+private:
+    ompl::base::StateSamplerPtr wrapped_;
+};
+
+ompl::base::StateSamplerPtr OMPLTVSStateSpace::allocDefaultStateSampler() const {
+    ompl::base::StateSamplerPtr sampler = ompl::base::CompoundStateSpace::allocDefaultStateSampler();
+    return ompl::base::StateSamplerPtr(new WrapperForOMPLTVSSampler(this, sampler));
 }
 
-ompl::base::StateSamplerPtr ompl::control::OMPLTVSStateSpace::allocStateSampler() const
-{
-    base::StateSamplerPtr sampler = base::CompoundStateSpace::allocStateSampler();
+ompl::base::StateSamplerPtr OMPLTVSStateSpace::allocStateSampler() const {
+    ompl::base::StateSamplerPtr sampler = ompl::base::CompoundStateSpace::allocStateSampler();
     if (dynamic_cast<WrapperForOMPLTVSSampler*>(sampler.get()))
         return sampler;
     else
-        return base::StateSamplerPtr(new WrapperForOMPLTVSSampler(this, sampler));
+        return ompl::base::StateSamplerPtr(new WrapperForOMPLTVSSampler(this, sampler));
 }
 
-void ompl::control::OMPLTVSStateSpace::readState(base::State *state) const
-{
+void OMPLTVSStateSpace::readState(ompl::base::State *state) const {
     StateType *s = state->as<StateType>();
 
     for(int i = env_->env_->v->bodyArraySize - 1; i >= 0; --i) {
@@ -309,10 +246,10 @@ void ompl::control::OMPLTVSStateSpace::readState(base::State *state) const
         const dReal *vel = dBodyGetLinearVel(env_->env_->v->bodyArray[i]);
         const dReal *ang = dBodyGetAngularVel(env_->env_->v->bodyArray[i]);
         const dReal *rot = dBodyGetQuaternion(env_->env_->v->bodyArray[i]);
-        double *s_pos = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_POSITION)->values;
-        double *s_vel = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY)->values;
-        double *s_ang = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY)->values;
-        base::SO3StateSpace::StateType &s_rot = *s->as<base::SO3StateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ROTATION);
+        double *s_pos = s->as<ompl::base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_POSITION)->values;
+        double *s_vel = s->as<ompl::base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY)->values;
+        double *s_ang = s->as<ompl::base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY)->values;
+        ompl::base::SO3StateSpace::StateType &s_rot = *s->as<ompl::base::SO3StateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ROTATION);
 
         for (int j = 0; j < 3; ++j) {
             s_pos[j] = pos[j];
@@ -328,15 +265,14 @@ void ompl::control::OMPLTVSStateSpace::readState(base::State *state) const
     s->collision = 0;
 }
 
-void ompl::control::OMPLTVSStateSpace::writeState(const base::State *state) const
-{
+void OMPLTVSStateSpace::writeState(const ompl::base::State *state) const {
     const StateType *s = state->as<StateType>();
 
     for(int i = env_->env_->v->bodyArraySize - 1; i >= 0; --i) {
-        double *s_pos = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_POSITION)->values;
-        double *s_vel = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY)->values;
-        double *s_ang = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY)->values;
-        const base::SO3StateSpace::StateType &s_rot = *s->as<base::SO3StateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ROTATION);
+        double *s_pos = s->as<ompl::base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_POSITION)->values;
+        double *s_vel = s->as<ompl::base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY)->values;
+        double *s_ang = s->as<ompl::base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY)->values;
+        const ompl::base::SO3StateSpace::StateType &s_rot = *s->as<ompl::base::SO3StateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ROTATION);
         
         dQuaternion q;
         q[0] = s_rot.w;
@@ -351,8 +287,7 @@ void ompl::control::OMPLTVSStateSpace::writeState(const base::State *state) cons
     }
 }
 
-double ompl::control::OMPLTVSStateSpace::distance(const base::State *s1, const base::State *s2) const
-{
+double OMPLTVSStateSpace::distance(const ompl::base::State *s1, const ompl::base::State *s2) const {
     const double *p1 = s1->as<OMPLTVSStateSpace::StateType>()->getBodyPosition(0);
     const double *p2 = s2->as<OMPLTVSStateSpace::StateType>()->getBodyPosition(0);
     double dx = fabs(p1[0] - p2[0]);
@@ -361,13 +296,11 @@ double ompl::control::OMPLTVSStateSpace::distance(const base::State *s1, const b
     return sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-void ompl::control::OMPLTVSStateSpace::registerProjections(void)
-{
-    registerDefaultProjection(base::ProjectionEvaluatorPtr(new OMPLTVSStateProjectionEvaluator(this)));
+void OMPLTVSStateSpace::registerProjections(void) {
+    registerDefaultProjection(ompl::base::ProjectionEvaluatorPtr(new OMPLTVSStateProjectionEvaluator(this)));
 }
 
-double ompl::control::OMPLTVSStateSpace::getMeasure() const
-{
-    ompl::base::RealVectorBounds b = components_[COMPONENT_POSITION]->as<base::RealVectorStateSpace>()->getBounds();
+double OMPLTVSStateSpace::getMeasure() const {
+    ompl::base::RealVectorBounds b = components_[COMPONENT_POSITION]->as<ompl::base::RealVectorStateSpace>()->getBounds();
     return b.getVolume();
 }
