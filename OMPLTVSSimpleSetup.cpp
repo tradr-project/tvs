@@ -45,7 +45,7 @@ ompl::control::OMPLTVSGoalRegion::OMPLTVSGoalRegion(const ompl::base::SpaceInfor
 
 double ompl::control::OMPLTVSGoalRegion::distanceGoal(const ompl::base::State *st) const
 {
-    const double *pos = st->as<ompl::control::OMPLTVSStateSpace::StateType>()->getPosition();
+    const double *pos = st->as<ompl::control::OMPLTVSStateSpace::StateType>()->getBodyPosition(0);
     double dx = fabs(pos[0] - x_);
     double dy = fabs(pos[1] - y_);
     double dz = fabs(pos[2] - z_);
