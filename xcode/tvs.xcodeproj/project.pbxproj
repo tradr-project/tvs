@@ -7,30 +7,63 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE067A531A43581F0046E5EF /* ODEUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE067A511A43581F0046E5EF /* ODEUtils.cpp */; };
-		CE46E4261A56F08D00D11EFE /* OMPLTVSControlSpace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E41A1A56F08D00D11EFE /* OMPLTVSControlSpace.cpp */; };
-		CE46E4271A56F08D00D11EFE /* OMPLTVSEnvironment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E41C1A56F08D00D11EFE /* OMPLTVSEnvironment.cpp */; };
-		CE46E4281A56F08D00D11EFE /* OMPLTVSSimpleSetup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E41E1A56F08D00D11EFE /* OMPLTVSSimpleSetup.cpp */; };
-		CE46E4291A56F08D00D11EFE /* OMPLTVSStatePropagator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E4201A56F08D00D11EFE /* OMPLTVSStatePropagator.cpp */; };
-		CE46E42A1A56F08D00D11EFE /* OMPLTVSStateSpace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E4221A56F08D00D11EFE /* OMPLTVSStateSpace.cpp */; };
-		CE46E42B1A56F08D00D11EFE /* OMPLTVSStateValidityChecker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E4241A56F08D00D11EFE /* OMPLTVSStateValidityChecker.cpp */; };
-		CE6C895D1A2F44BA0054F8E0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */; };
-		CE7B050B1A4220280022D473 /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE7B05091A4220280022D473 /* Environment.cpp */; };
-		CEA84B841A4219FA000AA8FB /* Heightfield.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B741A4219FA000AA8FB /* Heightfield.cpp */; };
-		CEA84B851A4219FA000AA8FB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B761A4219FA000AA8FB /* main.cpp */; };
-		CEA84B871A4219FA000AA8FB /* PointCloud.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B791A4219FA000AA8FB /* PointCloud.cpp */; };
-		CEA84B881A4219FA000AA8FB /* Track.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7B1A4219FA000AA8FB /* Track.cpp */; };
-		CEA84B891A4219FA000AA8FB /* TrackedVehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7D1A4219FA000AA8FB /* TrackedVehicle.cpp */; };
-		CEA84B8A1A4219FA000AA8FB /* TrackKinematicModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7F1A4219FA000AA8FB /* TrackKinematicModel.cpp */; };
-		CEA84B8C1A4219FA000AA8FB /* fe.c in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B831A4219FA000AA8FB /* fe.c */; };
-		CEE5557F1A2E0441000AB866 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557B1A2E0441000AB866 /* Cocoa.framework */; };
-		CEE555801A2E0441000AB866 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557C1A2E0441000AB866 /* CoreVideo.framework */; };
-		CEE555811A2E0441000AB866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557D1A2E0441000AB866 /* IOKit.framework */; };
-		CEE555821A2E0441000AB866 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557E1A2E0441000AB866 /* OpenGL.framework */; };
+		CE93FD611A65D5FA005BDA76 /* simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE93FD481A65D27E005BDA76 /* simulator.cpp */; };
+		CE93FD621A65D5FA005BDA76 /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE7B05091A4220280022D473 /* Environment.cpp */; };
+		CE93FD631A65D5FA005BDA76 /* Environment.h in Sources */ = {isa = PBXBuildFile; fileRef = CE7B050A1A4220280022D473 /* Environment.h */; };
+		CE93FD641A65D5FA005BDA76 /* Track.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7B1A4219FA000AA8FB /* Track.cpp */; };
+		CE93FD651A65D5FA005BDA76 /* Track.h in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7C1A4219FA000AA8FB /* Track.h */; };
+		CE93FD661A65D5FA005BDA76 /* TrackedVehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7D1A4219FA000AA8FB /* TrackedVehicle.cpp */; };
+		CE93FD671A65D5FA005BDA76 /* TrackedVehicle.h in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7E1A4219FA000AA8FB /* TrackedVehicle.h */; };
+		CE93FD681A65D5FA005BDA76 /* TrackKinematicModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7F1A4219FA000AA8FB /* TrackKinematicModel.cpp */; };
+		CE93FD691A65D5FA005BDA76 /* TrackKinematicModel.h in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B801A4219FA000AA8FB /* TrackKinematicModel.h */; };
+		CE93FD6A1A65D5FA005BDA76 /* ODEUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE067A511A43581F0046E5EF /* ODEUtils.cpp */; };
+		CE93FD6B1A65D5FA005BDA76 /* ODEUtils.h in Sources */ = {isa = PBXBuildFile; fileRef = CE067A521A43581F0046E5EF /* ODEUtils.h */; };
+		CE93FD6C1A65D614005BDA76 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */; };
+		CE93FD6D1A65D614005BDA76 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557B1A2E0441000AB866 /* Cocoa.framework */; };
+		CE93FD6E1A65D614005BDA76 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557C1A2E0441000AB866 /* CoreVideo.framework */; };
+		CE93FD6F1A65D614005BDA76 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557D1A2E0441000AB866 /* IOKit.framework */; };
+		CE93FD701A65D614005BDA76 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557E1A2E0441000AB866 /* OpenGL.framework */; };
+		CE93FD711A65D61B005BDA76 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */; };
+		CE93FD721A65D61B005BDA76 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557B1A2E0441000AB866 /* Cocoa.framework */; };
+		CE93FD731A65D61B005BDA76 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557C1A2E0441000AB866 /* CoreVideo.framework */; };
+		CE93FD741A65D61B005BDA76 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557D1A2E0441000AB866 /* IOKit.framework */; };
+		CE93FD751A65D61B005BDA76 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557E1A2E0441000AB866 /* OpenGL.framework */; };
+		CE93FD761A65D62E005BDA76 /* planner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE93FD471A65D27E005BDA76 /* planner.cpp */; };
+		CE93FD771A65D62E005BDA76 /* OMPLTVSControlSpace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E41A1A56F08D00D11EFE /* OMPLTVSControlSpace.cpp */; };
+		CE93FD781A65D62E005BDA76 /* OMPLTVSControlSpace.h in Sources */ = {isa = PBXBuildFile; fileRef = CE46E41B1A56F08D00D11EFE /* OMPLTVSControlSpace.h */; };
+		CE93FD791A65D62E005BDA76 /* OMPLTVSEnvironment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E41C1A56F08D00D11EFE /* OMPLTVSEnvironment.cpp */; };
+		CE93FD7A1A65D62E005BDA76 /* OMPLTVSEnvironment.h in Sources */ = {isa = PBXBuildFile; fileRef = CE46E41D1A56F08D00D11EFE /* OMPLTVSEnvironment.h */; };
+		CE93FD7B1A65D62E005BDA76 /* OMPLTVSSimpleSetup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E41E1A56F08D00D11EFE /* OMPLTVSSimpleSetup.cpp */; };
+		CE93FD7C1A65D62E005BDA76 /* OMPLTVSSimpleSetup.h in Sources */ = {isa = PBXBuildFile; fileRef = CE46E41F1A56F08D00D11EFE /* OMPLTVSSimpleSetup.h */; };
+		CE93FD7D1A65D62E005BDA76 /* OMPLTVSStatePropagator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E4201A56F08D00D11EFE /* OMPLTVSStatePropagator.cpp */; };
+		CE93FD7E1A65D62E005BDA76 /* OMPLTVSStatePropagator.h in Sources */ = {isa = PBXBuildFile; fileRef = CE46E4211A56F08D00D11EFE /* OMPLTVSStatePropagator.h */; };
+		CE93FD7F1A65D62E005BDA76 /* OMPLTVSStateSpace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E4221A56F08D00D11EFE /* OMPLTVSStateSpace.cpp */; };
+		CE93FD801A65D62E005BDA76 /* OMPLTVSStateSpace.h in Sources */ = {isa = PBXBuildFile; fileRef = CE46E4231A56F08D00D11EFE /* OMPLTVSStateSpace.h */; };
+		CE93FD811A65D62E005BDA76 /* OMPLTVSStateValidityChecker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE46E4241A56F08D00D11EFE /* OMPLTVSStateValidityChecker.cpp */; };
+		CE93FD821A65D62E005BDA76 /* OMPLTVSStateValidityChecker.h in Sources */ = {isa = PBXBuildFile; fileRef = CE46E4251A56F08D00D11EFE /* OMPLTVSStateValidityChecker.h */; };
+		CE93FD831A65D62E005BDA76 /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE7B05091A4220280022D473 /* Environment.cpp */; };
+		CE93FD841A65D62E005BDA76 /* Environment.h in Sources */ = {isa = PBXBuildFile; fileRef = CE7B050A1A4220280022D473 /* Environment.h */; };
+		CE93FD851A65D62E005BDA76 /* Track.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7B1A4219FA000AA8FB /* Track.cpp */; };
+		CE93FD861A65D62E005BDA76 /* Track.h in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7C1A4219FA000AA8FB /* Track.h */; };
+		CE93FD871A65D62E005BDA76 /* TrackedVehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7D1A4219FA000AA8FB /* TrackedVehicle.cpp */; };
+		CE93FD881A65D62E005BDA76 /* TrackedVehicle.h in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7E1A4219FA000AA8FB /* TrackedVehicle.h */; };
+		CE93FD891A65D62E005BDA76 /* TrackKinematicModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B7F1A4219FA000AA8FB /* TrackKinematicModel.cpp */; };
+		CE93FD8A1A65D62E005BDA76 /* TrackKinematicModel.h in Sources */ = {isa = PBXBuildFile; fileRef = CEA84B801A4219FA000AA8FB /* TrackKinematicModel.h */; };
+		CE93FD8B1A65D62E005BDA76 /* ODEUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE067A511A43581F0046E5EF /* ODEUtils.cpp */; };
+		CE93FD8C1A65D62E005BDA76 /* ODEUtils.h in Sources */ = {isa = PBXBuildFile; fileRef = CE067A521A43581F0046E5EF /* ODEUtils.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		CE98939B1A2C8ED300E79C12 /* CopyFiles */ = {
+		CE93FD4D1A65D2D8005BDA76 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		CE93FD581A65D2E1005BDA76 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -59,10 +92,12 @@
 		CE6C895C1A2F44BA0054F8E0 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../../System/Library/Frameworks/GLUT.framework; sourceTree = "<group>"; };
 		CE7B05091A4220280022D473 /* Environment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Environment.cpp; path = ../Environment.cpp; sourceTree = "<group>"; };
 		CE7B050A1A4220280022D473 /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Environment.h; path = ../Environment.h; sourceTree = "<group>"; };
-		CE98939D1A2C8ED300E79C12 /* tvs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tvs; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE93FD471A65D27E005BDA76 /* planner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = planner.cpp; path = ../planner.cpp; sourceTree = "<group>"; };
+		CE93FD481A65D27E005BDA76 /* simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = simulator.cpp; path = ../simulator.cpp; sourceTree = "<group>"; };
+		CE93FD4F1A65D2D8005BDA76 /* simulator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulator; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE93FD5A1A65D2E1005BDA76 /* planner */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = planner; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEA84B741A4219FA000AA8FB /* Heightfield.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Heightfield.cpp; path = ../Heightfield.cpp; sourceTree = "<group>"; };
 		CEA84B751A4219FA000AA8FB /* Heightfield.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Heightfield.h; path = ../Heightfield.h; sourceTree = "<group>"; };
-		CEA84B761A4219FA000AA8FB /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
 		CEA84B791A4219FA000AA8FB /* PointCloud.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PointCloud.cpp; path = ../PointCloud.cpp; sourceTree = "<group>"; };
 		CEA84B7A1A4219FA000AA8FB /* PointCloud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PointCloud.h; path = ../PointCloud.h; sourceTree = "<group>"; };
 		CEA84B7B1A4219FA000AA8FB /* Track.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Track.cpp; path = ../Track.cpp; sourceTree = "<group>"; };
@@ -79,15 +114,27 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		CE98939A1A2C8ED300E79C12 /* Frameworks */ = {
+		CE93FD4C1A65D2D8005BDA76 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CEE5557F1A2E0441000AB866 /* Cocoa.framework in Frameworks */,
-				CEE555821A2E0441000AB866 /* OpenGL.framework in Frameworks */,
-				CEE555801A2E0441000AB866 /* CoreVideo.framework in Frameworks */,
-				CE6C895D1A2F44BA0054F8E0 /* GLUT.framework in Frameworks */,
-				CEE555811A2E0441000AB866 /* IOKit.framework in Frameworks */,
+				CE93FD6C1A65D614005BDA76 /* GLUT.framework in Frameworks */,
+				CE93FD6D1A65D614005BDA76 /* Cocoa.framework in Frameworks */,
+				CE93FD6E1A65D614005BDA76 /* CoreVideo.framework in Frameworks */,
+				CE93FD6F1A65D614005BDA76 /* IOKit.framework in Frameworks */,
+				CE93FD701A65D614005BDA76 /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE93FD571A65D2E1005BDA76 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE93FD711A65D61B005BDA76 /* GLUT.framework in Frameworks */,
+				CE93FD721A65D61B005BDA76 /* Cocoa.framework in Frameworks */,
+				CE93FD731A65D61B005BDA76 /* CoreVideo.framework in Frameworks */,
+				CE93FD741A65D61B005BDA76 /* IOKit.framework in Frameworks */,
+				CE93FD751A65D61B005BDA76 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,7 +157,8 @@
 		CE98939E1A2C8ED300E79C12 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CE98939D1A2C8ED300E79C12 /* tvs */,
+				CE93FD4F1A65D2D8005BDA76 /* simulator */,
+				CE93FD5A1A65D2E1005BDA76 /* planner */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -118,6 +166,8 @@
 		CEE555711A2C8F80000AB866 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CE93FD471A65D27E005BDA76 /* planner.cpp */,
+				CE93FD481A65D27E005BDA76 /* simulator.cpp */,
 				CE46E41A1A56F08D00D11EFE /* OMPLTVSControlSpace.cpp */,
 				CE46E41B1A56F08D00D11EFE /* OMPLTVSControlSpace.h */,
 				CE46E41C1A56F08D00D11EFE /* OMPLTVSEnvironment.cpp */,
@@ -134,7 +184,6 @@
 				CE7B050A1A4220280022D473 /* Environment.h */,
 				CEA84B741A4219FA000AA8FB /* Heightfield.cpp */,
 				CEA84B751A4219FA000AA8FB /* Heightfield.h */,
-				CEA84B761A4219FA000AA8FB /* main.cpp */,
 				CEA84B791A4219FA000AA8FB /* PointCloud.cpp */,
 				CEA84B7A1A4219FA000AA8FB /* PointCloud.h */,
 				CEA84B7B1A4219FA000AA8FB /* Track.cpp */,
@@ -153,21 +202,38 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		CE98939C1A2C8ED300E79C12 /* tvs */ = {
+		CE93FD4E1A65D2D8005BDA76 /* simulator */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CE9893A41A2C8ED300E79C12 /* Build configuration list for PBXNativeTarget "tvs" */;
+			buildConfigurationList = CE93FD531A65D2D8005BDA76 /* Build configuration list for PBXNativeTarget "simulator" */;
 			buildPhases = (
-				CE9893991A2C8ED300E79C12 /* Sources */,
-				CE98939A1A2C8ED300E79C12 /* Frameworks */,
-				CE98939B1A2C8ED300E79C12 /* CopyFiles */,
+				CE93FD4B1A65D2D8005BDA76 /* Sources */,
+				CE93FD4C1A65D2D8005BDA76 /* Frameworks */,
+				CE93FD4D1A65D2D8005BDA76 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = tvs;
-			productName = tvs;
-			productReference = CE98939D1A2C8ED300E79C12 /* tvs */;
+			name = simulator;
+			productName = simulator;
+			productReference = CE93FD4F1A65D2D8005BDA76 /* simulator */;
+			productType = "com.apple.product-type.tool";
+		};
+		CE93FD591A65D2E1005BDA76 /* planner */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE93FD5E1A65D2E1005BDA76 /* Build configuration list for PBXNativeTarget "planner" */;
+			buildPhases = (
+				CE93FD561A65D2E1005BDA76 /* Sources */,
+				CE93FD571A65D2E1005BDA76 /* Frameworks */,
+				CE93FD581A65D2E1005BDA76 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = planner;
+			productName = planner;
+			productReference = CE93FD5A1A65D2E1005BDA76 /* planner */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -179,8 +245,11 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Federico Ferri";
 				TargetAttributes = {
-					CE98939C1A2C8ED300E79C12 = {
-						CreatedOnToolsVersion = 6.1;
+					CE93FD4E1A65D2D8005BDA76 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+					CE93FD591A65D2E1005BDA76 = {
+						CreatedOnToolsVersion = 6.1.1;
 					};
 				};
 			};
@@ -196,37 +265,188 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CE98939C1A2C8ED300E79C12 /* tvs */,
+				CE93FD4E1A65D2D8005BDA76 /* simulator */,
+				CE93FD591A65D2E1005BDA76 /* planner */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		CE9893991A2C8ED300E79C12 /* Sources */ = {
+		CE93FD4B1A65D2D8005BDA76 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE46E4291A56F08D00D11EFE /* OMPLTVSStatePropagator.cpp in Sources */,
-				CE46E42B1A56F08D00D11EFE /* OMPLTVSStateValidityChecker.cpp in Sources */,
-				CEA84B871A4219FA000AA8FB /* PointCloud.cpp in Sources */,
-				CE46E4261A56F08D00D11EFE /* OMPLTVSControlSpace.cpp in Sources */,
-				CEA84B851A4219FA000AA8FB /* main.cpp in Sources */,
-				CEA84B8C1A4219FA000AA8FB /* fe.c in Sources */,
-				CE067A531A43581F0046E5EF /* ODEUtils.cpp in Sources */,
-				CE7B050B1A4220280022D473 /* Environment.cpp in Sources */,
-				CEA84B881A4219FA000AA8FB /* Track.cpp in Sources */,
-				CE46E4281A56F08D00D11EFE /* OMPLTVSSimpleSetup.cpp in Sources */,
-				CEA84B841A4219FA000AA8FB /* Heightfield.cpp in Sources */,
-				CE46E4271A56F08D00D11EFE /* OMPLTVSEnvironment.cpp in Sources */,
-				CEA84B8A1A4219FA000AA8FB /* TrackKinematicModel.cpp in Sources */,
-				CEA84B891A4219FA000AA8FB /* TrackedVehicle.cpp in Sources */,
-				CE46E42A1A56F08D00D11EFE /* OMPLTVSStateSpace.cpp in Sources */,
+				CE93FD611A65D5FA005BDA76 /* simulator.cpp in Sources */,
+				CE93FD621A65D5FA005BDA76 /* Environment.cpp in Sources */,
+				CE93FD631A65D5FA005BDA76 /* Environment.h in Sources */,
+				CE93FD641A65D5FA005BDA76 /* Track.cpp in Sources */,
+				CE93FD651A65D5FA005BDA76 /* Track.h in Sources */,
+				CE93FD661A65D5FA005BDA76 /* TrackedVehicle.cpp in Sources */,
+				CE93FD671A65D5FA005BDA76 /* TrackedVehicle.h in Sources */,
+				CE93FD681A65D5FA005BDA76 /* TrackKinematicModel.cpp in Sources */,
+				CE93FD691A65D5FA005BDA76 /* TrackKinematicModel.h in Sources */,
+				CE93FD6A1A65D5FA005BDA76 /* ODEUtils.cpp in Sources */,
+				CE93FD6B1A65D5FA005BDA76 /* ODEUtils.h in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE93FD561A65D2E1005BDA76 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE93FD761A65D62E005BDA76 /* planner.cpp in Sources */,
+				CE93FD771A65D62E005BDA76 /* OMPLTVSControlSpace.cpp in Sources */,
+				CE93FD781A65D62E005BDA76 /* OMPLTVSControlSpace.h in Sources */,
+				CE93FD791A65D62E005BDA76 /* OMPLTVSEnvironment.cpp in Sources */,
+				CE93FD7A1A65D62E005BDA76 /* OMPLTVSEnvironment.h in Sources */,
+				CE93FD7B1A65D62E005BDA76 /* OMPLTVSSimpleSetup.cpp in Sources */,
+				CE93FD7C1A65D62E005BDA76 /* OMPLTVSSimpleSetup.h in Sources */,
+				CE93FD7D1A65D62E005BDA76 /* OMPLTVSStatePropagator.cpp in Sources */,
+				CE93FD7E1A65D62E005BDA76 /* OMPLTVSStatePropagator.h in Sources */,
+				CE93FD7F1A65D62E005BDA76 /* OMPLTVSStateSpace.cpp in Sources */,
+				CE93FD801A65D62E005BDA76 /* OMPLTVSStateSpace.h in Sources */,
+				CE93FD811A65D62E005BDA76 /* OMPLTVSStateValidityChecker.cpp in Sources */,
+				CE93FD821A65D62E005BDA76 /* OMPLTVSStateValidityChecker.h in Sources */,
+				CE93FD831A65D62E005BDA76 /* Environment.cpp in Sources */,
+				CE93FD841A65D62E005BDA76 /* Environment.h in Sources */,
+				CE93FD851A65D62E005BDA76 /* Track.cpp in Sources */,
+				CE93FD861A65D62E005BDA76 /* Track.h in Sources */,
+				CE93FD871A65D62E005BDA76 /* TrackedVehicle.cpp in Sources */,
+				CE93FD881A65D62E005BDA76 /* TrackedVehicle.h in Sources */,
+				CE93FD891A65D62E005BDA76 /* TrackKinematicModel.cpp in Sources */,
+				CE93FD8A1A65D62E005BDA76 /* TrackKinematicModel.h in Sources */,
+				CE93FD8B1A65D62E005BDA76 /* ODEUtils.cpp in Sources */,
+				CE93FD8C1A65D62E005BDA76 /* ODEUtils.h in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		CE93FD541A65D2D8005BDA76 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					OSX,
+					AMD64,
+					DEBUG,
+					"DRAWSTUFF_TEXTURE_PATH=\\\"$(SRCROOT)/../textures\\\"",
+					"CONFIG_PATH=\\\"$(SRCROOT)/..\\\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../ode/include",
+					/opt/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../../ode/ode/src/.libs",
+					"$(SRCROOT)/../../ode/drawstuff/src/.libs",
+					/opt/local/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-lode",
+					"-ldrawstuff",
+					"-lboost_system-mt",
+					"-lboost_thread-mt",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		CE93FD551A65D2D8005BDA76 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					OSX,
+					AMD64,
+					"DRAWSTUFF_TEXTURE_PATH=\\\"$(SRCROOT)/../textures\\\"",
+					"CONFIG_PATH=\\\"$(SRCROOT)/..\\\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../ode/include",
+					/opt/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../../ode/ode/src/.libs",
+					"$(SRCROOT)/../../ode/drawstuff/src/.libs",
+					/opt/local/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-lode",
+					"-ldrawstuff",
+					"-lboost_system-mt",
+					"-lboost_thread-mt",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		CE93FD5F1A65D2E1005BDA76 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					OSX,
+					AMD64,
+					DEBUG,
+					"DRAWSTUFF_TEXTURE_PATH=\\\"$(SRCROOT)/../textures\\\"",
+					"CONFIG_PATH=\\\"$(SRCROOT)/..\\\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../ode/include",
+					/opt/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../../ode/ode/src/.libs",
+					"$(SRCROOT)/../../ode/drawstuff/src/.libs",
+					/opt/local/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-lompl",
+					"-lode",
+					"-ldrawstuff",
+					"-lboost_system-mt",
+					"-lboost_thread-mt",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		CE93FD601A65D2E1005BDA76 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					OSX,
+					AMD64,
+					"DRAWSTUFF_TEXTURE_PATH=\\\"$(SRCROOT)/../textures\\\"",
+					"CONFIG_PATH=\\\"$(SRCROOT)/..\\\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../ode/include",
+					/opt/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../../ode/ode/src/.libs",
+					"$(SRCROOT)/../../ode/drawstuff/src/.libs",
+					/opt/local/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-lompl",
+					"-lode",
+					"-ldrawstuff",
+					"-lboost_system-mt",
+					"-lboost_thread-mt",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		CE9893A21A2C8ED300E79C12 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -301,82 +521,30 @@
 			};
 			name = Release;
 		};
-		CE9893A51A2C8ED300E79C12 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DRAWSTUFF_TEXTURE_PATH=\\\"$SRCROOT/../textures\\\"",
-					"DEBUG=1",
-					"POINTCLOUDS_PATH=\\\"$SRCROOT/../pointclouds\\\"",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					$SRCROOT/../../ode/include,
-					/opt/local/include,
-				);
-				OTHER_LDFLAGS = (
-					"-L$SRCROOT/../../ode/ode/src/.libs",
-					"-lode",
-					"-L$SRCROOT/../../ode/drawstuff/src/.libs",
-					"-ldrawstuff",
-					"-lstdc++",
-					"-lm",
-					"-L/opt/local/lib",
-					"-lompl",
-					"-lboost_system-mt",
-					"-lboost_thread-mt",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		CE9893A61A2C8ED300E79C12 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DRAWSTUFF_TEXTURE_PATH=\\\"$SRCROOT/../textures\\\"",
-					"POINTCLOUDS_PATH=\\\"$SRCROOT/../pointclouds\\\"",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					$SRCROOT/../../ode/include,
-					/opt/local/include,
-				);
-				OTHER_LDFLAGS = (
-					"-L$SRCROOT/../../ode/ode/src/.libs",
-					"-lode",
-					"-L$SRCROOT/../../ode/drawstuff/src/.libs",
-					"-ldrawstuff",
-					"-lstdc++",
-					"-lm",
-					"-L/opt/local/lib",
-					"-lompl",
-					"-lboost_system-mt",
-					"-lboost_thread-mt",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		CE93FD531A65D2D8005BDA76 /* Build configuration list for PBXNativeTarget "simulator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE93FD541A65D2D8005BDA76 /* Debug */,
+				CE93FD551A65D2D8005BDA76 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		CE93FD5E1A65D2E1005BDA76 /* Build configuration list for PBXNativeTarget "planner" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE93FD5F1A65D2E1005BDA76 /* Debug */,
+				CE93FD601A65D2E1005BDA76 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		CE9893981A2C8ED300E79C12 /* Build configuration list for PBXProject "tvs" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CE9893A21A2C8ED300E79C12 /* Debug */,
 				CE9893A31A2C8ED300E79C12 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		CE9893A41A2C8ED300E79C12 /* Build configuration list for PBXNativeTarget "tvs" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				CE9893A51A2C8ED300E79C12 /* Debug */,
-				CE9893A61A2C8ED300E79C12 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

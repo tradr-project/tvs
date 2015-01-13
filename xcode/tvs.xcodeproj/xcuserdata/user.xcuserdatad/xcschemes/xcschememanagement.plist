@@ -4,6 +4,16 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>planner.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
+		<key>simulator.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>tvs.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -12,6 +22,16 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>CE93FD4E1A65D2D8005BDA76</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>CE93FD591A65D2E1005BDA76</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>CE98939C1A2C8ED300E79C12</key>
 		<dict>
 			<key>primary</key>
