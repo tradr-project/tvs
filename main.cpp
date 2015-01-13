@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
         ompl::base::RealVectorBounds bounds(3);
         bounds.setLow(0, -2); bounds.setHigh(0, 8);
         bounds.setLow(1,  0); bounds.setHigh(1, 9);
-        bounds.setLow(2,  0); bounds.setHigh(2, 2);
+        bounds.setLow(2,  -0.1); bounds.setHigh(2, 2);
         stateSpace->as<ompl::control::OMPLTVSStateSpace>()->setVolumeBounds(bounds);
         setup.setup();
         if (setup.solve(600)) {
