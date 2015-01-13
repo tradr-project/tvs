@@ -50,8 +50,10 @@ void stop() {
 void printInfo() {
     const dReal *p = environment->v->getPosition();
     const dReal *q = environment->v->getQuaternion();
+    const dReal *R = environment->v->getRotation();
     std::cout << "position: " << p[0] << ", " << p[1] << ", " << p[2] << std::endl;
     std::cout << "orientation: " << q[0] << ", " << q[1] << ", " << q[2] << ", " << q[3] << std::endl;
+    std::cout << "z: " << R[2] << ", " << R[6] << ", " << R[10] << std::endl;
 }
 
 void command(int cmd) {
