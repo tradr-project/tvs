@@ -30,10 +30,8 @@ void joy_poll() {
         if(ev.type == EV_ABS) {
             if(ev.code == ABS_Y) {
                 joy_l = (ev.value - 127) / 127.0 * environment->config.world.max_track_speed;
-                std::cout << "L = " << joy_l << std::endl;
             } else if(ev.code == ABS_RZ) {
                 joy_r = (ev.value - 127) / 127.0 * environment->config.world.max_track_speed;
-                std::cout << "R = " << joy_r << std::endl;
             }
         }
     }
