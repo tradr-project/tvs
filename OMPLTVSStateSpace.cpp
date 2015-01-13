@@ -52,14 +52,14 @@ unsigned int ompl::control::OMPLTVSStateProjectionEvaluator::getDimension(void) 
 void ompl::control::OMPLTVSStateProjectionEvaluator::defaultCellSizes(void)
 {
     cellSizes_.resize(3);
-    cellSizes_[0] = 1;
-    cellSizes_[1] = 1;
-    cellSizes_[2] = 1;
+    cellSizes_[0] = 0.333;
+    cellSizes_[1] = 0.333;
+    cellSizes_[2] = 0.2;
 }
 
 void ompl::control::OMPLTVSStateProjectionEvaluator::project(const ompl::base::State *state, ompl::base::EuclideanProjection &projection) const
 {
-    const double *pos = state->as<OMPLTVSStateSpace::StateType>()->getPosition();
+    const double *pos = state->as<OMPLTVSStateSpace::StateType>()->getBodyPosition(0);
     projection[0] = pos[0];
     projection[1] = pos[1];
     projection[2] = pos[2];
@@ -75,17 +75,21 @@ ompl::control::OMPLTVSStateSpace::OMPLTVSStateSpace(const OMPLTVSEnvironmentPtr 
 
     std::string body = ""; // unused
 
-    addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), positionWeight); // position
-    components_.back()->setName(components_.back()->getName() + body + ":position");
-    
-    addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), linVelWeight);   // linear velocity
-    components_.back()->setName(components_.back()->getName() + body + ":linvel");
-    
-    addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), angVelWeight);   // angular velocity
-    components_.back()->setName(components_.back()->getName() + body + ":angvel");
-    
-    addSubspace(base::StateSpacePtr(new base::SO3StateSpace()), orientationWeight);      // orientation
-    components_.back()->setName(components_.back()->getName() + body + ":orientation");
+    for(size_t i = 0; i < env_->env_->v->bodyArraySize; i++) {
+        std::string body = ":B" + boost::lexical_cast<std::string>(i);
+
+        addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), positionWeight); // position
+        components_.back()->setName(components_.back()->getName() + body + ":position");
+        
+        addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), linVelWeight);   // linear velocity
+        components_.back()->setName(components_.back()->getName() + body + ":linvel");
+        
+        addSubspace(base::StateSpacePtr(new base::RealVectorStateSpace(3)), angVelWeight);   // angular velocity
+        components_.back()->setName(components_.back()->getName() + body + ":angvel");
+        
+        addSubspace(base::StateSpacePtr(new base::SO3StateSpace()), orientationWeight);      // orientation
+        components_.back()->setName(components_.back()->getName() + body + ":orientation");
+    }
 
     lock(); // prevents modification of subspaces
     setDefaultBounds();
@@ -197,22 +201,25 @@ bool ompl::control::OMPLTVSStateSpace::evaluateCollision(const base::State *stat
 bool ompl::control::OMPLTVSStateSpace::satisfiesBoundsExceptRotation(const StateType *state) const
 {
     for (unsigned int i = 0 ; i < componentCount_ ; ++i)
-        if (i % 4 != 3)
+        if (i % NUM_COMPONENTS != COMPONENT_ROTATION)
             if (!components_[i]->satisfiesBounds(state->components[i]))
                 return false;
     return true;
 }
 
 void ompl::control::OMPLTVSStateSpace::setVolumeBounds(const base::RealVectorBounds &bounds) {
-    components_[COMPONENT_POSITION]->as<base::RealVectorStateSpace>()->setBounds(bounds);
+    for(size_t i = 0; i < env_->env_->v->bodyArraySize; i++)
+        components_[i * NUM_COMPONENTS + COMPONENT_POSITION]->as<base::RealVectorStateSpace>()->setBounds(bounds);
 }
 
 void ompl::control::OMPLTVSStateSpace::setLinearVelocityBounds(const base::RealVectorBounds &bounds) {
-    components_[COMPONENT_LINEAR_VELOCITY]->as<base::RealVectorStateSpace>()->setBounds(bounds);
+    for(size_t i = 0; i < env_->env_->v->bodyArraySize; i++)
+        components_[i * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY]->as<base::RealVectorStateSpace>()->setBounds(bounds);
 }
 
 void ompl::control::OMPLTVSStateSpace::setAngularVelocityBounds(const base::RealVectorBounds &bounds) {
-    components_[COMPONENT_ANGULAR_VELOCITY]->as<base::RealVectorStateSpace>()->setBounds(bounds);
+    for(size_t i = 0; i < env_->env_->v->bodyArraySize; i++)
+        components_[i * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY]->as<base::RealVectorStateSpace>()->setBounds(bounds);
 }
 
 ompl::base::State* ompl::control::OMPLTVSStateSpace::allocState() const
@@ -291,27 +298,27 @@ void ompl::control::OMPLTVSStateSpace::readState(base::State *state) const
 {
     StateType *s = state->as<StateType>();
 
-    const dReal *pos = env_->env_->v->getPosition();
-    const dReal *vel = env_->env_->v->getLinearVel();
-    const dReal *ang = env_->env_->v->getAngularVel();
-    const dReal *rot = env_->env_->v->getQuaternion();
-    double *s_pos = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_POSITION)->values;
-    double *s_vel = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_LINEAR_VELOCITY)->values;
-    double *s_ang = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_ANGULAR_VELOCITY)->values;
-    base::SO3StateSpace::StateType &s_rot = *s->as<base::SO3StateSpace::StateType>(COMPONENT_ROTATION);
+    for(int i = env_->env_->v->bodyArraySize - 1; i >= 0; --i) {
+        const dReal *pos = dBodyGetPosition(env_->env_->v->bodyArray[i]);
+        const dReal *vel = dBodyGetLinearVel(env_->env_->v->bodyArray[i]);
+        const dReal *ang = dBodyGetAngularVel(env_->env_->v->bodyArray[i]);
+        const dReal *rot = dBodyGetQuaternion(env_->env_->v->bodyArray[i]);
+        double *s_pos = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_POSITION)->values;
+        double *s_vel = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY)->values;
+        double *s_ang = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY)->values;
+        base::SO3StateSpace::StateType &s_rot = *s->as<base::SO3StateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ROTATION);
 
-    for (int j = 0; j < 3; ++j)
-    {
-        s_pos[j] = pos[j];
-        s_vel[j] = vel[j];
-        s_ang[j] = ang[j];
+        for (int j = 0; j < 3; ++j) {
+            s_pos[j] = pos[j];
+            s_vel[j] = vel[j];
+            s_ang[j] = ang[j];
+        }
+
+        s_rot.w = rot[0];
+        s_rot.x = rot[1];
+        s_rot.y = rot[2];
+        s_rot.z = rot[3];
     }
-
-    s_rot.w = rot[0];
-    s_rot.x = rot[1];
-    s_rot.y = rot[2];
-    s_rot.z = rot[3];
-
     s->collision = 0;
 }
 
@@ -319,26 +326,29 @@ void ompl::control::OMPLTVSStateSpace::writeState(const base::State *state) cons
 {
     const StateType *s = state->as<StateType>();
 
-    double *s_pos = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_POSITION)->values;
-    double *s_vel = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_LINEAR_VELOCITY)->values;
-    double *s_ang = s->as<base::RealVectorStateSpace::StateType>(COMPONENT_ANGULAR_VELOCITY)->values;
-    const base::SO3StateSpace::StateType &s_rot = *s->as<base::SO3StateSpace::StateType>(COMPONENT_ROTATION);
-    
-    dQuaternion q;
-    q[0] = s_rot.w;
-    q[1] = s_rot.x;
-    q[2] = s_rot.y;
-    q[3] = s_rot.z;
-    
-    env_->env_->v->setPosition(s_pos);
-    env_->env_->v->setVel(s_vel, s_ang);
-    env_->env_->v->setQuaternion(q);
+    for(int i = env_->env_->v->bodyArraySize - 1; i >= 0; --i) {
+        double *s_pos = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_POSITION)->values;
+        double *s_vel = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY)->values;
+        double *s_ang = s->as<base::RealVectorStateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY)->values;
+        const base::SO3StateSpace::StateType &s_rot = *s->as<base::SO3StateSpace::StateType>(i * NUM_COMPONENTS + COMPONENT_ROTATION);
+        
+        dQuaternion q;
+        q[0] = s_rot.w;
+        q[1] = s_rot.x;
+        q[2] = s_rot.y;
+        q[3] = s_rot.z;
+        
+        dBodySetPosition(env_->env_->v->bodyArray[i], s_pos[0], s_pos[1], s_pos[2]);
+        dBodySetLinearVel(env_->env_->v->bodyArray[i], s_vel[0], s_vel[1], s_vel[2]);
+        dBodySetAngularVel(env_->env_->v->bodyArray[i], s_ang[0], s_ang[1], s_ang[2]);
+        dBodySetQuaternion(env_->env_->v->bodyArray[i], q);
+    }
 }
 
 double ompl::control::OMPLTVSStateSpace::distance(const base::State *s1, const base::State *s2) const
 {
-    const double *p1 = s1->as<OMPLTVSStateSpace::StateType>()->getPosition();
-    const double *p2 = s2->as<OMPLTVSStateSpace::StateType>()->getPosition();
+    const double *p1 = s1->as<OMPLTVSStateSpace::StateType>()->getBodyPosition(0);
+    const double *p2 = s2->as<OMPLTVSStateSpace::StateType>()->getBodyPosition(0);
     double dx = fabs(p1[0] - p2[0]);
     double dy = fabs(p1[1] - p2[1]);
     double dz = fabs(p1[2] - p2[2]);

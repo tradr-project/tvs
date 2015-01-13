@@ -90,52 +90,52 @@ namespace ompl
                 {
                 }
 
-                /** \brief Get the position (x, y, z) */
-                const double* getPosition() const
+                /** \brief Get the position (x, y, z) of the body at index \e body */
+                const double* getBodyPosition(unsigned int body) const
                 {
-                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_POSITION)->values;
+                    return as<base::RealVectorStateSpace::StateType>(body * NUM_COMPONENTS + COMPONENT_POSITION)->values;
                 }
 
-                /** \brief Get the position (x, y, z) */
-                double* getPosition()
+                /** \brief Get the position (x, y, z) of the body at index \e body */
+                double* getBodyPosition(unsigned int body)
                 {
-                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_POSITION)->values;
+                    return as<base::RealVectorStateSpace::StateType>(body * NUM_COMPONENTS + COMPONENT_POSITION)->values;
                 }
 
-                /** \brief Get the quaternion */
-                const base::SO3StateSpace::StateType& getRotation() const
+                /** \brief Get the quaternion of the body at index \e body */
+                const base::SO3StateSpace::StateType& getBodyRotation(unsigned int body) const
                 {
-                    return *as<base::SO3StateSpace::StateType>(COMPONENT_ROTATION);
+                    return *as<base::SO3StateSpace::StateType>(body * NUM_COMPONENTS + COMPONENT_ROTATION);
                 }
 
-                /** \brief Get the quaternion */
-                base::SO3StateSpace::StateType& getRotation()
+                /** \brief Get the quaternion of the body at index \e body */
+                base::SO3StateSpace::StateType& getBodyRotation(unsigned int body)
                 {
-                    return *as<base::SO3StateSpace::StateType>(COMPONENT_ROTATION);
+                    return *as<base::SO3StateSpace::StateType>(body * NUM_COMPONENTS + COMPONENT_ROTATION);
                 }
 
-                /** \brief Get the linear velocity (x, y, z) */
-                const double* getLinearVelocity() const
+                /** \brief Get the linear velocity (x, y, z) of the body at index \e body */
+                const double* getBodyLinearVelocity(unsigned int body) const
                 {
-                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_LINEAR_VELOCITY)->values;
+                    return as<base::RealVectorStateSpace::StateType>(body * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY)->values;
                 }
 
-                /** \brief Get the linear velocity (x, y, z) */
-                double* getLinearVelocity()
+                /** \brief Get the linear velocity (x, y, z) of the body at index \e body */
+                double* getBodyLinearVelocity(unsigned int body)
                 {
-                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_LINEAR_VELOCITY)->values;
+                    return as<base::RealVectorStateSpace::StateType>(body * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY)->values;
                 }
 
-                /** \brief Get the angular velocity (x, y, z) */
-                const double* getAngularVelocity() const
+                /** \brief Get the angular velocity (x, y, z) of the body at index \e body */
+                const double* getBodyAngularVelocity(unsigned int body) const
                 {
-                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_ANGULAR_VELOCITY)->values;
+                    return as<base::RealVectorStateSpace::StateType>(body * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY)->values;
                 }
 
-                /** \brief Get the angular velocity (x, y, z) */
-                double* getAngularVelocity()
+                /** \brief Get the angular velocity (x, y, z) of the body at index \e body */
+                double* getBodyAngularVelocity(unsigned int body)
                 {
-                    return as<base::RealVectorStateSpace::StateType>(COMPONENT_ANGULAR_VELOCITY)->values;
+                    return as<base::RealVectorStateSpace::StateType>(body * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY)->values;
                 }
 
                 /** \brief Flag containing information about state validity.
