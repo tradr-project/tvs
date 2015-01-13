@@ -20,37 +20,56 @@
 #include "PointCloud.h"
 #include "TriMesh.h"
 
+struct ContactParams {
+    int max_contacts;
+    dReal bounce;
+    dReal bounce_vel;
+    dReal soft_cfm;
+    dReal mu;
+    dReal mu2;
+};
+
+struct StepParams {
+    dReal step_size;
+    int simulation_steps_per_frame;
+};
+
+struct WorldParams {
+    dReal gravity_x, gravity_y, gravity_z;
+};
+
+struct Config {
+    StepParams step;
+    WorldParams world;
+    ContactParams contact_wheel_grouser;
+    ContactParams contact_grouser_terrain;
+    ContactParams contact_grouser_guide;
+    ContactParams contact_default;
+};
+
 class Environment {
 public:
-    boost::property_tree::ptree config;
-    dReal stepSize;
-    int simulationStepsPerFrame;
+    Config config;
 
     dWorldID world;
     dSpaceID space;
     dJointGroupID contactGroup;
+    std::map<dGeomID, std::string> geomNames;
 
     dGeomID planeGeom;
-
     TrackedVehicle *v;
-    PointCloud *pcl;
-    TriMesh *mesh;
-
     std::vector<dGeomID> boxes;
     
     bool badCollision;
-
     size_t stepNum;
-    
-    std::map<dGeomID, std::string> geomNames;
     
     Environment();
     virtual ~Environment();
+    void readConfig();
     void create();
     void destroy();
     std::string getGeomName(dGeomID geom) const;
     void setGeomName(dGeomID geom, const std::string &name);
-    int getMaxContacts(dGeomID o1, dGeomID o2);
     bool isCatPair(unsigned long cat1, unsigned long cat2, dGeomID *o1, dGeomID *o2);
     bool isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact);
     void nearCallback(dGeomID o1, dGeomID o2);
@@ -59,7 +78,7 @@ public:
     void nearCallbackGrouserGuide(dGeomID o1, dGeomID o2);
     void nearCallbackDefault(dGeomID o1, dGeomID o2);
     bool step(dReal stepSize, int simulationStepsPerFrame);
-    inline bool step() {return step(stepSize, simulationStepsPerFrame);}
+    bool step();
     void evaluateCollisionNearCallback(dGeomID o1, dGeomID o2);
     bool evaluateCollision();
     void draw();

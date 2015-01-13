@@ -21,21 +21,7 @@ static const dVector3 extents = {7,7,7};
 static const dReal limit = 2.0;
 
 Environment::Environment() {
-    boost::property_tree::ini_parser::read_ini("simulator.ini", this->config);
-    this->stepSize = 0.01;
-    this->simulationStepsPerFrame = 4;
-
-#define vehicleZoffset 0.0
-#if 0
-#define vehicleZoffset 0.4
-    this->pcl = new PointCloud("problem01-ds.pcd", 0.25);
-    this->mesh = 0L;
-#elif 0
-#define vehicleZoffset 0.0
-    this->pcl = 0L;
-    this->mesh = new TriMesh();
-#endif
-    this->v = new TrackedVehicle("robot", 1, -2, 0.301+vehicleZoffset);
+    this->v = new TrackedVehicle("robot", 1, -2, 0.301);
 }
 
 Environment::~Environment() {
@@ -43,8 +29,29 @@ Environment::~Environment() {
     dSpaceDestroy(this->space);
     dWorldDestroy(this->world);
     delete this->v;
-    if(this->pcl) delete this->pcl;
-    if(this->mesh) delete this->mesh;
+}
+
+static void readContactParams(std::string section, ContactParams* p, const boost::property_tree::ptree& pt) {
+    p->max_contacts = pt.get<int>(section + ".max_contacts");
+    p->bounce = pt.get<dReal>(section + ".bounce");
+    p->bounce_vel = pt.get<dReal>(section + ".bounce_vel");
+    p->soft_cfm = pt.get<dReal>(section + ".soft_cfm");
+    if(pt.get<std::string>(section + ".mu") == "infinity") p->mu = dInfinity; else p->mu = pt.get<dReal>(section + ".mu");
+    if(pt.get<std::string>(section + ".mu2") == "infinity") p->mu2 = dInfinity; else p->mu2 = pt.get<dReal>(section + ".mu2");
+}
+
+void Environment::readConfig() {
+    boost::property_tree::ptree pt;
+    boost::property_tree::ini_parser::read_ini("simulator.ini", pt);
+    config.step.step_size = pt.get<float>("step.step_size", 0.01);
+    config.step.simulation_steps_per_frame = pt.get<int>("step.simulation_steps_per_frame", 4);
+    readContactParams("contact_wheel_grouser", &config.contact_wheel_grouser, pt);
+    readContactParams("contact_grouser_terrain", &config.contact_grouser_terrain, pt);
+    readContactParams("contact_grouser_guide", &config.contact_grouser_guide, pt);
+    readContactParams("contact_default", &config.contact_default, pt);
+    config.world.gravity_x = pt.get<float>("world.gravity_x", 0.0);
+    config.world.gravity_y = pt.get<float>("world.gravity_y", 0.0);
+    config.world.gravity_z = pt.get<float>("world.gravity_z", 0.0);
 }
 
 inline dGeomID createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y2, dReal z2, dReal rx = 1.0, dReal ry = 0.0, dReal rz = 0.0, dReal rAngle = 0.0) {
@@ -68,7 +75,7 @@ void Environment::create() {
     this->space = dHashSpaceCreate(0);
 #endif
     this->contactGroup = dJointGroupCreate(0);
-    dWorldSetGravity(this->world, 0, 0, -9.81);
+    dWorldSetGravity(this->world, config.world.gravity_x, config.world.gravity_y, config.world.gravity_z);
     //dWorldSetERP(this->world, 0.7);
     //dWorldSetCFM(this->world, 1e-5);
     //dWorldSetContactMaxCorrectingVel(this->world, 0.9);
@@ -81,28 +88,7 @@ void Environment::create() {
     dGeomSetCollideBits(this->planeGeom, Category::GROUSER | Category::OBSTACLE);
 
     this->v->create(this);
-    if(this->pcl) this->pcl->create(this, this->v->getPosition(), limit);
-    if(this->mesh) {
-        this->mesh->create(this, "models/maze.stl");
-        //dGeomSetPosition(this->mesh->geom, 4, 4, -0.001);
-        //dMatrix3 R; dRFromAxisAndAngle(R, 1, 0, 0, M_PI_2);
-        //dGeomSetRotation(this->mesh->geom, R);
-    }
     
-#if 0
-    dVector3 sides = {1,1,1};
-    dGeomID g = dCreateBox(this->space, sides[0], sides[1], sides[2]);
-    dMass m;
-    dMassSetBox(&m, 1, sides[0], sides[1], sides[2]);
-    dBodyID b = dBodyCreate(this->world);
-    dBodySetMass(b, &m);
-    dGeomSetBody(g, b);
-    dBodySetPosition(b, 1, 1, 1);
-    dMatrix3 R;
-    dRFromAxisAndAngle(R, 1, 2, 2, 0.3);
-    dBodySetRotation(b, R);
-#endif
-
     const dReal h = 1.3; // wall height
     const dReal t = 0.1; // wall thickness
     const dReal T = 0.25; // arch thickness
@@ -124,12 +110,9 @@ void Environment::create() {
 
 void Environment::destroy() {
     this->v->destroy();
-    if(this->pcl) this->pcl->destroy();
-    if(this->mesh) this->mesh->destroy();
 }
 
-std::string Environment::getGeomName(dGeomID geom) const
-{
+std::string Environment::getGeomName(dGeomID geom) const {
     std::map<dGeomID, std::string>::const_iterator it = geomNames.find(geom);
     if (it == geomNames.end())
         return boost::lexical_cast<std::string>(reinterpret_cast<unsigned long>(geom));
@@ -137,13 +120,8 @@ std::string Environment::getGeomName(dGeomID geom) const
         return it->second;
 }
 
-void Environment::setGeomName(dGeomID geom, const std::string &name)
-{
+void Environment::setGeomName(dGeomID geom, const std::string &name) {
     geomNames[geom] = name;
-}
-
-int Environment::getMaxContacts(dGeomID o1, dGeomID o2) {
-    return 10;
 }
 
 bool Environment::isCatPair(unsigned long cat1, unsigned long cat2, dGeomID *o1, dGeomID *o2) {
@@ -194,7 +172,7 @@ void Environment::nearCallbackWheelGrouser(dGeomID o1, dGeomID o2) {
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
     if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
-    int maxc = getMaxContacts(o1, o2);
+    int maxc = config.contact_wheel_grouser.max_contacts;
     dContact contact[maxc];
     int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
     for(size_t i = 0; i < numc; i++) {
@@ -202,11 +180,11 @@ void Environment::nearCallbackWheelGrouser(dGeomID o1, dGeomID o2) {
         dCalcVectorCross3(contact[i].fdir1, contact[i].geom.normal, v);
         dSafeNormalize3(contact[i].fdir1);
         contact[i].surface.mode = dContactBounce | dContactSoftCFM | dContactMu2 | dContactFDir1;
-        contact[i].surface.bounce = 0.5;
-        contact[i].surface.bounce_vel = 0.1;
-        contact[i].surface.soft_cfm = 0.0001;
-        contact[i].surface.mu = dInfinity;
-        contact[i].surface.mu2 = dInfinity;
+        contact[i].surface.bounce = config.contact_wheel_grouser.bounce;
+        contact[i].surface.bounce_vel = config.contact_wheel_grouser.bounce_vel;
+        contact[i].surface.soft_cfm = config.contact_wheel_grouser.soft_cfm;
+        contact[i].surface.mu = config.contact_wheel_grouser.mu;
+        contact[i].surface.mu2 = config.contact_wheel_grouser.mu2;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
         if(!isValidCollision(o1, o2, contact[i]))
@@ -218,7 +196,7 @@ void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
     if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
-    int maxc = getMaxContacts(o1, o2);
+    int maxc = config.contact_grouser_terrain.max_contacts;
     dContact contact[maxc];
     int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
     for(size_t i = 0; i < numc; i++) {
@@ -226,11 +204,11 @@ void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
         dCalcVectorCross3(contact[i].fdir1, contact[i].geom.normal, v);
         dSafeNormalize3(contact[i].fdir1);
         contact[i].surface.mode = dContactBounce | dContactSoftCFM | dContactMu2 | dContactFDir1;
-        contact[i].surface.bounce = 0.5;
-        contact[i].surface.bounce_vel = 0.1;
-        contact[i].surface.soft_cfm = 0.0001;
-        contact[i].surface.mu = 2.0;
-        contact[i].surface.mu2 = 0.5;
+        contact[i].surface.bounce = config.contact_grouser_terrain.bounce;
+        contact[i].surface.bounce_vel = config.contact_grouser_terrain.bounce_vel;
+        contact[i].surface.soft_cfm = config.contact_grouser_terrain.soft_cfm;
+        contact[i].surface.mu = config.contact_grouser_terrain.mu;
+        contact[i].surface.mu2 = config.contact_grouser_terrain.mu2;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
         if(!isValidCollision(o1, o2, contact[i]))
@@ -242,15 +220,16 @@ void Environment::nearCallbackGrouserGuide(dGeomID o1, dGeomID o2) {
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
     if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
-    int maxc = 3; // 3 should be enough  //getMaxContacts(o1, o2);
+    int maxc = config.contact_grouser_guide.max_contacts;
     dContact contact[maxc];
     int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
     for(size_t i = 0; i < numc; i++) {
         contact[i].surface.mode = dContactBounce | dContactSoftCFM;
-        contact[i].surface.bounce = 0.5;
-        contact[i].surface.bounce_vel = 0.2;
-        contact[i].surface.soft_cfm = 0.0001;
-        contact[i].surface.mu = 0;
+        contact[i].surface.bounce = config.contact_grouser_guide.bounce;
+        contact[i].surface.bounce_vel = config.contact_grouser_guide.bounce_vel;
+        contact[i].surface.soft_cfm = config.contact_grouser_guide.soft_cfm;
+        contact[i].surface.mu = config.contact_grouser_guide.mu;
+        contact[i].surface.mu2 = config.contact_grouser_guide.mu2;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
         if(!isValidCollision(o1, o2, contact[i]))
@@ -262,15 +241,16 @@ void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
     if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
-    int maxc = getMaxContacts(o1, o2);
+    int maxc = config.contact_default.max_contacts;
     dContact contact[maxc];
     int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
     for(size_t i = 0; i < numc; i++) {
         contact[i].surface.mode = dContactBounce | dContactSoftCFM;
-        contact[i].surface.bounce = 0.5;
-        contact[i].surface.bounce_vel = 0.1;
-        contact[i].surface.soft_cfm = 0.0001;
-        contact[i].surface.mu = 5.0;
+        contact[i].surface.bounce = config.contact_default.bounce;
+        contact[i].surface.bounce_vel = config.contact_default.bounce_vel;
+        contact[i].surface.soft_cfm = config.contact_default.soft_cfm;
+        contact[i].surface.mu = config.contact_default.mu;
+        contact[i].surface.mu2 = config.contact_default.mu2;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
         if(!isValidCollision(o1, o2, contact[i]))
@@ -280,7 +260,6 @@ void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
 
 bool Environment::step(dReal stepSize, int simulationStepsPerFrame) {
     stepNum++;
-    if(!(stepNum % 10) && this->pcl) this->pcl->create(this, this->v->getPosition(), limit);
 
     this->badCollision = false;
     for(size_t i = 0; i < simulationStepsPerFrame; i++) {
@@ -292,6 +271,10 @@ bool Environment::step(dReal stepSize, int simulationStepsPerFrame) {
         dJointGroupEmpty(this->contactGroup);
     }
     return this->badCollision;
+}
+
+bool Environment::step() {
+    return step(config.step.step_size, config.step.simulation_steps_per_frame);
 }
 
 static void evaluateCollisionNearCallbackWrapper(void *data, dGeomID o1, dGeomID o2) {
@@ -320,10 +303,7 @@ bool Environment::evaluateCollision() {
 }
 
 void Environment::draw() {
-    if(this->pcl) this->pcl->draw();
-    if(this->mesh) this->mesh->draw();
     this->v->draw();
-
 
     for(std::vector<dGeomID>::iterator it = boxes.begin(); it != boxes.end(); it++) {
         dsSetColor(0.6, 0.6, 0.7);

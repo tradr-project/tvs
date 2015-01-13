@@ -29,7 +29,7 @@ void OMPLTVSStatePropagator::propagate(const ompl::base::State *state, const omp
     env_->applyControl(control->as<ompl::control::RealVectorControlSpace::ControlType>()->values);
 
     bool collision = false;
-    for(double t = 0; t < duration; t += env_->env_->stepSize) {
+    for(double t = 0; t < duration; t += env_->env_->config.step.step_size) {
         collision = env_->env_->step() || collision;
         if(collision) break;
     }
