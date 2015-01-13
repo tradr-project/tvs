@@ -55,8 +55,13 @@ bool ompl::control::OMPLTVSStateValidityChecker::isValid(const base::State *stat
     // if not, we compute it:
     bool valid = false;
 
-    if (!osm_->evaluateCollision(state))
-        valid = osm_->satisfiesBoundsExceptRotation(s);
+    if (!osm_->evaluateCollision(state)) {
+        bool satBounds = osm_->satisfiesBoundsExceptRotation(s);
+        if(!satBounds) {
+            std::cout << "OMPLTVSStateValidityChecker::isValid(): invalid bounds" << std::endl;
+        }
+        valid = satBounds;
+    }
 
     if (valid)
         s->collision &= (1 << OMPLTVSStateSpace::STATE_VALIDITY_VALUE_BIT);
