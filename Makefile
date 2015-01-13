@@ -29,7 +29,7 @@ else
 			CFLAGS += -DARM
 		endif
         LDLIBS += -lGL -lGLU -lglut -lX11 -lXxf86vm -lXrandr -lpthread -lXi -lboost_system -lboost_thread
-        CFLAGS += -I$(HOME)/omplapp/ompl/src
+        CFLAGS += -I$(HOME)/omplapp/ompl/src -DHAVE_JOYSTICK
         LDLIBS += -L$(HOME)/omplapp/build/Release/lib
     endif
     ifeq ($(UNAME_S),Darwin)
