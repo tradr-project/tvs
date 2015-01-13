@@ -82,6 +82,11 @@ void TrackedVehicle::destroy() {
     dGeomDestroy(this->vehicleGeom);
 }
 
+void TrackedVehicle::step(dReal stepSize) {
+    this->leftTrack->step(stepSize);
+    this->rightTrack->step(stepSize);
+}
+
 void TrackedVehicle::draw() {
     {
         dsSetColor(0, 0, 1);

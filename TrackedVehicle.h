@@ -38,6 +38,7 @@ public:
     virtual ~TrackedVehicle();
     void create(Environment *environment);
     void destroy();
+    void step(dReal stepSize);
     void draw();
     void setTrackVelocities(dReal left, dReal right);
     const dReal * getPosition();

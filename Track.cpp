@@ -30,6 +30,9 @@ Track::Track(const std::string& name_, dReal radius1_, dReal radius2_, dReal dis
     this->numGrousers = numGrousers_;
     this->linkThickness = linkThickness_;
     this->grouserHeight = grouserHeight_;
+    this->requestedVelocity = 0.0;
+    this->actualVelocity = 0.0;
+    this->acceleration = 10000.0;
 }
 
 Track::~Track() {
@@ -142,6 +145,22 @@ void Track::destroy() {
     }
 }
 
+void Track::step(dReal stepSize) {
+    dReal a = 0.0;
+    if(this->actualVelocity < this->requestedVelocity)
+        a = this->acceleration;
+    else if(this->actualVelocity > this->requestedVelocity)
+        a = -this->acceleration;
+    this->actualVelocity += a * stepSize;
+    
+#ifdef DRIVING_WHEEL_FRONT
+    dJointSetHingeParam(this->wheelJoint[0], dParamVel, this->actualVelocity);
+#endif
+#ifdef DRIVING_WHEEL_BACK
+    dJointSetHingeParam(this->wheelJoint[1], dParamVel, this->actualVelocity);
+#endif
+}
+
 void Track::draw() {
     dsSetColor(1, 1, 0);
     for(int w = 0; w < 2; w++) {
@@ -181,10 +200,5 @@ void Track::draw() {
 }
 
 void Track::setVelocity(dReal velocity) {
-#ifdef DRIVING_WHEEL_FRONT
-    dJointSetHingeParam(this->wheelJoint[0], dParamVel, velocity);
-#endif
-#ifdef DRIVING_WHEEL_BACK
-    dJointSetHingeParam(this->wheelJoint[1], dParamVel, velocity);
-#endif
+    this->requestedVelocity = velocity;
 }

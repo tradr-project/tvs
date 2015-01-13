@@ -38,11 +38,15 @@ public:
     size_t numGrousers;
     dReal linkThickness;
     dReal grouserHeight;
+    dReal requestedVelocity;
+    dReal actualVelocity;
+    dReal acceleration;
 
     Track(const std::string& name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal linkThickness_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~Track();
     void create(Environment *environment);
     void destroy();
+    void step(dReal stepSize);
     void draw();
     void setVelocity(dReal velocity);
 };

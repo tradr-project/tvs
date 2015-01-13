@@ -23,6 +23,8 @@ static const dReal limit = 2.0;
 Environment::Environment() {
     readConfig();
     this->v = new TrackedVehicle("robot", 1, -2, 0.301);
+    this->v->leftTrack->acceleration = config.world.track_acceleration;
+    this->v->rightTrack->acceleration = config.world.track_acceleration;
 }
 
 Environment::~Environment() {
@@ -58,6 +60,7 @@ void Environment::readConfig() {
     config.world.gravity_y = pt.get<dReal>("world.gravity_y", 0.0);
     config.world.gravity_z = pt.get<dReal>("world.gravity_z", 0.0);
     config.world.max_track_speed = pt.get<dReal>("world.max_track_speed", 5.0);
+    config.world.track_acceleration = pt.get<dReal>("world.track_acceleration", 200.0);
     config.joystick.enabled = pt.get<unsigned short>("joystick.enabled", 0);
     config.joystick.device = pt.get<std::string>("joystick.device", "");
 }
@@ -269,6 +272,8 @@ void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
 bool Environment::step(dReal stepSize, int simulationStepsPerFrame) {
     stepNum++;
 
+    this->v->step(stepSize);
+    
     this->badCollision = false;
     for(size_t i = 0; i < simulationStepsPerFrame; i++) {
         // find collisions and add contact joints
