@@ -22,6 +22,8 @@ static const dReal limit = 2.0;
 
 Environment::Environment() {
     boost::property_tree::ini_parser::read_ini("simulator.ini", this->config);
+    this->stepSize = 0.01;
+    this->simulationStepsPerFrame = 4;
 
 #define vehicleZoffset 0.0
 #if 0
@@ -46,13 +48,15 @@ Environment::~Environment() {
 }
 
 inline dGeomID createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y2, dReal z2, dReal rx = 1.0, dReal ry = 0.0, dReal rz = 0.0, dReal rAngle = 0.0) {
+    static int i = 0;
     dGeomID g = dCreateBox(e->space, x2 - x1, y2 - y1, z2 - z1);
     dGeomSetPosition(g, x1 + 0.5 * (x2 - x1), y1 + 0.5 * (y2 - y1), z1 + 0.5 * (z2 - z1));
     dMatrix3 R;
     dRFromAxisAndAngle(R, rx, ry, rz, rAngle);
     dGeomSetRotation(g, R);
-    dGeomSetCategoryBits(g, Category::OBSTACLE);
+    dGeomSetCategoryBits(g, Category::TERRAIN);
     dGeomSetCollideBits(g, Category::GROUSER);
+    e->setGeomName(g, "panel" + boost::lexical_cast<std::string>(i++));
     return g;
 }
 
@@ -164,6 +168,8 @@ bool Environment::isValidCollision(dGeomID o1, dGeomID o2, const dContact& conta
         return true;
     if(isCatPair(Category::GROUSER, Category::G_GUIDE, &o1, &o2))
         return true;
+    if(isCatPair(Category::WHEEL, Category::G_GUIDE, &o1, &o2)) // XXX: not needed really
+        return true;
     if(isCatPair(Category::WHEEL, Category::GROUSER, &o1, &o2))
         return true;
     return false;
@@ -247,6 +253,8 @@ void Environment::nearCallbackGrouserGuide(dGeomID o1, dGeomID o2) {
         contact[i].surface.mu = 0;
         dJointID c = dJointCreateContact(this->world, this->contactGroup, &contact[i]);
         dJointAttach(c, b1, b2);
+        if(!isValidCollision(o1, o2, contact[i]))
+            this->badCollision = true;
     }
 }
 

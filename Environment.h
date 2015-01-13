@@ -23,6 +23,8 @@
 class Environment {
 public:
     boost::property_tree::ptree config;
+    dReal stepSize;
+    int simulationStepsPerFrame;
 
     dWorldID world;
     dSpaceID space;
@@ -57,6 +59,7 @@ public:
     void nearCallbackGrouserGuide(dGeomID o1, dGeomID o2);
     void nearCallbackDefault(dGeomID o1, dGeomID o2);
     bool step(dReal stepSize, int simulationStepsPerFrame);
+    inline bool step() {return step(stepSize, simulationStepsPerFrame);}
     void evaluateCollisionNearCallback(dGeomID o1, dGeomID o2);
     bool evaluateCollision();
     void draw();
