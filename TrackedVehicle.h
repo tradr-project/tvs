@@ -44,9 +44,11 @@ public:
     const dReal * getLinearVel();
     const dReal * getAngularVel();
     const dReal * getQuaternion();
+    const dReal * getRotation();
     void setPosition(const dReal *p);
     void setVel(const dReal *linear, const dReal *angular);
     void setQuaternion(const dReal *q);
+    void setRotation(const dReal *R);
 };
 
 #endif // TRACKED_VEHICLE_H_INCLUDED

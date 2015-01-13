@@ -117,6 +117,10 @@ const dReal * TrackedVehicle::getQuaternion() {
     return dBodyGetQuaternion(this->vehicleBody);
 }
 
+const dReal * TrackedVehicle::getRotation() {
+    return dBodyGetRotation(this->vehicleBody);
+}
+
 void TrackedVehicle::setPosition(const dReal *p) {
     dRigidBodyArraySetPosition(this->bodyArray, this->bodyArraySize, this->vehicleBody, p[0], p[1], p[2]);
 }
@@ -127,4 +131,8 @@ void TrackedVehicle::setVel(const dReal *linear, const dReal *angular) {
 
 void TrackedVehicle::setQuaternion(const dReal *q) {
     dRigidBodyArraySetQuaternion(this->bodyArray, this->bodyArraySize, this->vehicleBody, q);
+}
+
+void TrackedVehicle::setRotation(const dReal *R) {
+    dRigidBodyArraySetRotation(this->bodyArray, this->bodyArraySize, this->vehicleBody, R);
 }
