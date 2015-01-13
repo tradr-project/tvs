@@ -37,9 +37,15 @@ struct WorldParams {
     dReal max_track_speed;
 };
 
+struct JoystickParams {
+    unsigned short enabled;
+    std::string device;
+};
+
 struct Config {
     StepParams step;
     WorldParams world;
+    JoystickParams joystick;
     ContactParams contact_wheel_grouser;
     ContactParams contact_grouser_terrain;
     ContactParams contact_grouser_guide;

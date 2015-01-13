@@ -14,10 +14,9 @@
 static int joy = -1;
 dReal joy_l = 0.0, joy_r = 0.0;
 
-void joy_open() {
-    joy = open("/dev/input/by-id/usb-Logitech_Logitech_Cordless_RumblePad_2-event-joystick", O_RDONLY | O_NONBLOCK);
+void joy_open(const char *device) {
+    joy = open(device, O_RDONLY | O_NONBLOCK);
     if(joy == -1) {perror("joy_open"); exit(1);}
-    std::cout << "opened joystick device" << std::endl;
 }
 
 void joy_poll() {

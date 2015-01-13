@@ -22,7 +22,8 @@ Environment *environment;
 
 void start() {
 #ifdef HAVE_JOYSTICK
-    joy_open();
+    if(environment->config.joystick.enabled)
+        joy_open(environment->config.joystick.device.c_str());
 #endif
     static float xyz[3] = {9.3812,4.5702,3.1600}; // {6.3286,-5.9263,1.7600};
     static float hpr[3] = {-142.5000,-34.5000,0.0000}; // {102.5000,-16.0000,0.0000};
@@ -31,7 +32,8 @@ void start() {
 
 void step(int pause) {
 #ifdef HAVE_JOYSTICK
-    joy_poll();
+    if(environment->config.joystick.enabled)
+        joy_poll();
     environment->v->setTrackVelocities(joy_r,joy_l);
 #endif
     environment->draw();
@@ -40,7 +42,8 @@ void step(int pause) {
 
 void stop() {
 #ifdef HAVE_JOYSTICK
-    joy_close();
+    if(environment->config.joystick.enabled)
+        joy_close();
 #endif
 }
 
