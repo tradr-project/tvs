@@ -21,6 +21,7 @@ static const dVector3 extents = {7,7,7};
 static const dReal limit = 2.0;
 
 Environment::Environment() {
+    readConfig();
     this->v = new TrackedVehicle("robot", 1, -2, 0.301);
 }
 
@@ -37,7 +38,7 @@ static void readContactParams(std::string section, ContactParams* p, const boost
     p->bounce_vel = pt.get<dReal>(section + ".bounce_vel");
     p->soft_cfm = pt.get<dReal>(section + ".soft_cfm");
     if(pt.get<std::string>(section + ".mu") == "infinity") p->mu = dInfinity; else p->mu = pt.get<dReal>(section + ".mu");
-    if(pt.get<std::string>(section + ".mu2") == "infinity") p->mu2 = dInfinity; else p->mu2 = pt.get<dReal>(section + ".mu2");
+    if(pt.get<std::string>(section + ".mu2", "") == "infinity") p->mu2 = dInfinity; else p->mu2 = pt.get<dReal>(section + ".mu2", p->mu);
 }
 
 void Environment::readConfig() {
