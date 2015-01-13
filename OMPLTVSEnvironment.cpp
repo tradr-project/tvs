@@ -67,6 +67,6 @@ void ompl::control::OMPLTVSEnvironment::applyControl(const double *control) cons
 void ompl::control::OMPLTVSEnvironment::addToSearchTree(const ompl::base::State *s1, const ompl::base::State *s2)
 {
     searchTree.resize(searchTree.size() + 1);
-    memcpy(searchTree.back().a, s1->as<ompl::control::OMPLTVSStateSpace::StateType>()->getPosition(), sizeof(dReal) * 3);
-    memcpy(searchTree.back().b, s2->as<ompl::control::OMPLTVSStateSpace::StateType>()->getPosition(), sizeof(dReal) * 3);
+    memcpy(searchTree.back().a, s1->as<ompl::control::OMPLTVSStateSpace::StateType>()->getBodyPosition(0), sizeof(dReal) * 3);
+    memcpy(searchTree.back().b, s2->as<ompl::control::OMPLTVSStateSpace::StateType>()->getBodyPosition(0), sizeof(dReal) * 3);
 }
