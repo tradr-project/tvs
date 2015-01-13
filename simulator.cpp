@@ -21,6 +21,14 @@ Environment *environment;
 #include "joystick.cpp"
 #endif
 
+void initRobotPose() {
+    static dVector3 p = {2.08086,3.39581,0.102089};
+    static dQuaternion q = {-0.229659,-0.00088334,0.00010361,0.973271};
+    environment->v->setPosition(p);
+    environment->v->setQuaternion(q);
+    environment->v->setTrackVelocities(0, 0);
+}
+
 void start() {
 #ifdef HAVE_JOYSTICK
     if(environment->config.joystick.enabled)
@@ -68,6 +76,7 @@ void command(int cmd) {
         case 'q': environment->v->setTrackVelocities(-V, -0.25*V); break;
         case ' ': environment->v->setTrackVelocities( 0,  0); break;
         case 'p': printInfo(); break;
+        case 'r': initRobotPose(); break;
     }
 }
 
@@ -79,10 +88,7 @@ int main(int argc, char **argv) {
     environment->create();
 
     // set initial robot pose:
-    static dVector3 p = {2.08086,3.39581,0.102089};
-    static dQuaternion q = {-0.229659,-0.00088334,0.00010361,0.973271};
-    environment->v->setPosition(p);
-    environment->v->setQuaternion(q);
+    initRobotPose();
 
     // run simulation loop & visualization
     dsFunctions fn;
