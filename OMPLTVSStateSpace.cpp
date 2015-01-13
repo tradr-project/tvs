@@ -173,8 +173,8 @@ void ompl::control::OMPLTVSStateSpace::setDefaultBounds()
     bounds1.setHigh(2);
     setLinearVelocityBounds(bounds1);
     
-    bounds1.setLow(-M_PI_2);
-    bounds1.setHigh(M_PI_2);
+    bounds1.setLow(-8.0*M_PI);
+    bounds1.setHigh(8.0*M_PI);
     setAngularVelocityBounds(bounds1);
 }
 
@@ -200,10 +200,16 @@ bool ompl::control::OMPLTVSStateSpace::evaluateCollision(const base::State *stat
 
 bool ompl::control::OMPLTVSStateSpace::satisfiesBoundsExceptRotation(const StateType *state) const
 {
-    for (unsigned int i = 0 ; i < componentCount_ ; ++i)
-        if (i % NUM_COMPONENTS != COMPONENT_ROTATION)
-            if (!components_[i]->satisfiesBounds(state->components[i]))
-                return false;
+    static const char *comp_name[] = {"position", "linear_vel", "angular_vel", "rotation"};
+    for(unsigned int i = 0 ; i < componentCount_ ; ++i) {
+        int body = i / NUM_COMPONENTS;
+        int comp = i % NUM_COMPONENTS;
+        if(comp == COMPONENT_ROTATION) continue;
+        if(!components_[i]->satisfiesBounds(state->components[i])) {
+            std::cout << "body #" << body << " does not satisfy " << comp_name[comp] << " bounds" << std::endl;
+            return false;
+        }
+    }
     return true;
 }
 
