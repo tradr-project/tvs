@@ -50,9 +50,10 @@ void Environment::readConfig() {
     readContactParams("contact_grouser_terrain", &config.contact_grouser_terrain, pt);
     readContactParams("contact_grouser_guide", &config.contact_grouser_guide, pt);
     readContactParams("contact_default", &config.contact_default, pt);
-    config.world.gravity_x = pt.get<float>("world.gravity_x", 0.0);
-    config.world.gravity_y = pt.get<float>("world.gravity_y", 0.0);
-    config.world.gravity_z = pt.get<float>("world.gravity_z", 0.0);
+    config.world.gravity_x = pt.get<dReal>("world.gravity_x", 0.0);
+    config.world.gravity_y = pt.get<dReal>("world.gravity_y", 0.0);
+    config.world.gravity_z = pt.get<dReal>("world.gravity_z", 0.0);
+    config.world.max_track_speed = pt.get<dReal>("world.max_track_speed", 5.0);
 }
 
 inline dGeomID createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y2, dReal z2, dReal rx = 1.0, dReal ry = 0.0, dReal rz = 0.0, dReal rAngle = 0.0) {

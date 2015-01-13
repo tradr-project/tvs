@@ -34,6 +34,7 @@ struct StepParams {
 
 struct WorldParams {
     dReal gravity_x, gravity_y, gravity_z;
+    dReal max_track_speed;
 };
 
 struct Config {

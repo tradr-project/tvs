@@ -38,7 +38,7 @@ void printInfo() {
 }
 
 void command(int cmd) {
-    const dReal V = 6.0;
+    const dReal V = environment->config.world.max_track_speed;
     switch(cmd) {
         case 'd': environment->v->setTrackVelocities( V, -V); break;
         case 'a': environment->v->setTrackVelocities(-V,  V); break;
