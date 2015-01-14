@@ -28,7 +28,10 @@ void initRobotPose() {
     static dQuaternion q = {-0.229659,-0.00088334,0.00010361,0.973271};
     environment->v->setPosition(p);
     environment->v->setQuaternion(q);
+    vel_left = vel_right = 0.0;
     environment->v->setTrackVelocities(0, 0);
+    environment->v->leftTrack->actualVelocity = 0.0;
+    environment->v->rightTrack->actualVelocity = 0.0;
 }
 
 void follow(dReal x, dReal y, dReal z) {
