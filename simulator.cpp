@@ -34,8 +34,15 @@ void lookAt(dReal eye_x, dReal eye_y, dReal eye_z, dReal x, dReal y, dReal z) {
 
 void start() {
     if(environment->config.joystick.enabled) {
-        SDL_JoystickEventState(SDL_ENABLE);
-        joystick = SDL_JoystickOpen(0);
+        if(SDL_NumJoysticks() > 0) {
+            std::cout << "Available joysticks:" << std::endl;
+            for(int i=0; i < SDL_NumJoysticks(); i++)
+                std::cout << i << ": " << SDL_JoystickNameForIndex(i) << std::endl;
+            SDL_JoystickEventState(SDL_ENABLE);
+            joystick = SDL_JoystickOpen(0);
+        } else {
+            std::cout << "No joysticks available." << std::endl;
+        }
     }
     static float xyz[3] = {9.3812,4.5702,3.1600}; // {6.3286,-5.9263,1.7600};
     static float hpr[3] = {-142.5000,-34.5000,0.0000}; // {102.5000,-16.0000,0.0000};
@@ -48,7 +55,7 @@ void step(int pause) {
         while(SDL_PollEvent(&event)) {
             switch(event.type) {
                 case SDL_JOYAXISMOTION:
-                    std::cout << "joystick, axis " << event.jaxis.axis << ", value " << event.jaxis.value << std::endl;
+                    std::cout << "joystick, axis " << static_cast<int>(event.jaxis.axis) << ", value " << event.jaxis.value << std::endl;
                     //environment->v->setTrackVelocities(joy_r,joy_l);
                     break;
             }
@@ -90,6 +97,12 @@ void command(int cmd) {
 }
 
 int main(int argc, char **argv) {
+    if(SDL_Init(SDL_INIT_JOYSTICK)) {
+        std::cout << "SDL initialization failed." << std::endl;
+        return 1;
+    }
+    SDL_GameControllerAddMappingsFromFile(CONFIG_PATH "/gamecontrollerdb.txt");
+    
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
 
@@ -114,6 +127,8 @@ int main(int argc, char **argv) {
     delete environment;
     
     dCloseODE();
+    
+    SDL_Quit();
 
     return 0;
 }

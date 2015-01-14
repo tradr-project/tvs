@@ -43,10 +43,6 @@ static void readContactParams(std::string section, ContactParams* p, const boost
     if(pt.get<std::string>(section + ".mu2", "") == "infinity") p->mu2 = dInfinity; else p->mu2 = pt.get<dReal>(section + ".mu2", p->mu);
 }
 
-#ifndef CONFIG_PATH
-#define CONFIG_PATH "."
-#endif
-
 void Environment::readConfig() {
     boost::property_tree::ptree pt;
     boost::property_tree::ini_parser::read_ini(CONFIG_PATH "/simulator.ini", pt);

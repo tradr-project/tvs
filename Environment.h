@@ -53,6 +53,10 @@ struct Config {
     ContactParams contact_default;
 };
 
+#ifndef CONFIG_PATH
+#define CONFIG_PATH "."
+#endif
+
 class Environment {
 public:
     Config config;
