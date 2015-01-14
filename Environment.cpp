@@ -17,10 +17,6 @@
 #include <ompl/util/Console.h>
 #include <boost/foreach.hpp>
 
-static const dVector3 center = {3,3,0};
-static const dVector3 extents = {7,7,7};
-static const dReal limit = 2.0;
-
 Environment::Environment() {
     readConfig();
     this->v = new TrackedVehicle("robot", 1, -2, 0.301);
