@@ -343,11 +343,10 @@ void Environment::draw() {
     this->v->draw();
 
     {
-        dVector3 ss = {0.1,0.1,0.1};
-        dsSetColor(0, 1, 0);
+        dsSetColor(1, 0, 1);
         dMatrix3 R; dRSetIdentity(R);
         BOOST_FOREACH(dContactGeom cg, this->contacts) {
-            dsDrawBoxD(cg.pos, R, ss);
+            dsDrawSphereD(cg.pos, R, 0.05);
         }
     }
     
