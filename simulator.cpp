@@ -29,13 +29,31 @@ void initRobotPose() {
     environment->v->setTrackVelocities(0, 0);
 }
 
-void lookAt(dReal x, dReal y, dReal z) {
+void follow(dReal x, dReal y, dReal z) {
     float xyz[3], hpr[3];
     dsGetViewpoint(xyz, hpr);
+    
+    // ~lookAt:
     dReal dx = x - xyz[0], dy = y - xyz[1], dz = z - xyz[2];
     hpr[0] = atan2(dy, dx) * 180.0 / M_PI;
     hpr[1] = atan2(dz, hypot(dy, dx)) * 180.0 / M_PI;
     hpr[2] = 0;
+
+    // ~followRobot:
+    dReal d = hypot(dz, hypot(dx, dy));
+    dReal dmin = 3.5, dmax = 4.3, k = 0.2;
+    if(d > dmax) {
+        dReal a = (d - dmax) * k;
+        xyz[0] += dx * a;
+        xyz[1] += dy * a;
+        //xyz[2] += dz * a;
+    } else if(d < dmin) {
+        dReal a = (d - dmin) * k;
+        xyz[0] += dx * a;
+        xyz[1] += dy * a;
+        //xyz[2] += dz * a;
+    }
+    
     dsSetViewpoint(xyz,hpr);
 }
 
@@ -51,7 +69,7 @@ void start() {
             std::cout << "No joysticks available." << std::endl;
         }
     }
-    static float xyz[3] = {9.3812,4.5702,3.1600}; // {6.3286,-5.9263,1.7600};
+    static float xyz[3] = {9.3812,4.5702,2.8600}; // {6.3286,-5.9263,1.7600};
     static float hpr[3] = {-142.5000,-34.5000,0.0000}; // {102.5000,-16.0000,0.0000};
     dsSetViewpoint(xyz,hpr);
 }
@@ -74,7 +92,7 @@ void step(int pause) {
         }
     }
     const dReal *p = environment->v->getPosition();
-    lookAt(p[0], p[1], p[2]);
+    follow(p[0], p[1], p[2]);
     environment->draw();
     if(!pause) environment->step();
 }
