@@ -56,7 +56,7 @@ void step(int pause) {
         while(SDL_PollEvent(&event)) {
             switch(event.type) {
                 case SDL_JOYAXISMOTION:
-                    const dReal V = environment->config.world.max_track_speed;
+                    const dReal V = environment->config.world.max_track_speed * environment->config.joystick.gain;
                     if(event.jaxis.axis == 1)
                         joy_l = V * event.jaxis.value / 32768.0;
                     if(event.jaxis.axis == 3)

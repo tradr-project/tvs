@@ -41,6 +41,7 @@ struct WorldParams {
 struct JoystickParams {
     unsigned short enabled;
     unsigned short device;
+    dReal gain;
 };
 
 struct Config {
