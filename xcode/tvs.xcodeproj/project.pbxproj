@@ -332,12 +332,14 @@
 					DEBUG,
 					"DRAWSTUFF_TEXTURE_PATH=\\\"$(SRCROOT)/../textures\\\"",
 					"CONFIG_PATH=\\\"$(SRCROOT)/..\\\"",
+					_THREAD_SAFE,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../ode/include",
 					/opt/local/include,
+					/opt/local/include/SDL2,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../../ode/ode/src/.libs",
@@ -349,6 +351,7 @@
 					"-ldrawstuff",
 					"-lboost_system-mt",
 					"-lboost_thread-mt",
+					"-lSDL2",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -362,12 +365,14 @@
 					AMD64,
 					"DRAWSTUFF_TEXTURE_PATH=\\\"$(SRCROOT)/../textures\\\"",
 					"CONFIG_PATH=\\\"$(SRCROOT)/..\\\"",
+					_THREAD_SAFE,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../ode/include",
 					/opt/local/include,
+					/opt/local/include/SDL2,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../../ode/ode/src/.libs",
@@ -379,6 +384,7 @@
 					"-ldrawstuff",
 					"-lboost_system-mt",
 					"-lboost_thread-mt",
+					"-lSDL2",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

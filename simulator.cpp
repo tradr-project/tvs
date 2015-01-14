@@ -14,12 +14,11 @@
 #include <ode/ode.h>
 #include <drawstuff/drawstuff.h>
 #include "Environment.h"
+#include <SDL.h>
+#include <SDL_joystick.h>
 
 Environment *environment;
-
-#ifdef HAVE_JOYSTICK
-#include "joystick.cpp"
-#endif
+SDL_Joystick *joystick;
 
 void initRobotPose() {
     static dVector3 p = {2.08086,3.39581,0.102089};
@@ -34,30 +33,36 @@ void lookAt(dReal eye_x, dReal eye_y, dReal eye_z, dReal x, dReal y, dReal z) {
 }
 
 void start() {
-#ifdef HAVE_JOYSTICK
-    if(environment->config.joystick.enabled)
-        joy_open(environment->config.joystick.device.c_str());
-#endif
+    if(environment->config.joystick.enabled) {
+        SDL_JoystickEventState(SDL_ENABLE);
+        joystick = SDL_JoystickOpen(0);
+    }
     static float xyz[3] = {9.3812,4.5702,3.1600}; // {6.3286,-5.9263,1.7600};
     static float hpr[3] = {-142.5000,-34.5000,0.0000}; // {102.5000,-16.0000,0.0000};
     dsSetViewpoint(xyz,hpr);
 }
 
 void step(int pause) {
-#ifdef HAVE_JOYSTICK
-    if(environment->config.joystick.enabled)
-        joy_poll();
-    environment->v->setTrackVelocities(joy_r,joy_l);
-#endif
+    if(environment->config.joystick.enabled) {
+        SDL_Event event;
+        while(SDL_PollEvent(&event)) {
+            switch(event.type) {
+                case SDL_JOYAXISMOTION:
+                    std::cout << "joystick, axis " << event.jaxis.axis << ", value " << event.jaxis.value << std::endl;
+                    //environment->v->setTrackVelocities(joy_r,joy_l);
+                    break;
+            }
+        }
+    }
     environment->draw();
     if(!pause) environment->step();
 }
 
 void stop() {
-#ifdef HAVE_JOYSTICK
-    if(environment->config.joystick.enabled)
-        joy_close();
-#endif
+    if(environment->config.joystick.enabled) {
+        SDL_JoystickClose(joystick);
+        SDL_JoystickEventState(SDL_DISABLE);
+    }
 }
 
 void printInfo() {
