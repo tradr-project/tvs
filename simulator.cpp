@@ -29,6 +29,10 @@ void initRobotPose() {
     environment->v->setTrackVelocities(0, 0);
 }
 
+void lookAt(dReal eye_x, dReal eye_y, dReal eye_z, dReal x, dReal y, dReal z) {
+    // TODO
+}
+
 void start() {
 #ifdef HAVE_JOYSTICK
     if(environment->config.joystick.enabled)
