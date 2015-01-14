@@ -19,6 +19,7 @@
 
 Environment *environment;
 SDL_Joystick *joystick;
+dReal joy_l = 0.0, joy_r = 0.0;
 
 void initRobotPose() {
     static dVector3 p = {2.08086,3.39581,0.102089};
@@ -55,8 +56,13 @@ void step(int pause) {
         while(SDL_PollEvent(&event)) {
             switch(event.type) {
                 case SDL_JOYAXISMOTION:
-                    std::cout << "joystick, axis " << static_cast<int>(event.jaxis.axis) << ", value " << event.jaxis.value << std::endl;
-                    //environment->v->setTrackVelocities(joy_r,joy_l);
+                    const dReal V = environment->config.world.max_track_speed;
+                    if(event.jaxis.axis == 1)
+                        joy_l = V * event.jaxis.value / 32768.0;
+                    if(event.jaxis.axis == 3)
+                        joy_r = V * event.jaxis.value / 32768.0;
+                    //std::cout << "    " << joy_l << "    " << joy_r << std::endl;
+                    environment->v->setTrackVelocities(joy_r,joy_l);
                     break;
             }
         }
