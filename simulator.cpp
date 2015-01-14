@@ -20,6 +20,7 @@
 Environment *environment;
 SDL_Joystick *joystick;
 dReal joy_l = 0.0, joy_r = 0.0;
+bool following = false;
 
 void initRobotPose() {
     static dVector3 p = {2.08086,3.39581,0.102089};
@@ -91,8 +92,10 @@ void step(int pause) {
             }
         }
     }
-    const dReal *p = environment->v->getPosition();
-    follow(p[0], p[1], p[2]);
+    if(following) {
+        const dReal *p = environment->v->getPosition();
+        follow(p[0], p[1], p[2]);
+    }
     environment->draw();
     if(!pause) environment->step();
 }
@@ -123,6 +126,7 @@ void command(int cmd) {
         case 'e': environment->v->setTrackVelocities(-0.25*V, -V); break;
         case 'q': environment->v->setTrackVelocities(-V, -0.25*V); break;
         case ' ': environment->v->setTrackVelocities( 0,  0); break;
+        case 'f': following = !following; break;
         case 'p': printInfo(); break;
         case 'r': initRobotPose(); break;
     }
