@@ -15,6 +15,7 @@
 #include <iostream>
 #include <drawstuff/drawstuff.h>
 #include <ompl/util/Console.h>
+#include <boost/foreach.hpp>
 
 static const dVector3 center = {3,3,0};
 static const dVector3 extents = {7,7,7};
@@ -41,6 +42,7 @@ static void readContactParams(std::string section, ContactParams* p, const boost
     p->soft_cfm = pt.get<dReal>(section + ".soft_cfm");
     if(pt.get<std::string>(section + ".mu") == "infinity") p->mu = dInfinity; else p->mu = pt.get<dReal>(section + ".mu");
     if(pt.get<std::string>(section + ".mu2", "") == "infinity") p->mu2 = dInfinity; else p->mu2 = pt.get<dReal>(section + ".mu2", p->mu);
+    p->debug = pt.get<bool>(section + ".debug", false);
 }
 
 void Environment::readConfig() {
@@ -213,6 +215,8 @@ void Environment::nearCallbackWheelGrouser(dGeomID o1, dGeomID o2) {
         dJointAttach(c, b1, b2);
         if(!isValidCollision(o1, o2, contact[i]))
             this->badCollision = true;
+        if(config.contact_wheel_grouser.debug)
+            this->contacts.push_back(contact[i].geom);
     }
 }
 
@@ -237,6 +241,8 @@ void Environment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2) {
         dJointAttach(c, b1, b2);
         if(!isValidCollision(o1, o2, contact[i]))
             this->badCollision = true;
+        if(config.contact_grouser_terrain.debug)
+            this->contacts.push_back(contact[i].geom);
     }
 }
 
@@ -258,6 +264,8 @@ void Environment::nearCallbackGrouserGuide(dGeomID o1, dGeomID o2) {
         dJointAttach(c, b1, b2);
         if(!isValidCollision(o1, o2, contact[i]))
             this->badCollision = true;
+        if(config.contact_grouser_guide.debug)
+            this->contacts.push_back(contact[i].geom);
     }
 }
 
@@ -279,6 +287,8 @@ void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
         dJointAttach(c, b1, b2);
         if(!isValidCollision(o1, o2, contact[i]))
             this->badCollision = true;
+        if(config.contact_default.debug)
+            this->contacts.push_back(contact[i].geom);
     }
 }
 
@@ -288,6 +298,8 @@ bool Environment::step(dReal stepSize, int simulationStepsPerFrame) {
     this->v->step(stepSize);
     
     this->badCollision = false;
+    this->contacts.clear();
+    
     for(size_t i = 0; i < simulationStepsPerFrame; i++) {
         // find collisions and add contact joints
         dSpaceCollide(this->space, this, &nearCallbackWrapper);
@@ -296,6 +308,7 @@ bool Environment::step(dReal stepSize, int simulationStepsPerFrame) {
         // remove all contact joints
         dJointGroupEmpty(this->contactGroup);
     }
+    
     return this->badCollision;
 }
 
@@ -329,8 +342,17 @@ bool Environment::evaluateCollision() {
 void Environment::draw() {
     this->v->draw();
 
+    {
+        dVector3 ss = {0.1,0.1,0.1};
+        dsSetColor(0, 1, 0);
+        dMatrix3 R; dRSetIdentity(R);
+        BOOST_FOREACH(dContactGeom cg, this->contacts) {
+            dsDrawBoxD(cg.pos, R, ss);
+        }
+    }
+    
     for(std::vector<dGeomID>::iterator it = boxes.begin(); it != boxes.end(); it++) {
-        dsSetColor(0.6, 0.6, 0.7);
+        dsSetColorAlpha(0.6, 0.6, 0.7, 0.8);
         const dReal *pos = dGeomGetPosition(*it);
         const dReal *R = dGeomGetRotation(*it);
         dReal sides[3];

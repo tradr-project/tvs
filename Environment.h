@@ -25,6 +25,7 @@ struct ContactParams {
     dReal soft_cfm;
     dReal mu;
     dReal mu2;
+    bool debug;
 };
 
 struct StepParams {
@@ -72,6 +73,7 @@ public:
     std::vector<dGeomID> boxes;
     
     bool badCollision;
+    std::vector<dContactGeom> contacts;
     size_t stepNum;
     
     Environment();
