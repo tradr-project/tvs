@@ -323,7 +323,7 @@ void Environment::evaluateCollisionNearCallback(dGeomID o1, dGeomID o2) {
     if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
     dContact contact[1];  // one contact is sufficient
     int numc = dCollide(o1, o2, 1, &contact[0].geom, sizeof(dContact));
-    // flag collision is there is really a collision and is of those not allowed
+    // flag collision if there is really a collision and is of those not allowed
     if(numc > 0 && !isValidCollision(o1, o2, contact[0])) {
         badCollision = true;
         std::cout << "collision between " << getGeomName(o1) << "[" << dClassGetName(dGeomGetClass(o1)) << "] and " << getGeomName(o2) << "[" << dClassGetName(dGeomGetClass(o2)) << "]" << std::endl;
