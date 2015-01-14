@@ -19,8 +19,9 @@
 
 Environment *environment;
 SDL_Joystick *joystick;
-dReal joy_l = 0.0, joy_r = 0.0;
+dReal vel_left = 0.0, vel_right = 0.0;
 bool following = false;
+dReal kbd_gain = 1.0;
 
 void initRobotPose() {
     static dVector3 p = {2.08086,3.39581,0.102089};
@@ -83,11 +84,10 @@ void step(int pause) {
                 case SDL_JOYAXISMOTION:
                     const dReal V = environment->config.world.max_track_speed * environment->config.joystick.gain;
                     if(event.jaxis.axis == 1)
-                        joy_l = V * event.jaxis.value / 32768.0;
+                        vel_right = V * event.jaxis.value / 32768.0;
                     if(event.jaxis.axis == 3)
-                        joy_r = V * event.jaxis.value / 32768.0;
+                        vel_left = V * event.jaxis.value / 32768.0;
                     //std::cout << "    " << joy_l << "    " << joy_r << std::endl;
-                    environment->v->setTrackVelocities(joy_r,joy_l);
                     break;
             }
         }
@@ -96,6 +96,7 @@ void step(int pause) {
         const dReal *p = environment->v->getPosition();
         follow(p[0], p[1], p[2]);
     }
+    environment->v->setTrackVelocities(kbd_gain * vel_left, kbd_gain * vel_right);
     environment->draw();
     if(!pause) environment->step();
 }
@@ -119,17 +120,18 @@ void printInfo() {
 void command(int cmd) {
     const dReal V = environment->config.world.max_track_speed;
     switch(cmd) {
-        case 'd': environment->v->setTrackVelocities( V, -V); break;
-        case 'a': environment->v->setTrackVelocities(-V,  V); break;
-        case 'w': environment->v->setTrackVelocities(-V, -V); break;
-        case 's': environment->v->setTrackVelocities( V,  V); break;
-        case 'e': environment->v->setTrackVelocities(-0.25*V, -V); break;
-        case 'q': environment->v->setTrackVelocities(-V, -0.25*V); break;
-        case ' ': environment->v->setTrackVelocities( 0,  0); break;
+        case 'd': vel_left = V; vel_right = -V; break;
+        case 'a': vel_left = -V; vel_right = V; break;
+        case 'w': vel_left = -V; vel_right = -V; break;
+        case 's': vel_left = V; vel_right = V; break;
+        case 'e': vel_left = -0.25 * V; vel_right = -V; break;
+        case 'q': vel_left = -V; vel_right = -0.25 * V; break;
+        case ' ': vel_left = 0; vel_right = 0; break;
         case 'f': following = !following; break;
         case 'p': printInfo(); break;
         case 'r': initRobotPose(); break;
     }
+    if(cmd >= '1' && cmd <= '9') kbd_gain = (cmd - '1' + 1) / 5.0;
 }
 
 int main(int argc, char **argv) {
