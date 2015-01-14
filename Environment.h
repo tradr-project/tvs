@@ -53,6 +53,7 @@ struct Config {
     ContactParams contact_grouser_terrain;
     ContactParams contact_grouser_guide;
     ContactParams contact_default;
+    bool show_contact_points;
 };
 
 #ifndef CONFIG_PATH

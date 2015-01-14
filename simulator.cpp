@@ -124,10 +124,11 @@ void command(int cmd) {
         case 'a': vel_left = -V; vel_right = V; break;
         case 'w': vel_left = -V; vel_right = -V; break;
         case 's': vel_left = V; vel_right = V; break;
-        case 'e': vel_left = -0.25 * V; vel_right = -V; break;
-        case 'q': vel_left = -V; vel_right = -0.25 * V; break;
+        case 'e': vel_left *= 0.33; break;
+        case 'q': vel_right *= 0.33; break;
         case ' ': vel_left = 0; vel_right = 0; break;
-        case 'f': following = !following; break;
+        case 'f': following ^= 1; break;
+        case 'c': environment->config.show_contact_points ^= 1; break;
         case 'p': printInfo(); break;
         case 'r': initRobotPose(); break;
     }

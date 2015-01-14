@@ -58,6 +58,7 @@ void Environment::readConfig() {
     config.joystick.enabled = pt.get<unsigned short>("joystick.enabled", 0);
     config.joystick.device = pt.get<unsigned short>("joystick.device", 0);
     config.joystick.gain = pt.get<dReal>("joystick.gain", 1.0);
+    config.show_contact_points = false;
 }
 
 void createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y2, dReal z2, dReal rx = 1.0, dReal ry = 0.0, dReal rz = 0.0, dReal rAngle = 0.0) {
@@ -338,7 +339,7 @@ bool Environment::evaluateCollision() {
 void Environment::draw() {
     this->v->draw();
 
-    {
+    if(config.show_contact_points) {
         dsSetColor(1, 0, 1);
         dMatrix3 R; dRSetIdentity(R);
         BOOST_FOREACH(dContactGeom cg, this->contacts) {
