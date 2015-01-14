@@ -29,8 +29,14 @@ void initRobotPose() {
     environment->v->setTrackVelocities(0, 0);
 }
 
-void lookAt(dReal eye_x, dReal eye_y, dReal eye_z, dReal x, dReal y, dReal z) {
-    // TODO
+void lookAt(dReal x, dReal y, dReal z) {
+    float xyz[3], hpr[3];
+    dsGetViewpoint(xyz, hpr);
+    dReal dx = x - xyz[0], dy = y - xyz[1], dz = z - xyz[2];
+    hpr[0] = atan2(dy, dx) * 180.0 / M_PI;
+    hpr[1] = atan2(dz, hypot(dy, dx)) * 180.0 / M_PI;
+    hpr[2] = 0;
+    dsSetViewpoint(xyz,hpr);
 }
 
 void start() {
@@ -67,6 +73,8 @@ void step(int pause) {
             }
         }
     }
+    const dReal *p = environment->v->getPosition();
+    lookAt(p[0], p[1], p[2]);
     environment->draw();
     if(!pause) environment->step();
 }
