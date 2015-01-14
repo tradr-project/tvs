@@ -98,7 +98,7 @@ void command(int cmd) {
 
 int main(int argc, char **argv) {
     if(SDL_Init(SDL_INIT_JOYSTICK)) {
-        std::cout << "SDL initialization failed." << std::endl;
+        std::cout << "SDL initialization failed: " << SDL_GetError() << std::endl;
         return 1;
     }
     SDL_GameControllerAddMappingsFromFile(CONFIG_PATH "/gamecontrollerdb.txt");
