@@ -58,7 +58,7 @@ void Environment::readConfig() {
     config.world.max_track_speed = pt.get<dReal>("world.max_track_speed", 5.0);
     config.world.track_acceleration = pt.get<dReal>("world.track_acceleration", 200.0);
     config.joystick.enabled = pt.get<unsigned short>("joystick.enabled", 0);
-    config.joystick.device = pt.get<std::string>("joystick.device", "");
+    config.joystick.device = pt.get<unsigned short>("joystick.device", 0);
 }
 
 inline dGeomID createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y2, dReal z2, dReal rx = 1.0, dReal ry = 0.0, dReal rz = 0.0, dReal rAngle = 0.0) {

@@ -40,7 +40,7 @@ void start() {
             for(int i=0; i < SDL_NumJoysticks(); i++)
                 std::cout << i << ": " << SDL_JoystickNameForIndex(i) << std::endl;
             SDL_JoystickEventState(SDL_ENABLE);
-            joystick = SDL_JoystickOpen(0);
+            joystick = SDL_JoystickOpen(environment->config.joystick.device);
         } else {
             std::cout << "No joysticks available." << std::endl;
         }

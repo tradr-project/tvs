@@ -40,7 +40,7 @@ struct WorldParams {
 
 struct JoystickParams {
     unsigned short enabled;
-    std::string device;
+    unsigned short device;
 };
 
 struct Config {
