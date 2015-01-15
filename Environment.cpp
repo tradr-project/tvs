@@ -61,7 +61,7 @@ void Environment::readConfig() {
     config.show_contact_points = false;
 }
 
-void createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y2, dReal z2, dReal rx = 1.0, dReal ry = 0.0, dReal rz = 0.0, dReal rAngle = 0.0) {
+void createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y2, dReal z2, unsigned long cat = Category::OBSTACLE, dReal rx = 1.0, dReal ry = 0.0, dReal rz = 0.0, dReal rAngle = 0.0) {
     static int i = 0;
     dGeomID g = dCreateBox(e->space, x2 - x1, y2 - y1, z2 - z1);
     dGeomSetPosition(g, x1 + 0.5 * (x2 - x1), y1 + 0.5 * (y2 - y1), z1 + 0.5 * (z2 - z1));
@@ -78,13 +78,14 @@ void makeStairCase(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal
     dReal dx = x2 - x1, dy = y2 - y1, dz = z2 - z1;
     dReal riser = dz / dReal(steps);
     dReal tread = (axis == 0 ? dx : dy) / dReal(steps);
+    unsigned long cat = Category::TERRAIN;
     for(int i = 0; i < steps; i++) {
         if(axis == 0)
-            createAABox(e, x1 + i * tread, y1, z1 + i * riser, x1 + (i + 1) * tread, y2, z1 + (i + 1) * riser);
+            createAABox(e, x1 + i * tread, y1, z1 + i * riser, x1 + (i + 1) * tread, y2, z1 + (i + 1) * riser, cat);
         else if(axis == 1)
-            createAABox(e, x1, y1 + i * tread, z1 + i * riser, x2, y1 + (i + 1) * tread, z1 + (i + 1) * riser);
+            createAABox(e, x1, y1 + i * tread, z1 + i * riser, x2, y1 + (i + 1) * tread, z1 + (i + 1) * riser, cat);
         else if(axis == 3)
-            createAABox(e, x1, y2 - (i + 1) * tread, z1 + i * riser, x2, y2 - i * tread, z1 + (i + 1) * riser);
+            createAABox(e, x1, y2 - (i + 1) * tread, z1 + i * riser, x2, y2 - i * tread, z1 + (i + 1) * riser, cat);
     }
 }
 
@@ -126,8 +127,8 @@ void Environment::create() {
     createAABox(this, W-t, 0,   0,   W,   D,   h);
     createAABox(this, W-O, 0,   0,   W-O+T, w, h);
     createAABox(this, W-T, 0,   0,   W,   w, h);
-    createAABox(this, W-O, 0,   h-t, W,   w, h);
-    createAABox(this, W-O-0.5*l-0.5*l2, 0, 0.5*h-0.5*t-0.5*t, W-O-0.5*l+0.5*l2, 1.5, 0.5*h+0.5*t-0.5*t, 0, 1, 0, -a);
+    createAABox(this, W-O, 0,   h-t, W,   w, h, Category::TERRAIN);
+    createAABox(this, W-O-0.5*l-0.5*l2, 0, 0.5*h-0.5*t-0.5*t, W-O-0.5*l+0.5*l2, 1.5, 0.5*h+0.5*t-0.5*t, Category::TERRAIN, 0, 1, 0, -a);
     makeStairCase(this, W-w, w, 0, W, w+sl, h, 3, 10);
 }
 
