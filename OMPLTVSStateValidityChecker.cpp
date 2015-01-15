@@ -26,11 +26,22 @@ bool OMPLTVSStateValidityChecker::isValid(const ompl::base::State *state) const 
     bool valid = false;
 
     if(!osm_->evaluateCollision(state)) {
+        // check bounds
         bool satBounds = osm_->satisfiesBoundsExceptRotation(s);
-        if(!satBounds) {
-            std::cout << "OMPLTVSStateValidityChecker::isValid(): invalid bounds" << std::endl;
+        
+        // check pose (i.e. if robot is about to flip)
+        dMatrix3 R;
+        const ompl::base::SO3StateSpace::StateType &s_rot = s->getBodyRotation(0);
+        dQuaternion q = {s_rot.w, s_rot.x, s_rot.y, s_rot.z};
+        dRfromQ(R, q);
+        bool badPose = R[10] < 0.707; // angle between robot z and world z > 45 deg
+        
+        valid = satBounds && !badPose;
+        
+        if(!valid) {
+            if(!satBounds) std::cout << "invalid state: exceeds bounds" << std::endl;
+            if(badPose) std::cout << "invalid state: bad pose" << std::endl;
         }
-        valid = satBounds;
     }
 
     if(valid)
