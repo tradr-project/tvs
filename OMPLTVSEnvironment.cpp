@@ -15,7 +15,7 @@
 
 OMPLTVSEnvironment::OMPLTVSEnvironment(Environment *env)
 : stepSize_(0.5), maxControlSteps_(40), minControlSteps_(1), env_(env) {
-    searchTreeLogFile.open("tree-" + env->datetime + ".csv");
+    searchTreeLogFile.open(("tree-" + env->datetime + ".csv").c_str());
 }
 
 OMPLTVSEnvironment::~OMPLTVSEnvironment() {
