@@ -53,7 +53,7 @@ CXXFLAGS = $(CFLAGS)
 .PHONY: clean all
 
 # Heightfield.o TriMesh.o PointCloud.o
-TVS_OBJS := Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o simulator.o
+TVS_OBJS := Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o simulator.o search_vis.o utils.o
 OMPL_OBJS := OMPLTVSControlSpace.o OMPLTVSEnvironment.o OMPLTVSSimpleSetup.o OMPLTVSStatePropagator.o OMPLTVSStateSpace.o OMPLTVSStateValidityChecker.o planner.o
 OBJS = $(TVS_OBJS) $(OMPL_OBJS)
 
@@ -80,5 +80,6 @@ search_vis: Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtil
 	@rm -f $*.d.tmp
 
 clean:
-	rm -f $(OBJS) $(OBJS:.o=.d) simulator planner
+	@rm -vf $(OBJS) $(OBJS:.o=.d) simulator planner search_vis
+	@sh -c 'if ls *.o > /dev/null 2>&1; then echo "error: some *.o files have not been cleaned: $$(ls *.o)"; false; fi'
 
