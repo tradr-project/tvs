@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <cmath>
 #include <cassert>
+#include <iostream>
+#include <fstream>
 #include <ode/ode.h>
 #include <drawstuff/drawstuff.h>
 #include "Environment.h"
@@ -88,6 +90,18 @@ int main(int argc, char **argv) {
         std::cout << "SOLUTION LENGTH: " << path->getStateCount() << std::endl;
         setFrame(0);
         //path->printAsMatrix(std::cout);
+        
+        // save solution to file:
+        std::fstream solutionFile;
+        solutionFile.open("solution-" + environment->datetime + ".csv");
+        for(int i = 0; i < path->getStateCount(); i++) {
+            std::vector<double> row;
+            ss->copyToReals(row, path->getState(i));
+            for(int j = 0; j < row.size(); j++)
+                solutionFile << (j > 0 ? "," : "") << row[j];
+            solutionFile << std::endl;
+        }
+        solutionFile.close();
     } else {
         std::cout << "SOLUTION NOT FOUND" << std::endl;
         path = 0L;

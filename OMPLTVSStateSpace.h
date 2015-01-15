@@ -90,7 +90,7 @@ public:
         double* getBodyAngularVelocity(unsigned int body) {
             return as<ompl::base::RealVectorStateSpace::StateType>(body * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY)->values;
         }
-
+        
         /** \brief Flag containing information about state validity.
 
             - BIT 0: (OMPLTVSStateSpace::STATE_COLLISION_KNOWN_BIT)

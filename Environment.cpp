@@ -16,8 +16,10 @@
 #include <drawstuff/drawstuff.h>
 #include <ompl/util/Console.h>
 #include <boost/foreach.hpp>
+#include "utils.h"
 
 Environment::Environment() {
+    datetime = getDateTimeString();
     readConfig();
     this->v = new TrackedVehicle("robot", 1, -2, 0.301);
     this->v->leftTrack->acceleration = config.world.track_acceleration;

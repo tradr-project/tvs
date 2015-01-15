@@ -15,20 +15,7 @@
 
 OMPLTVSEnvironment::OMPLTVSEnvironment(Environment *env)
 : stepSize_(0.5), maxControlSteps_(40), minControlSteps_(1), env_(env) {
-    std::string bakName = "searchTree", bakExt = ".csv";
-    if(boost::filesystem::exists(bakName + bakExt)) {
-        // backup existing file
-        // find latest backup:
-        int b = 0;
-        std::stringstream ss;
-        do {
-            ss.str(std::string()); // clear ss
-            ss << bakName << "." << b << bakExt;
-            b++;
-        } while(boost::filesystem::exists(ss.str()));
-        boost::filesystem::rename(bakName + bakExt, ss.str());
-    }
-    searchTreeLogFile.open("searchTree.csv" /* , std::ios_base::app */);
+    searchTreeLogFile.open("tree-" + env->datetime + ".csv");
 }
 
 OMPLTVSEnvironment::~OMPLTVSEnvironment() {

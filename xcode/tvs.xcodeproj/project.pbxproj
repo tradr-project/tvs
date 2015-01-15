@@ -67,6 +67,9 @@
 		CEA6B4291A67DFFC0047EF8F /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557C1A2E0441000AB866 /* CoreVideo.framework */; };
 		CEA6B42A1A67DFFC0047EF8F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557D1A2E0441000AB866 /* IOKit.framework */; };
 		CEA6B42B1A67DFFC0047EF8F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE5557E1A2E0441000AB866 /* OpenGL.framework */; };
+		CEA6B42E1A6808A80047EF8F /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA6B42C1A6808A80047EF8F /* utils.cpp */; };
+		CEA6B42F1A6808A80047EF8F /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA6B42C1A6808A80047EF8F /* utils.cpp */; };
+		CEA6B4301A6808A80047EF8F /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA6B42C1A6808A80047EF8F /* utils.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -124,6 +127,8 @@
 		CEA6B40F1A67DB140047EF8F /* search_vis.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = search_vis.cpp; path = ../search_vis.cpp; sourceTree = "<group>"; };
 		CEA6B4151A67DF280047EF8F /* search_vis */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = search_vis; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEA6B4171A67DF280047EF8F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		CEA6B42C1A6808A80047EF8F /* utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utils.cpp; path = ../utils.cpp; sourceTree = "<group>"; };
+		CEA6B42D1A6808A80047EF8F /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = ../utils.h; sourceTree = "<group>"; };
 		CEA84B741A4219FA000AA8FB /* Heightfield.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Heightfield.cpp; path = ../Heightfield.cpp; sourceTree = "<group>"; };
 		CEA84B751A4219FA000AA8FB /* Heightfield.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Heightfield.h; path = ../Heightfield.h; sourceTree = "<group>"; };
 		CEA84B791A4219FA000AA8FB /* PointCloud.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PointCloud.cpp; path = ../PointCloud.cpp; sourceTree = "<group>"; };
@@ -216,6 +221,8 @@
 		CEE555711A2C8F80000AB866 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CEA6B42C1A6808A80047EF8F /* utils.cpp */,
+				CEA6B42D1A6808A80047EF8F /* utils.h */,
 				CEA6B40F1A67DB140047EF8F /* search_vis.cpp */,
 				CE93FD471A65D27E005BDA76 /* planner.cpp */,
 				CE93FD481A65D27E005BDA76 /* simulator.cpp */,
@@ -351,6 +358,7 @@
 				CE93FD611A65D5FA005BDA76 /* simulator.cpp in Sources */,
 				CE93FD621A65D5FA005BDA76 /* Environment.cpp in Sources */,
 				CE93FD631A65D5FA005BDA76 /* Environment.h in Sources */,
+				CEA6B42E1A6808A80047EF8F /* utils.cpp in Sources */,
 				CE93FD641A65D5FA005BDA76 /* Track.cpp in Sources */,
 				CE93FD651A65D5FA005BDA76 /* Track.h in Sources */,
 				CE93FD661A65D5FA005BDA76 /* TrackedVehicle.cpp in Sources */,
@@ -369,6 +377,7 @@
 				CE93FD761A65D62E005BDA76 /* planner.cpp in Sources */,
 				CE93FD771A65D62E005BDA76 /* OMPLTVSControlSpace.cpp in Sources */,
 				CE93FD781A65D62E005BDA76 /* OMPLTVSControlSpace.h in Sources */,
+				CEA6B42F1A6808A80047EF8F /* utils.cpp in Sources */,
 				CE93FD791A65D62E005BDA76 /* OMPLTVSEnvironment.cpp in Sources */,
 				CE93FD7A1A65D62E005BDA76 /* OMPLTVSEnvironment.h in Sources */,
 				CE93FD7B1A65D62E005BDA76 /* OMPLTVSSimpleSetup.cpp in Sources */,
@@ -399,6 +408,7 @@
 				CEA6B41C1A67DFED0047EF8F /* search_vis.cpp in Sources */,
 				CEA6B41D1A67DFED0047EF8F /* Environment.cpp in Sources */,
 				CEA6B41E1A67DFED0047EF8F /* Environment.h in Sources */,
+				CEA6B4301A6808A80047EF8F /* utils.cpp in Sources */,
 				CEA6B41F1A67DFED0047EF8F /* Track.cpp in Sources */,
 				CEA6B4201A67DFED0047EF8F /* Track.h in Sources */,
 				CEA6B4211A67DFED0047EF8F /* TrackedVehicle.cpp in Sources */,

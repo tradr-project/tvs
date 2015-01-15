@@ -63,6 +63,7 @@ struct Config {
 class Environment {
 public:
     Config config;
+    std::string datetime;
 
     dWorldID world;
     dSpaceID space;

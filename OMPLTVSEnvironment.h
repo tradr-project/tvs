@@ -19,6 +19,7 @@
 
 #include <ode/ode.h>
 #include <vector>
+#include <fstream>
 #include <boost/thread/mutex.hpp>
 
 OMPL_CLASS_FORWARD(OMPLTVSEnvironment);
