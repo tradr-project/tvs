@@ -70,11 +70,12 @@ void step(int pause) {
     environment->draw();
     
     // draw search tree
-    const dReal w = 20, w2 = 7;
+    const dReal w0 = 35, w1 = 21, w2 = 7;
     for(size_t i = 0; i < searchTree.size(); i++) {
-        dReal g = fmax(0, i + w - searchTree.size()) / w;
+        dReal r = fmax(0, i + w0 - searchTree.size()) / w0;
+        dReal g = fmax(0, i + w1 - searchTree.size()) / w1;
         dReal b = fmax(0, i + w2 - searchTree.size()) / w2;
-        dsSetColor(1, g, b);
+        dsSetColor(r, g, b);
         dsDrawLineD(searchTree[i].a, searchTree[i].b);
     }
 }
