@@ -6,7 +6,7 @@ PCL_LDLIBS = $(shell sh -c 'for i in $(PCL_MODULES); do pkg-config pcl_$${i}-$(P
 SDL_CFLAGS = $(shell pkg-config sdl2 --cflags)
 SDL_LDLIBS = $(shell pkg-config sdl2 --libs)
 
-CFLAGS := -std=c++03 -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -DPOINTCLOUDS_PATH=\"$(PWD)/pointclouds\" -I$(PWD)/../ode/include -I/opt/local/include $(SDL_CFLAGS) $(OPT_CFLAGS)
+CFLAGS := -std=c++03 -O0 -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -DPOINTCLOUDS_PATH=\"$(PWD)/pointclouds\" -I$(PWD)/../ode/include -I/opt/local/include $(SDL_CFLAGS) $(OPT_CFLAGS)
 LDLIBS := -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff -lstdc++ -L/opt/local/lib $(SDL_LDLIBS)
 
 ifeq ($(OS),Windows_NT)
