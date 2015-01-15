@@ -14,7 +14,7 @@
 #include <boost/filesystem/operations.hpp>
 
 OMPLTVSEnvironment::OMPLTVSEnvironment(Environment *env)
-: stepSize_(0.5), maxControlSteps_(5), minControlSteps_(1), env_(env) {
+: stepSize_(0.5), maxControlSteps_(40), minControlSteps_(1), env_(env) {
     std::string bakName = "searchTree", bakExt = ".csv";
     if(boost::filesystem::exists(bakName + bakExt)) {
         // backup existing file

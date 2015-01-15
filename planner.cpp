@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
     bounds.setLow(2,  -0.1); bounds.setHigh(2, 2);
     stateSpace->as<OMPLTVSStateSpace>()->setVolumeBounds(bounds);
     setup.setup();
-    if (setup.solve(600)) {
+    if (setup.solve(46800)) {
         path = new ompl::control::PathControl(setup.getSolutionPath());
         std::cout << "SOLUTION LENGTH: " << path->getStateCount() << std::endl;
         setFrame(0);

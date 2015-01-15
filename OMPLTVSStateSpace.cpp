@@ -21,9 +21,9 @@ unsigned int OMPLTVSStateProjectionEvaluator::getDimension(void) const {
 
 void OMPLTVSStateProjectionEvaluator::defaultCellSizes(void) {
     cellSizes_.resize(3);
-    cellSizes_[0] = 0.333;
-    cellSizes_[1] = 0.333;
-    cellSizes_[2] = 0.2;
+    cellSizes_[0] = 0.2;
+    cellSizes_[1] = 0.2;
+    cellSizes_[2] = 0.1;
 }
 
 void OMPLTVSStateProjectionEvaluator::project(const ompl::base::State *state, ompl::base::EuclideanProjection &projection) const {
