@@ -1,5 +1,7 @@
 main
 planner
+searchTree.csv
+searchTree.[0-9]*.csv
 simulator
 *.o
 *.d

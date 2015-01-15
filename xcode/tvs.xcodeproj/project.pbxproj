@@ -417,6 +417,7 @@
 					"-ldrawstuff",
 					"-lboost_system-mt",
 					"-lboost_thread-mt",
+					"-lboost_filesystem-mt",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -448,6 +449,7 @@
 					"-ldrawstuff",
 					"-lboost_system-mt",
 					"-lboost_thread-mt",
+					"-lboost_filesystem-mt",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -537,6 +539,7 @@
 				CE93FD551A65D2D8005BDA76 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		CE93FD5E1A65D2E1005BDA76 /* Build configuration list for PBXNativeTarget "planner" */ = {
 			isa = XCConfigurationList;
@@ -545,6 +548,7 @@
 				CE93FD601A65D2E1005BDA76 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		CE9893981A2C8ED300E79C12 /* Build configuration list for PBXProject "tvs" */ = {
 			isa = XCConfigurationList;

@@ -31,7 +31,7 @@ else
 		ifneq ($(filter arm%,$(UNAME_P)),)
 			CFLAGS += -DARM
 		endif
-        LDLIBS += -lGL -lGLU -lglut -lX11 -lXxf86vm -lXrandr -lpthread -lXi -lboost_system -lboost_thread
+        LDLIBS += -lGL -lGLU -lglut -lX11 -lXxf86vm -lXrandr -lpthread -lXi -lboost_system -lboost_thread -lboost_filesystem
         CFLAGS += -I$(HOME)/omplapp/ompl/src -DHAVE_JOYSTICK
         LDLIBS += -L$(HOME)/omplapp/build/Release/lib
     endif
@@ -44,7 +44,7 @@ else
 		ifneq ($(filter %86,$(UNAME_M)),)
 			CFLAGS += -DIA32
 		endif
-        LDLIBS += -framework Cocoa -framework CoreVideo -framework IOKit -framework OpenGL -framework GLUT -lboost_system-mt -lboost_thread-mt
+        LDLIBS += -framework Cocoa -framework CoreVideo -framework IOKit -framework OpenGL -framework GLUT -lboost_system-mt -lboost_thread-mt -lboost_filesystem-mt
     endif
 endif
 

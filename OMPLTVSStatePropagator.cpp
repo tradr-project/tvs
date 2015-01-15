@@ -37,21 +37,7 @@ void OMPLTVSStatePropagator::propagate(const ompl::base::State *state, const omp
     // read the final state from the OMPLTVS world
     si_->getStateSpace()->as<OMPLTVSStateSpace>()->readState(result);
 
-#if 1
-    const dReal *a = state->as<OMPLTVSStateSpace::StateType>()->getBodyPosition(0);
-    const dReal *b = result->as<OMPLTVSStateSpace::StateType>()->getBodyPosition(0);
-    std::cout
-    << control->as<ompl::control::RealVectorControlSpace::ControlType>()->values[0] << " "
-    << control->as<ompl::control::RealVectorControlSpace::ControlType>()->values[1] << " "
-    << "   "
-    << duration
-    << "   "
-    << a[0] << " " << a[1] << " " << a[2]
-    << "   "
-    << b[0] << " " << b[1] << " " << b[2]
-    << std::endl;
-#endif
-    env_->addToSearchTree(state, result); // for visualization purposes
+    env_->addToSearchTree(state, control, duration, result); // for visualization purposes
     
     env_->mutex_.unlock();
 

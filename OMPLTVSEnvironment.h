@@ -14,6 +14,7 @@
 
 #include <ompl/config.h>
 #include <ompl/base/State.h>
+#include <ompl/control/Control.h>
 #include <ompl/util/ClassForward.h>
 
 #include <ode/ode.h>
@@ -54,7 +55,8 @@ public:
     virtual void applyControl(const double *control) const;
     
     std::vector<dLine> searchTree;
-    void addToSearchTree(const ompl::base::State *s1, const ompl::base::State *s2);
+    void addToSearchTree(const ompl::base::State *s1, const ompl::control::Control *control, const double duration, const ompl::base::State *s2);
+    std::ofstream searchTreeLogFile;
 };
 
 #endif
