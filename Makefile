@@ -58,13 +58,16 @@ OMPL_OBJS := OMPLTVSControlSpace.o OMPLTVSEnvironment.o OMPLTVSSimpleSetup.o OMP
 OBJS = $(TVS_OBJS) $(OMPL_OBJS)
 
 
-all: simulator planner
+all: simulator planner search_vis
 
 simulator: Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o simulator.o
 	$(CC) $^ $(LDLIBS) -o $@
 
 planner: Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o OMPLTVSControlSpace.o OMPLTVSEnvironment.o OMPLTVSSimpleSetup.o OMPLTVSStatePropagator.o OMPLTVSStateSpace.o OMPLTVSStateValidityChecker.o planner.o
 	$(CC) $^ $(LDLIBS) -lompl -o $@
+
+search_vis: Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o search_vis.o
+	$(CC) $^ $(LDLIBS) -o $@
 
 -include $(OBJS:.o=.d)
 

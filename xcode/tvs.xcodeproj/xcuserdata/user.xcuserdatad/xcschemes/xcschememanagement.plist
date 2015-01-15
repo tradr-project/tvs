@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>2</integer>
 		</dict>
+		<key>search_vis.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
 		<key>simulator.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -33,6 +38,11 @@
 			<true/>
 		</dict>
 		<key>CE98939C1A2C8ED300E79C12</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>CEA6B4141A67DF280047EF8F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
