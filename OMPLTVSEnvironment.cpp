@@ -65,7 +65,7 @@ void OMPLTVSEnvironment::addToSearchTree(const ompl::base::State *state, const o
     << control->as<ompl::control::RealVectorControlSpace::ControlType>()->values[0] << ","
     << control->as<ompl::control::RealVectorControlSpace::ControlType>()->values[1] << ","
     << duration << ","
-    << b[0] << " " << b[1] << " " << b[2]
+    << b[0] << "," << b[1] << "," << b[2]
     << std::endl;
     searchTreeLogFile.flush();
 }
