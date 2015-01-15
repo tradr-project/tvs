@@ -20,7 +20,7 @@
 Environment *environment;
 size_t old_len = 0;
 int last_newline = -1;
-const char *f = "searchTree.csv";
+const char *f = 0L;
 std::vector<dLine> searchTree;
 
 void start() {
@@ -87,6 +87,8 @@ void command(int cmd) {
 }
 
 int main(int argc, char **argv) {
+    f = argv[1];
+    
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
 
