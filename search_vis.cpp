@@ -70,9 +70,10 @@ void step(int pause) {
     environment->draw();
     
     // draw search tree
-    dsSetColor(1, 0, 0);
-    for(std::vector<dLine>::iterator i = searchTree.begin(); i != searchTree.end(); i++) {
-        dsDrawLineD(i->a, i->b);
+    for(size_t i = 0; i < searchTree.size(); i++) {
+        dReal d = fmax(0, i + 50 - searchTree.size()) / 50.0;
+        dsSetColor(1, d, d);
+        dsDrawLineD(searchTree[i].a, searchTree[i].b);
     }
 }
 
