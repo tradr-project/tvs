@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
         //path->printAsMatrix(std::cout);
         
         // save solution to file:
-        std::fstream solutionFile;
+        std::ofstream solutionFile;
         solutionFile.open(("solution-" + environment->datetime + ".csv").c_str());
         for(int i = 0; i < path->getStateCount(); i++) {
             std::vector<double> row;
