@@ -26,14 +26,14 @@ dRigidBodyArrayID dRigidBodyArrayCreate(dBodyID centerBody);
 void dRigidBodyArrayAdd(dRigidBodyArrayID bodyArray, dBodyID body);
 void dRigidBodyArrayAdd(dRigidBodyArrayID bodyArray, dRigidBodyArrayID bodyArray2);
 void dRigidBodyArrayDestroy(dRigidBodyArrayID bodyArray);
-
-void dRigidBodyArraySetPosition(dBodyID *bodyArray, size_t arraySize, dBodyID center, dReal x, dReal y, dReal z);
-void dRigidBodyArraySetRotation(dBodyID *bodyArray, size_t arraySize, dBodyID center, const dReal *Rs);
-void dRigidBodyArraySetQuaternion(dBodyID *bodyArray, size_t arraySize, dBodyID center, const dReal *q);
-void dRigidBodyArraySetLinearVel(dBodyID *bodyArray, size_t arraySize, dBodyID center, dReal lx, dReal ly, dReal lz);
-void dRigidBodyArraySetAngularVel(dBodyID *bodyArray, size_t arraySize, dBodyID center, dReal ax, dReal ay, dReal az);
-void dRigidBodyArrayAddLinearVel(dBodyID *bodyArray, size_t arraySize, dBodyID center, dReal lx, dReal ly, dReal lz);
-void dRigidBodyArraySetVel(dBodyID *bodyArray, size_t arraySize, dBodyID center, dReal lx, dReal ly, dReal lz, dReal ax, dReal ay, dReal az);
+void dRigidBodyArraySetPosition(dRigidBodyArrayID bodyArray, dReal x, dReal y, dReal z);
+void dRigidBodyArraySetRotationRelative(dRigidBodyArrayID bodyArray, const dReal *Rs);
+void dRigidBodyArraySetRotation(dRigidBodyArrayID bodyArray, const dReal *Rs);
+void dRigidBodyArraySetQuaternion(dRigidBodyArrayID bodyArray, const dReal *q);
+void dRigidBodyArraySetLinearVel(dRigidBodyArrayID bodyArray, dReal lx, dReal ly, dReal lz);
+void dRigidBodyArraySetAngularVel(dRigidBodyArrayID bodyArray, dReal ax, dReal ay, dReal az);
+void dRigidBodyArrayAddLinearVel(dRigidBodyArrayID bodyArray, dReal lx, dReal ly, dReal lz);
+void dRigidBodyArraySetVel(dRigidBodyArrayID bodyArray, dReal lx, dReal ly, dReal lz, dReal ax, dReal ay, dReal az);
 const char * dClassGetName(int c);
 
 struct dLine {
