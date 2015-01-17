@@ -11,6 +11,22 @@
 
 #include <ode/ode.h>
 
+struct dxRigidBodyArray;
+typedef struct dxRigidBodyArray *dRigidBodyArrayID;
+
+struct dxRigidBodyArray {
+    dBodyID body;
+    dRigidBodyArrayID next;
+    dxRigidBodyArray() : body(0L), next(0L) {}
+    dxRigidBodyArray(dBodyID body_) : body(body_), next(0L) {}
+    dxRigidBodyArray(dBodyID body_, dRigidBodyArrayID next_) : body(body_), next(next_) {}
+};
+
+dRigidBodyArrayID dRigidBodyArrayCreate(dBodyID centerBody);
+void dRigidBodyArrayAdd(dRigidBodyArrayID bodyArray, dBodyID body);
+void dRigidBodyArrayAdd(dRigidBodyArrayID bodyArray, dRigidBodyArrayID bodyArray2);
+void dRigidBodyArrayDestroy(dRigidBodyArrayID bodyArray);
+
 void dRigidBodyArraySetPosition(dBodyID *bodyArray, size_t arraySize, dBodyID center, dReal x, dReal y, dReal z);
 void dRigidBodyArraySetRotation(dBodyID *bodyArray, size_t arraySize, dBodyID center, const dReal *Rs);
 void dRigidBodyArraySetQuaternion(dBodyID *bodyArray, size_t arraySize, dBodyID center, const dReal *q);
