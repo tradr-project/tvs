@@ -12,6 +12,7 @@
 #include <string>
 #include <ode/ode.h>
 #include "Track.h"
+#include "ODEUtils.h"
 
 class Environment;
 
@@ -31,8 +32,7 @@ public:
     dReal yOffset;
     dReal zOffset;
     
-    dBodyID *bodyArray;
-    size_t bodyArraySize;
+    dRigidBodyArrayID bodyArray;
     
     TrackedVehicle(const std::string& name_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~TrackedVehicle();

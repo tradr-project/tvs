@@ -58,19 +58,16 @@ void TrackedVehicle::create(Environment *environment) {
     dJointSetFixed(this->leftTrackJoint);
     dJointSetFixed(this->rightTrackJoint);
     
-    this->bodyArraySize = (this->leftTrack->numGrousers + 1 + 2) * 2 + 1;
-    this->bodyArray = new dBodyID[this->bodyArraySize];
-    size_t j = 0;
-    this->bodyArray[j++] = this->vehicleBody;
-    this->bodyArray[j++] = this->leftTrack->trackBody;
-    this->bodyArray[j++] = this->rightTrack->trackBody;
+    this->bodyArray = dRigidBodyArrayCreate(this->vehicleBody);
+    dRigidBodyArrayAdd(this->bodyArray, this->leftTrack->trackBody);
+    dRigidBodyArrayAdd(this->bodyArray, this->rightTrack->trackBody);
     for(int w = 0; w < 2; w++) {
-        this->bodyArray[j++] = this->leftTrack->wheelBody[w];
-        this->bodyArray[j++] = this->rightTrack->wheelBody[w];
+        dRigidBodyArrayAdd(this->bodyArray, this->leftTrack->wheelBody[w]);
+        dRigidBodyArrayAdd(this->bodyArray, this->rightTrack->wheelBody[w]);
     }
     for(size_t i = 0; i < this->leftTrack->numGrousers; i++) {
-        this->bodyArray[j++] = this->leftTrack->linkBody[i];
-        this->bodyArray[j++] = this->rightTrack->linkBody[i];
+        dRigidBodyArrayAdd(this->bodyArray, this->leftTrack->linkBody[i]);
+        dRigidBodyArrayAdd(this->bodyArray, this->rightTrack->linkBody[i]);
     }
 }
 
@@ -127,17 +124,17 @@ const dReal * TrackedVehicle::getRotation() {
 }
 
 void TrackedVehicle::setPosition(const dReal *p) {
-    dRigidBodyArraySetPosition(this->bodyArray, this->bodyArraySize, this->vehicleBody, p[0], p[1], p[2]);
+    dRigidBodyArraySetPosition(this->bodyArray, p[0], p[1], p[2]);
 }
 
 void TrackedVehicle::setVel(const dReal *linear, const dReal *angular) {
-    dRigidBodyArraySetVel(this->bodyArray, this->bodyArraySize, this->vehicleBody, linear[0], linear[1], linear[2], angular[0], angular[1], angular[2]);
+    dRigidBodyArraySetVel(this->bodyArray, linear[0], linear[1], linear[2], angular[0], angular[1], angular[2]);
 }
 
 void TrackedVehicle::setQuaternion(const dReal *q) {
-    dRigidBodyArraySetQuaternion(this->bodyArray, this->bodyArraySize, this->vehicleBody, q);
+    dRigidBodyArraySetQuaternion(this->bodyArray, q);
 }
 
 void TrackedVehicle::setRotation(const dReal *R) {
-    dRigidBodyArraySetRotation(this->bodyArray, this->bodyArraySize, this->vehicleBody, R);
+    dRigidBodyArraySetRotation(this->bodyArray, R);
 }
