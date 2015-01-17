@@ -77,6 +77,8 @@ void TrackedVehicle::destroy() {
 
     dBodyDestroy(this->vehicleBody);
     dGeomDestroy(this->vehicleGeom);
+    
+    dRigidBodyArrayDestroy(this->bodyArray);
 }
 
 void TrackedVehicle::step(dReal stepSize) {
