@@ -1,8 +1,8 @@
 main
 planner
 search_vis
-searchTree.csv
-searchTree.[0-9]*.csv
+tree-*.csv
+solution-*.csv
 simulator
 *.o
 *.d
