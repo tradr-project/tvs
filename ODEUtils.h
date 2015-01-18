@@ -17,7 +17,6 @@ typedef struct dxRigidBodyArray *dRigidBodyArrayID;
 struct dxRigidBodyArray {
     dBodyID body;
     dRigidBodyArrayID next;
-    dxRigidBodyArray() : body(0L), next(0L) {}
     dxRigidBodyArray(dBodyID body_) : body(body_), next(0L) {}
     dxRigidBodyArray(dBodyID body_, dRigidBodyArrayID next_) : body(body_), next(next_) {}
 };
