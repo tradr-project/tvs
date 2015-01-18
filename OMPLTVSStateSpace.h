@@ -13,6 +13,7 @@
 #include <ompl/base/spaces/RealVectorStateSpace.h>
 #include <ompl/base/spaces/SO3StateSpace.h>
 #include "OMPLTVSEnvironment.h"
+#include "ODEUtils.h"
 
 /** \brief Defines how we project a state to a lower dimensional (euclidean) space */
 class OMPLTVSStateProjectionEvaluator : public ompl::base::ProjectionEvaluator {
