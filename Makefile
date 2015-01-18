@@ -53,20 +53,20 @@ CXXFLAGS = $(CFLAGS)
 .PHONY: clean all
 
 # Heightfield.o TriMesh.o PointCloud.o
-TVS_OBJS := Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o simulator.o search_vis.o utils.o
+TVS_OBJS := Track.o TrackKinematicModel.o TrackedVehicle.o SkidSteeringVehicle.o Environment.o ODEUtils.o simulator.o search_vis.o utils.o
 OMPL_OBJS := OMPLTVSControlSpace.o OMPLTVSEnvironment.o OMPLTVSSimpleSetup.o OMPLTVSStatePropagator.o OMPLTVSStateSpace.o OMPLTVSStateValidityChecker.o planner.o
 OBJS = $(TVS_OBJS) $(OMPL_OBJS)
 
 
 all: simulator planner search_vis
 
-simulator: Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o utils.o simulator.o
+simulator: Track.o TrackKinematicModel.o TrackedVehicle.o SkidSteeringVehicle.o Environment.o ODEUtils.o utils.o simulator.o
 	$(CC) $^ $(LDLIBS) -o $@
 
-planner: Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o OMPLTVSControlSpace.o OMPLTVSEnvironment.o OMPLTVSSimpleSetup.o OMPLTVSStatePropagator.o OMPLTVSStateSpace.o OMPLTVSStateValidityChecker.o utils.o planner.o
+planner: Track.o TrackKinematicModel.o TrackedVehicle.o SkidSteeringVehicle.o Environment.o ODEUtils.o OMPLTVSControlSpace.o OMPLTVSEnvironment.o OMPLTVSSimpleSetup.o OMPLTVSStatePropagator.o OMPLTVSStateSpace.o OMPLTVSStateValidityChecker.o utils.o planner.o
 	$(CC) $^ $(LDLIBS) -lompl -o $@
 
-search_vis: Track.o TrackKinematicModel.o TrackedVehicle.o Environment.o ODEUtils.o utils.o search_vis.o
+search_vis: Track.o TrackKinematicModel.o TrackedVehicle.o SkidSteeringVehicle.o Environment.o ODEUtils.o utils.o search_vis.o
 	$(CC) $^ $(LDLIBS) -o $@
 
 -include $(OBJS:.o=.d)

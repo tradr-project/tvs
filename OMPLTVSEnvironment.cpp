@@ -37,7 +37,11 @@ void OMPLTVSEnvironment::getControlBounds(std::vector<double> &lower, std::vecto
 }
 
 void OMPLTVSEnvironment::applyControl(const double *control) const {
+#ifdef USE_TRACKED_VEHICLE
     env_->v->setTrackVelocities(control[0], control[1]);
+#else // SKID STEERING VEHICLE:
+    env_->v->setWheelVelocities(control[0], control[1]);
+#endif
 }
 
 void OMPLTVSEnvironment::addToSearchTree(const ompl::base::State *state, const ompl::control::Control *control, const double duration, const ompl::base::State *result) {

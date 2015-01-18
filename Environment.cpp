@@ -21,9 +21,15 @@
 Environment::Environment() {
     datetime = getDateTimeString();
     readConfig();
+#ifdef USE_TRACKED_VEHICLE
     this->v = new TrackedVehicle("robot", 1, -2, 0.301);
-    this->v->leftTrack->acceleration = config.world.track_acceleration;
-    this->v->rightTrack->acceleration = config.world.track_acceleration;
+    this->v->leftTrack->velocity.setSlope(config.world.track_acceleration);
+    this->v->rightTrack->velocity.setSlope(config.world.track_acceleration);
+#else // SKID STEERING VEHICLE:
+    this->v = new SkidSteeringVehicle("robot", 1, -2, 0.301);
+    this->v->velocityLeft.setSlope(config.world.track_acceleration);
+    this->v->velocityRight.setSlope(config.world.track_acceleration);
+#endif
 }
 
 Environment::~Environment() {
@@ -175,6 +181,8 @@ bool Environment::isValidCollision(dGeomID o1, dGeomID o2, const dContact& conta
     if(isCatPair(Category::WHEEL, Category::G_GUIDE, &o1, &o2)) // XXX: not needed really
         return true;
     if(isCatPair(Category::WHEEL, Category::GROUSER, &o1, &o2))
+        return true;
+    if(isCatPair(Category::WHEEL, Category::TERRAIN, &o1, &o2))
         return true;
     return false;
 }

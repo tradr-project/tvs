@@ -70,6 +70,9 @@
 		CEA6B42E1A6808A80047EF8F /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA6B42C1A6808A80047EF8F /* utils.cpp */; };
 		CEA6B42F1A6808A80047EF8F /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA6B42C1A6808A80047EF8F /* utils.cpp */; };
 		CEA6B4301A6808A80047EF8F /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA6B42C1A6808A80047EF8F /* utils.cpp */; };
+		CEA6B4331A6A8D250047EF8F /* SkidSteeringVehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA6B4311A6A8D250047EF8F /* SkidSteeringVehicle.cpp */; };
+		CEA6B4341A6A8D250047EF8F /* SkidSteeringVehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA6B4311A6A8D250047EF8F /* SkidSteeringVehicle.cpp */; };
+		CEA6B4351A6A8D250047EF8F /* SkidSteeringVehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA6B4311A6A8D250047EF8F /* SkidSteeringVehicle.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -129,6 +132,8 @@
 		CEA6B4171A67DF280047EF8F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CEA6B42C1A6808A80047EF8F /* utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utils.cpp; path = ../utils.cpp; sourceTree = "<group>"; };
 		CEA6B42D1A6808A80047EF8F /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = ../utils.h; sourceTree = "<group>"; };
+		CEA6B4311A6A8D250047EF8F /* SkidSteeringVehicle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SkidSteeringVehicle.cpp; path = ../SkidSteeringVehicle.cpp; sourceTree = "<group>"; };
+		CEA6B4321A6A8D250047EF8F /* SkidSteeringVehicle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SkidSteeringVehicle.h; path = ../SkidSteeringVehicle.h; sourceTree = "<group>"; };
 		CEA84B741A4219FA000AA8FB /* Heightfield.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Heightfield.cpp; path = ../Heightfield.cpp; sourceTree = "<group>"; };
 		CEA84B751A4219FA000AA8FB /* Heightfield.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Heightfield.h; path = ../Heightfield.h; sourceTree = "<group>"; };
 		CEA84B791A4219FA000AA8FB /* PointCloud.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PointCloud.cpp; path = ../PointCloud.cpp; sourceTree = "<group>"; };
@@ -244,6 +249,8 @@
 				CEA84B751A4219FA000AA8FB /* Heightfield.h */,
 				CEA84B791A4219FA000AA8FB /* PointCloud.cpp */,
 				CEA84B7A1A4219FA000AA8FB /* PointCloud.h */,
+				CEA6B4311A6A8D250047EF8F /* SkidSteeringVehicle.cpp */,
+				CEA6B4321A6A8D250047EF8F /* SkidSteeringVehicle.h */,
 				CEA84B7B1A4219FA000AA8FB /* Track.cpp */,
 				CEA84B7C1A4219FA000AA8FB /* Track.h */,
 				CEA84B7D1A4219FA000AA8FB /* TrackedVehicle.cpp */,
@@ -356,6 +363,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE93FD611A65D5FA005BDA76 /* simulator.cpp in Sources */,
+				CEA6B4331A6A8D250047EF8F /* SkidSteeringVehicle.cpp in Sources */,
 				CE93FD621A65D5FA005BDA76 /* Environment.cpp in Sources */,
 				CE93FD631A65D5FA005BDA76 /* Environment.h in Sources */,
 				CEA6B42E1A6808A80047EF8F /* utils.cpp in Sources */,
@@ -374,6 +382,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEA6B4341A6A8D250047EF8F /* SkidSteeringVehicle.cpp in Sources */,
 				CE93FD761A65D62E005BDA76 /* planner.cpp in Sources */,
 				CE93FD771A65D62E005BDA76 /* OMPLTVSControlSpace.cpp in Sources */,
 				CE93FD781A65D62E005BDA76 /* OMPLTVSControlSpace.h in Sources */,
@@ -406,6 +415,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEA6B41C1A67DFED0047EF8F /* search_vis.cpp in Sources */,
+				CEA6B4351A6A8D250047EF8F /* SkidSteeringVehicle.cpp in Sources */,
 				CEA6B41D1A67DFED0047EF8F /* Environment.cpp in Sources */,
 				CEA6B41E1A67DFED0047EF8F /* Environment.h in Sources */,
 				CEA6B4301A6808A80047EF8F /* utils.cpp in Sources */,

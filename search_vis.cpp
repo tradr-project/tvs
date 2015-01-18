@@ -87,6 +87,11 @@ void command(int cmd) {
 }
 
 int main(int argc, char **argv) {
+    if(argc != 2) {
+        std::cout << "usage: " << argv[0] << " <tree.csv>" << std::endl;
+        exit(1);
+    }
+    
     f = argv[1];
     
     dInitODE2(0);

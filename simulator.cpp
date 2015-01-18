@@ -29,9 +29,13 @@ void initRobotPose() {
     environment->v->setPosition(p);
     environment->v->setQuaternion(q);
     vel_left = vel_right = 0.0;
-    environment->v->setTrackVelocities(0, 0);
-    environment->v->leftTrack->actualVelocity = 0.0;
-    environment->v->rightTrack->actualVelocity = 0.0;
+#ifdef USE_TRACKED_VEHICLE
+    environment->v->leftTrack->velocity.reset();
+    environment->v->rightTrack->velocity.reset();
+#else // SKID STEERING VEHICLE:
+    environment->v->velocityLeft.reset();
+    environment->v->velocityRight.reset();
+#endif
 }
 
 void follow(dReal x, dReal y, dReal z) {
@@ -99,7 +103,11 @@ void step(int pause) {
         const dReal *p = environment->v->getPosition();
         follow(p[0], p[1], p[2]);
     }
+#ifdef USE_TRACKED_VEHICLE
     environment->v->setTrackVelocities(kbd_gain * vel_left, kbd_gain * vel_right);
+#else // SKID STEERING VEHICLE:
+    environment->v->setWheelVelocities(kbd_gain * vel_left, kbd_gain * vel_right);
+#endif
     environment->draw();
     if(!pause) environment->step();
 }
