@@ -24,8 +24,13 @@ bool following = false;
 dReal kbd_gain = 1.0;
 
 void initRobotPose() {
-    static dVector3 p = {2.08086,3.39581,0.102089};
-    static dQuaternion q = {-0.229659,-0.00088334,0.00010361,0.973271};
+    static dVector3 p = {
+        1.4554, 3.01316, 0.077984
+    };
+    static dQuaternion q = {
+        -0.767196, -1.83056e-06, 2.44949e-06, -0.641413
+    };
+
     environment->v->setPosition(p);
     environment->v->setQuaternion(q);
     vel_left = vel_right = 0.0;
