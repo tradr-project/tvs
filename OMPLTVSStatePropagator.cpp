@@ -31,7 +31,10 @@ void OMPLTVSStatePropagator::propagate(const ompl::base::State *state, const omp
     bool collision = false;
     for(double t = 0; t < duration; t += env_->env_->config.step.step_size) {
         collision = env_->env_->step() || collision;
-        if(collision) break;
+        if(collision) {
+            std::cout << "propagate: collision" << std::endl;
+            break;
+        }
     }
 
     // read the final state from the OMPLTVS world
