@@ -21,8 +21,8 @@ unsigned int OMPLTVSStateProjectionEvaluator::getDimension(void) const {
 
 void OMPLTVSStateProjectionEvaluator::defaultCellSizes(void) {
     cellSizes_.resize(3);
-    cellSizes_[0] = 0.2;
-    cellSizes_[1] = 0.2;
+    cellSizes_[0] = 0.5;
+    cellSizes_[1] = 0.5;
     cellSizes_[2] = 0.1;
 }
 
