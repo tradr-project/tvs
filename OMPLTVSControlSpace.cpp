@@ -14,7 +14,7 @@ void OMPLTVSControlSampler::sample(ompl::control::Control *control) {
     const ompl::base::RealVectorBounds &bounds = space_->as<ompl::control::RealVectorControlSpace>()->getBounds();
     ompl::control::RealVectorControlSpace::ControlType *rcontrol = control->as<ompl::control::RealVectorControlSpace::ControlType>();
     int l = 0, r = 0, d = 2;
-    while(l == 0 && r == 0) {
+    while(l <= 0 && r <= 0) {
         l = rng_.uniformInt(-d, d);
         r = rng_.uniformInt(-d, d);
     }
