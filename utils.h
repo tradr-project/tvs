@@ -18,6 +18,8 @@ class LinVelProfInt {
 private:
     double x, tx, vmax;
 public:
+    LinVelProfInt();
+    virtual ~LinVelProfInt();
     void step(double timeStep);
     double get();
     void reset();
@@ -26,3 +28,4 @@ public:
 };
 
 #endif // UTILS_H_INCLUDED
+

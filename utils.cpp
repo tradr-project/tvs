@@ -17,6 +17,14 @@ std::string getDateTimeString(const char *format) {
     return ss.str();
 }
 
+LinVelProfInt::LinVelProfInt() {
+    x = tx = 0;
+    vmax = 50;
+}
+
+LinVelProfInt::~LinVelProfInt() {
+}
+
 void LinVelProfInt::step(double timeStep) {
     x += double(sgn(tx - x)) * vmax * timeStep;
 }
