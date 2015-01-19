@@ -41,9 +41,8 @@ OMPLTVSStateSpace::OMPLTVSStateSpace(const OMPLTVSEnvironmentPtr &env, double po
 
     std::string body = ""; // unused
 
-    size_t j = 0;
-    for(dRigidBodyArrayID i = env_->env_->v->bodyArray; i; i = i->next) {
-        std::string body = ":B" + boost::lexical_cast<std::string>(j++);
+    for(size_t i = 0; i < dRigidBodyArraySize(env_->env_->v->bodyArray); i++) {
+        std::string body = ":B" + boost::lexical_cast<std::string>(i);
 
         addSubspace(ompl::base::StateSpacePtr(new ompl::base::RealVectorStateSpace(3)), positionWeight); // position
         components_.back()->setName(components_.back()->getName() + body + ":position");
@@ -171,26 +170,20 @@ bool OMPLTVSStateSpace::satisfiesBoundsExceptRotation(const StateType *state) co
 }
 
 void OMPLTVSStateSpace::setVolumeBounds(const ompl::base::RealVectorBounds &bounds) {
-    size_t j = 0;
-    for(dRigidBodyArrayID i = env_->env_->v->bodyArray; i; i = i->next) {
-        components_[j + COMPONENT_POSITION]->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
-        j += NUM_COMPONENTS;
+    for(size_t i = 0; i < dRigidBodyArraySize(env_->env_->v->bodyArray); i++) {
+        components_[i * NUM_COMPONENTS + COMPONENT_POSITION]->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
     }
 }
 
 void OMPLTVSStateSpace::setLinearVelocityBounds(const ompl::base::RealVectorBounds &bounds) {
-    size_t j = 0;
-    for(dRigidBodyArrayID i = env_->env_->v->bodyArray; i; i = i->next) {
-        components_[j + COMPONENT_LINEAR_VELOCITY]->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
-        j += NUM_COMPONENTS;
+    for(size_t i = 0; i < dRigidBodyArraySize(env_->env_->v->bodyArray); i++) {
+        components_[i * NUM_COMPONENTS + COMPONENT_LINEAR_VELOCITY]->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
     }
 }
 
 void OMPLTVSStateSpace::setAngularVelocityBounds(const ompl::base::RealVectorBounds &bounds) {
-    size_t j = 0;
-    for(dRigidBodyArrayID i = env_->env_->v->bodyArray; i; i = i->next) {
-        components_[j + COMPONENT_ANGULAR_VELOCITY]->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
-        j += NUM_COMPONENTS;
+    for(size_t i = 0; i < dRigidBodyArraySize(env_->env_->v->bodyArray); i++) {
+        components_[i * NUM_COMPONENTS + COMPONENT_ANGULAR_VELOCITY]->as<ompl::base::RealVectorStateSpace>()->setBounds(bounds);
     }
 }
 
@@ -251,12 +244,15 @@ ompl::base::StateSamplerPtr OMPLTVSStateSpace::allocStateSampler() const {
 void OMPLTVSStateSpace::readState(ompl::base::State *state) const {
     StateType *s = state->as<StateType>();
     
-    size_t j = 0;
-    for(dRigidBodyArrayID i = env_->env_->v->bodyArray; i; i = i->next) {
-        const dReal *pos = dBodyGetPosition(i->body);
-        const dReal *vel = dBodyGetLinearVel(i->body);
-        const dReal *ang = dBodyGetAngularVel(i->body);
-        const dReal *rot = dBodyGetQuaternion(i->body);
+    for(size_t i = dRigidBodyArraySize(env_->env_->v->bodyArray) - 1; i >= 0; i--) {
+        size_t j = i * NUM_COMPONENTS;
+        dBodyID body = dRigidBodyArrayGet(env_->env_->v->bodyArray, i);
+
+        const dReal *pos = dBodyGetPosition(body);
+        const dReal *vel = dBodyGetLinearVel(body);
+        const dReal *ang = dBodyGetAngularVel(body);
+        const dReal *rot = dBodyGetQuaternion(body);
+
         double *s_pos = s->as<ompl::base::RealVectorStateSpace::StateType>(j + COMPONENT_POSITION)->values;
         double *s_vel = s->as<ompl::base::RealVectorStateSpace::StateType>(j + COMPONENT_LINEAR_VELOCITY)->values;
         double *s_ang = s->as<ompl::base::RealVectorStateSpace::StateType>(j + COMPONENT_ANGULAR_VELOCITY)->values;
@@ -272,8 +268,6 @@ void OMPLTVSStateSpace::readState(ompl::base::State *state) const {
         s_rot.x = rot[1];
         s_rot.y = rot[2];
         s_rot.z = rot[3];
-        
-        j += NUM_COMPONENTS;
     }
     s->collision = 0;
 }
@@ -281,8 +275,10 @@ void OMPLTVSStateSpace::readState(ompl::base::State *state) const {
 void OMPLTVSStateSpace::writeState(const ompl::base::State *state) const {
     const StateType *s = state->as<StateType>();
 
-    size_t j = 0;
-    for(dRigidBodyArrayID i = env_->env_->v->bodyArray; i; i = i->next) {
+    for(size_t i = dRigidBodyArraySize(env_->env_->v->bodyArray) - 1; i >= 0; i--) {
+        size_t j = i * NUM_COMPONENTS;
+        dBodyID body = dRigidBodyArrayGet(env_->env_->v->bodyArray, i);
+
         double *s_pos = s->as<ompl::base::RealVectorStateSpace::StateType>(j + COMPONENT_POSITION)->values;
         double *s_vel = s->as<ompl::base::RealVectorStateSpace::StateType>(j + COMPONENT_LINEAR_VELOCITY)->values;
         double *s_ang = s->as<ompl::base::RealVectorStateSpace::StateType>(j + COMPONENT_ANGULAR_VELOCITY)->values;
@@ -294,12 +290,10 @@ void OMPLTVSStateSpace::writeState(const ompl::base::State *state) const {
         q[2] = s_rot.y;
         q[3] = s_rot.z;
         
-        dBodySetPosition(i->body, s_pos[0], s_pos[1], s_pos[2]);
-        dBodySetLinearVel(i->body, s_vel[0], s_vel[1], s_vel[2]);
-        dBodySetAngularVel(i->body, s_ang[0], s_ang[1], s_ang[2]);
-        dBodySetQuaternion(i->body, q);
-        
-        j += NUM_COMPONENTS;
+        dBodySetPosition(body, s_pos[0], s_pos[1], s_pos[2]);
+        dBodySetLinearVel(body, s_vel[0], s_vel[1], s_vel[2]);
+        dBodySetAngularVel(body, s_ang[0], s_ang[1], s_ang[2]);
+        dBodySetQuaternion(body, q);
     }
 }
 
