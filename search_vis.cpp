@@ -50,9 +50,9 @@ void step(int pause) {
             }
             if(c == '\n') {
                 //std::cout << "got line:";
-                for(int i = 0; i < line.size(); i++)
-                    std::cout << " " << boost::lexical_cast<std::string>(line[i]);
-                std::cout << std::endl;
+                //for(int i = 0; i < line.size(); i++)
+                //    std::cout << " " << boost::lexical_cast<std::string>(line[i]);
+                //std::cout << std::endl;
                 searchTree.resize(searchTree.size() + 1);
                 searchTree.back().a[0] = line[0];
                 searchTree.back().a[1] = line[1];
