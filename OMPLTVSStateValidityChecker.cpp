@@ -34,7 +34,7 @@ bool OMPLTVSStateValidityChecker::isValid(const ompl::base::State *state) const 
         const ompl::base::SO3StateSpace::StateType &s_rot = s->getBodyRotation(0);
         dQuaternion q = {s_rot.w, s_rot.x, s_rot.y, s_rot.z};
         dRfromQ(R, q);
-        bool badPose = R[10] < 0.707; // angle between robot z and world z > 45 deg
+        bool badPose = R[10] < 0.5; // angle between robot z and world z > 60 deg
         
         valid = satBounds && !badPose;
         
@@ -42,6 +42,8 @@ bool OMPLTVSStateValidityChecker::isValid(const ompl::base::State *state) const 
             if(!satBounds) std::cout << "invalid state: exceeds bounds" << std::endl;
             if(badPose) std::cout << "invalid state: bad pose" << std::endl;
         }
+    } else {
+        std::cout << "invalid state: collision" << std::endl;
     }
 
     if(valid)

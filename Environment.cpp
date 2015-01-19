@@ -17,18 +17,22 @@
 #include <ompl/util/Console.h>
 #include <boost/foreach.hpp>
 #include "utils.h"
+#include "TrackedVehicle.h"
+#include "SkidSteeringVehicle.h"
 
 Environment::Environment() {
     datetime = getDateTimeString();
     readConfig();
-#ifdef USE_TRACKED_VEHICLE
-    this->v = new TrackedVehicle("robot", 1, -2, 0.301);
-    this->v->leftTrack->velocity.setSlope(config.world.track_acceleration);
-    this->v->rightTrack->velocity.setSlope(config.world.track_acceleration);
-#else // SKID STEERING VEHICLE:
-    this->v = new SkidSteeringVehicle("robot", 1, -2, 0.301);
-    this->v->velocityLeft.setSlope(config.world.track_acceleration);
-    this->v->velocityRight.setSlope(config.world.track_acceleration);
+#if 1
+    TrackedVehicle *tv = new TrackedVehicle("robot", 1, -2, 0.301);
+    tv->leftTrack->velocity.setSlope(config.world.track_acceleration);
+    tv->rightTrack->velocity.setSlope(config.world.track_acceleration);
+    this->v = tv;
+#else
+    SkidSteeringVehicle *ssv = new SkidSteeringVehicle("robot", 1, -2, 0.301);
+    ssv->velocityLeft.setSlope(config.world.track_acceleration);
+    ssv->velocityRight.setSlope(config.world.track_acceleration);
+    this->v = ssv;
 #endif
 }
 
@@ -36,7 +40,7 @@ Environment::~Environment() {
     dJointGroupDestroy(this->contactGroup);
     dSpaceDestroy(this->space);
     dWorldDestroy(this->world);
-    delete this->v;
+    if(this->v) delete this->v;
 }
 
 static void readContactParams(std::string section, ContactParams* p, const boost::property_tree::ptree& pt) {
@@ -117,7 +121,7 @@ void Environment::create() {
     dGeomSetCategoryBits(this->planeGeom, Category::TERRAIN);
     dGeomSetCollideBits(this->planeGeom, Category::GROUSER | Category::OBSTACLE);
 
-    this->v->create(this);
+    if(this->v) this->v->create(this);
     
     const dReal h = 1.3; // wall height
     const dReal t = 0.1; // wall thickness
@@ -141,7 +145,7 @@ void Environment::create() {
 }
 
 void Environment::destroy() {
-    this->v->destroy();
+    if(this->v) this->v->destroy();
 }
 
 std::string Environment::getGeomName(dGeomID geom) const {
@@ -303,7 +307,7 @@ void Environment::nearCallbackDefault(dGeomID o1, dGeomID o2) {
 bool Environment::step(dReal stepSize, int simulationStepsPerFrame) {
     stepNum++;
 
-    this->v->step(stepSize);
+    if(this->v) this->v->step(stepSize);
     
     this->badCollision = false;
     this->contacts.clear();
@@ -348,7 +352,7 @@ bool Environment::evaluateCollision() {
 }
 
 void Environment::draw() {
-    this->v->draw();
+    if(this->v) this->v->draw();
 
     if(config.show_contact_points) {
         dsSetColor(1, 0, 1);

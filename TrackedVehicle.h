@@ -11,14 +11,14 @@
 
 #include <string>
 #include <ode/ode.h>
+#include "Vehicle.h"
 #include "Track.h"
 #include "ODEUtils.h"
 
 class Environment;
 
-class TrackedVehicle {
+class TrackedVehicle : public Vehicle {
 public:
-    std::string name;
     Track *leftTrack;
     Track *rightTrack;
     dReal density;
@@ -32,14 +32,13 @@ public:
     dReal yOffset;
     dReal zOffset;
     
-    dRigidBodyArrayID bodyArray;
-    
     TrackedVehicle(const std::string& name_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~TrackedVehicle();
     void create(Environment *environment);
     void destroy();
     void step(dReal stepSize);
     void draw();
+    void setVelocities(dReal a, dReal b);
     void setTrackVelocities(dReal left, dReal right);
     const dReal * getPosition();
     const dReal * getLinearVel();
@@ -53,3 +52,4 @@ public:
 };
 
 #endif // TRACKED_VEHICLE_H_INCLUDED
+

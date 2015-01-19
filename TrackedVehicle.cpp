@@ -14,7 +14,7 @@
 #include <drawstuff/drawstuff.h>
 #include "ODEUtils.h"
 
-TrackedVehicle::TrackedVehicle(const std::string& name_, dReal xOffset, dReal yOffset, dReal zOffset) : name(name_) {
+TrackedVehicle::TrackedVehicle(const std::string& name_, dReal xOffset, dReal yOffset, dReal zOffset) : Vehicle(name_) {
     const dReal wheelRadius = 0.078;
     const dReal wheelBase = 0.4997;
     const dReal trackWidth = 0.097;
@@ -100,6 +100,10 @@ void TrackedVehicle::draw() {
 
     this->leftTrack->draw();
     this->rightTrack->draw();
+}
+
+void TrackedVehicle::setVelocities(dReal a, dReal b) {
+    setTrackVelocities(a, b);
 }
 
 void TrackedVehicle::setTrackVelocities(dReal left, dReal right) {

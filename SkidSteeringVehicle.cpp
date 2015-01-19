@@ -15,7 +15,7 @@
 #include <drawstuff/drawstuff.h>
 #include "ODEUtils.h"
 
-SkidSteeringVehicle::SkidSteeringVehicle(const std::string& name_, dReal xOffset, dReal yOffset, dReal zOffset) : name(name_) {
+SkidSteeringVehicle::SkidSteeringVehicle(const std::string& name_, dReal xOffset, dReal yOffset, dReal zOffset) : Vehicle(name_) {
     this->wheelRadius = 0.078;
     this->wheelBase = 0.4997;
     this->wheelWidth = 0.097;
@@ -120,6 +120,10 @@ void SkidSteeringVehicle::draw() {
             dsDrawCylinderD(pos, R, length, radius);
         }
     }
+}
+
+void SkidSteeringVehicle::setVelocities(dReal a, dReal b) {
+    setWheelVelocities(a, b);
 }
 
 void SkidSteeringVehicle::setWheelVelocities(dReal left, dReal right) {

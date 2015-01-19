@@ -16,8 +16,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include "TrackedVehicle.h"
-#include "SkidSteeringVehicle.h"
+#include "Vehicle.h"
 
 struct ContactParams {
     int max_contacts;
@@ -72,11 +71,7 @@ public:
     std::map<dGeomID, std::string> geomNames;
 
     dGeomID planeGeom;
-#ifdef USE_TRACKED_VEHICLE
-    TrackedVehicle *v;
-#else // SKID STEERING VEHICLE:
-    SkidSteeringVehicle *v;
-#endif
+    Vehicle *v;
     std::vector<dGeomID> boxes;
     
     bool badCollision;
