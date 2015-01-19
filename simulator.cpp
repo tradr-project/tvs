@@ -123,10 +123,10 @@ void command(int cmd) {
     switch(cmd) {
         case 'd': vel_left = V; vel_right = -V; break;
         case 'a': vel_left = -V; vel_right = V; break;
-        case 'w': vel_left = -V; vel_right = -V; break;
-        case 's': vel_left = V; vel_right = V; break;
-        case 'e': vel_left *= 0.33; break;
-        case 'q': vel_right *= 0.33; break;
+        case 'w': vel_left = V; vel_right = V; break;
+        case 's': vel_left = -V; vel_right = -V; break;
+        case 'q': vel_left *= 0.33; break;
+        case 'e': vel_right *= 0.33; break;
         case ' ': vel_left = 0; vel_right = 0; break;
         case 'f': following ^= 1; break;
         case 'c': environment->config.show_contact_points ^= 1; break;
