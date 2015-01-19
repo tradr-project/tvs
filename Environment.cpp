@@ -23,7 +23,7 @@
 Environment::Environment() {
     datetime = getDateTimeString();
     readConfig();
-#if 1
+#if 0
     TrackedVehicle *tv = new TrackedVehicle("robot", 1, -2, 0.301);
     tv->leftTrack->velocity.setSlope(config.world.track_acceleration);
     tv->rightTrack->velocity.setSlope(config.world.track_acceleration);
