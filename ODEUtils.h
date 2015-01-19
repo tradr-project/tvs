@@ -10,21 +10,23 @@
 #define __tvs__ODEUtils__
 
 #include <ode/ode.h>
+#include <vector>
 
 struct dxRigidBodyArray;
 typedef struct dxRigidBodyArray *dRigidBodyArrayID;
 
 struct dxRigidBodyArray {
-    dBodyID body;
-    dRigidBodyArrayID next;
-    dxRigidBodyArray(dBodyID body_) : body(body_), next(0L) {}
-    dxRigidBodyArray(dBodyID body_, dRigidBodyArrayID next_) : body(body_), next(next_) {}
+    dBodyID center;
+    std::vector<dBodyID> bodies;
+    dxRigidBodyArray(dBodyID center_) : center(center_) {}
 };
 
 dRigidBodyArrayID dRigidBodyArrayCreate(dBodyID centerBody);
 void dRigidBodyArrayAdd(dRigidBodyArrayID bodyArray, dBodyID body);
-void dRigidBodyArrayAdd(dRigidBodyArrayID bodyArray, dRigidBodyArrayID bodyArray2);
 void dRigidBodyArrayDestroy(dRigidBodyArrayID bodyArray);
+size_t dRigidBodyArraySize(dRigidBodyArrayID bodyArray);
+dBodyID dRigidBodyArrayGet(dRigidBodyArrayID bodyArray, size_t i);
+
 void dRigidBodyArraySetPosition(dRigidBodyArrayID bodyArray, dReal x, dReal y, dReal z);
 void dRigidBodyArraySetRotationRelative(dRigidBodyArrayID bodyArray, const dReal *Rs);
 void dRigidBodyArraySetRotation(dRigidBodyArrayID bodyArray, const dReal *Rs);
