@@ -262,10 +262,10 @@ void OMPLTVSStateSpace::readState(ompl::base::State *state) const {
         double *s_ang = s->as<ompl::base::RealVectorStateSpace::StateType>(j + COMPONENT_ANGULAR_VELOCITY)->values;
         ompl::base::SO3StateSpace::StateType &s_rot = *s->as<ompl::base::SO3StateSpace::StateType>(j + COMPONENT_ROTATION);
 
-        for (int j = 0; j < 3; ++j) {
-            s_pos[j] = pos[j];
-            s_vel[j] = vel[j];
-            s_ang[j] = ang[j];
+        for (int k = 0; k < 3; ++k) {
+            s_pos[k] = pos[k];
+            s_vel[k] = vel[k];
+            s_ang[k] = ang[k];
         }
 
         s_rot.w = rot[0];
