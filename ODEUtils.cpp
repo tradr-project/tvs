@@ -30,7 +30,7 @@ dBodyID dRigidBodyArrayGet(dRigidBodyArrayID bodyArray, size_t i) {
 }
 
 void dRigidBodyArraySetPosition(dRigidBodyArrayID bodyArray, dReal x, dReal y, dReal z) {
-    dBodyID center = bodyArray->body;
+    dBodyID center = bodyArray->center;
     const dReal *p0 = dBodyGetPosition(center);
     dVector3 ps = {x, y, z};
     dVector3 ps_p0;
@@ -45,7 +45,7 @@ void dRigidBodyArraySetPosition(dRigidBodyArrayID bodyArray, dReal x, dReal y, d
 }
 
 void dRigidBodyArraySetRotationRelative(dRigidBodyArrayID bodyArray, const dReal *Rs) {
-    dBodyID center = bodyArray->body;
+    dBodyID center = bodyArray->center;
     const dReal *p0 = dBodyGetPosition(center);
     const dReal *R0 = dBodyGetRotation(center);
     dMatrix3 R0Rs;
@@ -68,7 +68,7 @@ void dRigidBodyArraySetRotationRelative(dRigidBodyArrayID bodyArray, const dReal
 }
 
 void dRigidBodyArraySetRotation(dRigidBodyArrayID bodyArray, const dReal *Rs) {
-    dBodyID center = bodyArray->body;
+    dBodyID center = bodyArray->center;
     const dReal *p0 = dBodyGetPosition(center);
     const dReal *R0 = dBodyGetRotation(center);
     dMatrix3 RsR0t;
@@ -102,7 +102,7 @@ void dRigidBodyArraySetLinearVel(dRigidBodyArrayID bodyArray, dReal lx, dReal ly
 }
 
 void dRigidBodyArraySetAngularVel(dRigidBodyArrayID bodyArray, dReal ax, dReal ay, dReal az) {
-    dBodyID center = bodyArray->body;
+    dBodyID center = bodyArray->center;
     const dReal *p0 = dBodyGetPosition(center);
     dVector3 omega = {ax, ay, az};
     for(size_t i = 0; i < dRigidBodyArraySize(bodyArray); i++) {
