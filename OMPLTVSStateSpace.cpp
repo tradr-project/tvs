@@ -244,7 +244,7 @@ ompl::base::StateSamplerPtr OMPLTVSStateSpace::allocStateSampler() const {
 void OMPLTVSStateSpace::readState(ompl::base::State *state) const {
     StateType *s = state->as<StateType>();
     
-    for(size_t i = dRigidBodyArraySize(env_->env_->v->bodyArray) - 1; i >= 0; i--) {
+    for(ssize_t i = dRigidBodyArraySize(env_->env_->v->bodyArray) - 1; i >= 0; i--) {
         size_t j = i * NUM_COMPONENTS;
         dBodyID body = dRigidBodyArrayGet(env_->env_->v->bodyArray, i);
 
@@ -275,7 +275,7 @@ void OMPLTVSStateSpace::readState(ompl::base::State *state) const {
 void OMPLTVSStateSpace::writeState(const ompl::base::State *state) const {
     const StateType *s = state->as<StateType>();
 
-    for(size_t i = dRigidBodyArraySize(env_->env_->v->bodyArray) - 1; i >= 0; i--) {
+    for(ssize_t i = dRigidBodyArraySize(env_->env_->v->bodyArray) - 1; i >= 0; i--) {
         size_t j = i * NUM_COMPONENTS;
         dBodyID body = dRigidBodyArrayGet(env_->env_->v->bodyArray, i);
 
