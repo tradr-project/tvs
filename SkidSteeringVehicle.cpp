@@ -49,7 +49,7 @@ void SkidSteeringVehicle::create(Environment *environment) {
         for(int lr = 0; lr < 2; lr++) {
             this->wheelGeom[fr][lr] = dCreateCylinder(environment->space, this->wheelRadius, this->wheelWidth);
             environment->setGeomName(this->wheelGeom[fr][lr], this->name + "." + (!fr ? "front" : "rear") + (!lr ? "Left" : "Right") + "Wheel");
-            dGeomSetCategoryBits(this->wheelGeom[fr][lr], Category::WHEEL);
+            dGeomSetCategoryBits(this->wheelGeom[fr][lr], Category::GROUSER);
             dGeomSetCollideBits(this->wheelGeom[fr][lr], Category::TERRAIN);
             dMassSetCylinder(&this->wheelMass[fr][lr], this->density, 3, this->wheelRadius, this->wheelWidth);
             this->wheelBody[fr][lr] = dBodyCreate(environment->world);
