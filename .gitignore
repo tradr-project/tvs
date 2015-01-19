@@ -8,3 +8,4 @@ simulator
 *.d
 **/UserInterfaceState.xcuserstate
 **/xcuserdata
+.*.swp
