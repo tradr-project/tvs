@@ -37,6 +37,7 @@ struct WorldParams {
     dReal gravity_x, gravity_y, gravity_z;
     dReal max_track_speed;
     dReal track_acceleration;
+    int simulator_threads;
 };
 
 struct JoystickParams {
@@ -68,6 +69,8 @@ public:
     dWorldID world;
     dSpaceID space;
     dJointGroupID contactGroup;
+    dThreadingThreadPoolID pool;
+    dThreadingImplementationID threading;
     std::map<dGeomID, std::string> geomNames;
 
     dGeomID planeGeom;

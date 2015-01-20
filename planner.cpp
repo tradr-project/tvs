@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 
     // set initial robot pose:
     static dVector3 p = {
-        1.4554, 3.01316, 0.077984+0.024
+        1.4554, 3.01316, 0.077984+0.0246
     };
     static dQuaternion q = {
         -0.767196, -1.83056e-06, 2.44949e-06, -0.641413

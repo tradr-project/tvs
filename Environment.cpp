@@ -23,7 +23,7 @@
 Environment::Environment() {
     datetime = getDateTimeString();
     readConfig();
-#if 0
+#if 1
     TrackedVehicle *tv = new TrackedVehicle("robot", 1, -2, 0.301);
     tv->leftTrack->velocity.setSlope(config.world.track_acceleration);
     tv->rightTrack->velocity.setSlope(config.world.track_acceleration);
@@ -67,6 +67,7 @@ void Environment::readConfig() {
     config.world.gravity_z = pt.get<dReal>("world.gravity_z", 0.0);
     config.world.max_track_speed = pt.get<dReal>("world.max_track_speed", 5.0);
     config.world.track_acceleration = pt.get<dReal>("world.track_acceleration", 200.0);
+    config.world.simulator_threads = pt.get<dReal>("world.simulator_threads", 0);
     config.joystick.enabled = pt.get<unsigned short>("joystick.enabled", 0);
     config.joystick.device = pt.get<unsigned short>("joystick.device", 0);
     config.joystick.gain = pt.get<dReal>("joystick.gain", 1.0);
@@ -116,6 +117,13 @@ void Environment::create() {
     //dWorldSetContactSurfaceLayer(this->world, 0.001);
     dWorldSetAutoDisableFlag(this->world, 1);
 
+    if(config.world.simulator_threads > 1) {
+        this->threading = dThreadingAllocateMultiThreadedImplementation();
+        this->pool = dThreadingAllocateThreadPool(config.world.simulator_threads, 0, dAllocateFlagBasicData, NULL);
+        dThreadingThreadPoolServeMultiThreadedImplementation(this->pool, this->threading);
+        dWorldSetStepThreadingImplementation(this->world, dThreadingImplementationGetFunctions(this->threading), this->threading);
+    }
+
     this->planeGeom = dCreatePlane(this->space, 0, 0, 1, 0); // (a, b, c)' (x, y, z) = d
     setGeomName(this->planeGeom, "worldPlane");
     dGeomSetCategoryBits(this->planeGeom, Category::TERRAIN);
@@ -145,12 +153,18 @@ void Environment::create() {
 }
 
 void Environment::destroy() {
+    if(config.world.simulator_threads > 1) {
+        dThreadingImplementationShutdownProcessing(this->threading);
+        dThreadingFreeThreadPool(this->pool);
+        dWorldSetStepThreadingImplementation(this->world, NULL, NULL);
+        dThreadingFreeImplementation(this->threading);
+    }
     if(this->v) this->v->destroy();
 }
 
 std::string Environment::getGeomName(dGeomID geom) const {
     std::map<dGeomID, std::string>::const_iterator it = geomNames.find(geom);
-    if (it == geomNames.end())
+    if(it == geomNames.end())
         return boost::lexical_cast<std::string>(reinterpret_cast<unsigned long>(geom));
     else
         return it->second;
