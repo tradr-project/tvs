@@ -16,6 +16,12 @@
 #include <drawstuff/drawstuff.h>
 #include "Environment.h"
 #include "OMPLTVSSimpleSetup.h"
+#include <ompl/control/planners/kpiece/KPIECE1.h>
+#include <ompl/control/planners/rrt/RRT.h>
+#include <ompl/control/planners/est/EST.h>
+#include <ompl/control/planners/syclop/SyclopRRT.h>
+#include <ompl/control/planners/syclop/SyclopEST.h>
+#include <ompl/control/planners/pdst/PDST.h>
 
 Environment *environment;
 
@@ -70,7 +76,7 @@ int main(int argc, char **argv) {
 
     // set initial robot pose:
     static dVector3 p = {
-        1.4554, 3.01316, 0.077984
+        1.4554, 3.01316, 0.077984+0.024
     };
     static dQuaternion q = {
         -0.767196, -1.83056e-06, 2.44949e-06, -0.641413
@@ -88,6 +94,14 @@ int main(int argc, char **argv) {
     bounds.setLow(1,  0); bounds.setHigh(1, 9);
     bounds.setLow(2,  -0.1); bounds.setHigh(2, 2);
     stateSpace->as<OMPLTVSStateSpace>()->setVolumeBounds(bounds);
+    ompl::control::SpaceInformationPtr si = setup.getSpaceInformation();
+    ompl::base::PlannerPtr planner(new ompl::control::KPIECE1(si));
+    //ompl::base::PlannerPtr planner(new ompl::control::RRT(si));
+    //ompl::base::PlannerPtr planner(new ompl::control::EST(si));
+    //ompl::base::PlannerPtr planner(new ompl::control::SyclopRRT(si));
+    //ompl::base::PlannerPtr planner(new ompl::control::SyclopEST(si));
+    //ompl::base::PlannerPtr planner(new ompl::control::PDST(si));
+    setup.setPlanner(planner);
     setup.setup();
     if (setup.solve(46800)) {
         path = new ompl::control::PathControl(setup.getSolutionPath());
