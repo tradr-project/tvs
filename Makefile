@@ -6,8 +6,14 @@ PCL_LDLIBS = $(shell sh -c 'for i in $(PCL_MODULES); do pkg-config pcl_$${i}-$(P
 SDL_CFLAGS = $(shell pkg-config sdl2 --cflags)
 SDL_LDLIBS = $(shell pkg-config sdl2 --libs)
 
-CFLAGS := -std=c++03 -O0 -ggdb -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -DPOINTCLOUDS_PATH=\"$(PWD)/pointclouds\" -I$(PWD)/../ode/include -I/opt/local/include $(SDL_CFLAGS) $(OPT_CFLAGS)
-LDLIBS := -lm -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff -lstdc++ -L/opt/local/lib $(SDL_LDLIBS)
+ODE_CFLAGS = -DDRAWSTUFF_TEXTURE_PATH=\"$(PWD)/textures\" -DPOINTCLOUDS_PATH=\"$(PWD)/pointclouds\" -I$(PWD)/../ode/include
+ODE_LDLIBS = -L$(PWD)/../ode/ode/src/.libs -lode -L$(PWD)/../ode/drawstuff/src/.libs -ldrawstuff
+
+OMPL_CFLAGS = -I$(PWD)/../ompl/src
+OMPL_LDLIBS = -L$(PWD)/../ompl/build/Release/lib -lompl
+
+CFLAGS := -std=c++03 -O0 -ggdb $(ODE_CFLAGS) $(OMPL_CFLAGS) $(SDL_CFLAGS) $(OPT_CFLAGS) -DHAVE_JOYSTICK
+LDLIBS := -lm -lstdc++ $(ODE_LDLIBS) $(OMPL_LDLIBS) $(SDL_LDLIBS)
 
 ifeq ($(OS),Windows_NT)
     CFLAGS += -DWIN32
@@ -32,8 +38,6 @@ else
 			CFLAGS += -DARM
 		endif
         LDLIBS += -lGL -lGLU -lglut -lX11 -lXxf86vm -lXrandr -lpthread -lXi -lboost_system -lboost_thread -lboost_filesystem
-        CFLAGS += -I$(HOME)/omplapp/ompl/src -DHAVE_JOYSTICK
-        LDLIBS += -L$(HOME)/omplapp/build/Release/lib
     endif
     ifeq ($(UNAME_S),Darwin)
         CFLAGS += -DOSX
@@ -64,7 +68,7 @@ simulator: Track.o TrackKinematicModel.o TrackedVehicle.o SkidSteeringVehicle.o 
 	$(CC) $^ $(LDLIBS) -o $@
 
 planner: Track.o TrackKinematicModel.o TrackedVehicle.o SkidSteeringVehicle.o Environment.o ODEUtils.o OMPLTVSControlSpace.o OMPLTVSEnvironment.o OMPLTVSSimpleSetup.o OMPLTVSStatePropagator.o OMPLTVSStateSpace.o OMPLTVSStateValidityChecker.o utils.o planner.o
-	$(CC) $^ $(LDLIBS) -lompl -o $@
+	$(CC) $^ $(LDLIBS) -o $@
 
 search_vis: Track.o TrackKinematicModel.o TrackedVehicle.o SkidSteeringVehicle.o Environment.o ODEUtils.o utils.o search_vis.o
 	$(CC) $^ $(LDLIBS) -o $@
