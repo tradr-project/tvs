@@ -19,6 +19,7 @@ typedef struct {
     dReal grouserWidth;
     dReal grouserHeight;
     dReal trackDepth;
+    dReal flipDepth;
     dReal radiusDiff;
     dReal pDistance;
     dReal theta;
@@ -32,7 +33,7 @@ typedef struct {
     dReal dlimits[4];
 } TrackKinematicModel;
 
-TrackKinematicModel * track_kinematic_model_init(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_);
+TrackKinematicModel * track_kinematic_model_init(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal flipDepth_);
 
 void track_kinematic_model_deinit(TrackKinematicModel *m);
 

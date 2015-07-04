@@ -23,6 +23,8 @@ typedef struct {
     dMass wheel2Mass;
     dGeomID wheel1Geom;
     dGeomID wheel2Geom;
+    dGeomID planeGeom1; // plane geometry
+    dGeomID planeGeom2;
     dJointID wheel1Joint;
     dJointID wheel2Joint;
     //dJointID guideJoint;
@@ -43,6 +45,6 @@ void track_destroy(Track *t);
 
 void track_deinit(Track *t);
 
-void track_draw(Track *t);
+void track_draw(Track *t, int draw_planes);
 
 #endif // TRACK_H_INCLUDED

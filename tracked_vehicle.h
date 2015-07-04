@@ -11,23 +11,35 @@
 
 #include <ode/ode.h>
 #include "track.h"
+#include "flip.h"
+#include "backflip.h"
 
 typedef struct {
     Track *leftTrack;
     Track *rightTrack;
+    Flip *leftFlip; // aggiunto
+    Flip *rightFlip; // aggiunto
+    BackFlip *leftBackFlip;
+    BackFlip *rightBackFlip;
     dReal density;
     dBodyID vehicleBody;
     dMass vehicleMass;
     dGeomID vehicleGeom;
+
     dJointID leftTrackJoint;
     dJointID rightTrackJoint;
+    dJointID leftFlipJoint;
+    dJointID rightFlipJoint;
+    dJointID leftBackFlipJoint;
+    dJointID rightBackFlipJoint;
+
     dReal width;
     dReal xOffset;
     dReal yOffset;
     dReal zOffset;
 } TrackedVehicle;
 
-TrackedVehicle * tracked_vehicle_init(dReal wheelRadius_, dReal wheelBase_, dReal trackWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset);
+TrackedVehicle * tracked_vehicle_init(dReal wheelRadius_, dReal wheelBase_, dReal flipWheelRadius, dReal flipWheelBase, dReal trackWidth_, dReal flipWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset);
 
 void tracked_vehicle_create(TrackedVehicle *v, dWorldID world, dSpaceID space);
 

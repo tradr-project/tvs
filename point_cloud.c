@@ -15,7 +15,7 @@
 
 PointCloud * point_cloud_read(const char *filename) {
     PointCloud *p = (PointCloud *)malloc(sizeof(PointCloud));
-    p->point_radius = 0.1;
+    p->point_radius = 0.0015;
     char filename2[256];
     snprintf(filename2, 256, "%s/%s", POINTCLOUDS_PATH, filename);
     FILE *f = fopen(filename2, "r");

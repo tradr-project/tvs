@@ -15,7 +15,7 @@
 
 Track * track_init(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset) {
     Track *t = (Track *)malloc(sizeof(Track));
-    t->m = track_kinematic_model_init(radius1_, radius2_, distance_, numGrousers_, grouserHeight_, trackDepth_);
+    t->m = track_kinematic_model_init(radius1_, radius2_, distance_, numGrousers_, grouserHeight_, trackDepth_,0);
     t->density = 1.0;
     t->grouserBody = (dBodyID *)malloc(numGrousers_ * sizeof(dBodyID));
     t->grouserGeom = (dGeomID *)malloc(numGrousers_ * sizeof(dGeomID));
@@ -31,6 +31,38 @@ void track_create(Track *t, dWorldID world, dSpaceID space) {
     t->trackBody = dBodyCreate(world);
     dMassSetBox(&t->trackMass, t->density, t->m->distance, t->m->radius2, t->m->trackDepth);
     dBodySetMass(t->trackBody, &t->trackMass);
+    printf("Massa Track: %f \n",t->trackMass.mass);
+
+    // Planes
+
+    dReal planeYCompliance = 0.025;
+
+    //first couple
+
+    dReal track_l = t->m->distance+(t->m->radius1+t->m->radius2)+0.10;
+    dMatrix3 planeR;
+    dRSetIdentity(planeR);
+    t->planeGeom1 = dCreateBox(space,track_l,0.001,1.25*(t->m->radius1+t->m->radius2));
+    dGeomSetBody(t->planeGeom1,t->trackBody);
+    dGeomSetCategoryBits(t->planeGeom1,0x10);
+    dGeomSetCollideBits(t->planeGeom1,0x2);
+    //dGeomSetOffsetPosition(t->planeGeom,t->xOffset+t->m->distance/2,t->yOffset+t->m->trackDepth/2,t->zOffset);
+    dGeomSetOffsetPosition(t->planeGeom1,t->xOffset+t->m->distance/2,t->yOffset-(t->m->trackDepth/2+planeYCompliance),t->zOffset);
+    dGeomSetRotation(t->planeGeom1,planeR);
+
+    // second couple
+
+    //dReal track_l = t->m->distance+(t->m->radius1+t->m->radius2)+0.10;
+    //dMatrix3 planeR;
+    //dRSetIdentity(planeR);
+    t->planeGeom2 = dCreateBox(space,track_l,0.001,1.25*(t->m->radius1+t->m->radius2));
+    dGeomSetBody(t->planeGeom2,t->trackBody);
+    dGeomSetCategoryBits(t->planeGeom2,0x10);
+    dGeomSetCollideBits(t->planeGeom2,0x2);
+    dGeomSetOffsetPosition(t->planeGeom2,t->xOffset+t->m->distance/2,t->yOffset+t->m->trackDepth/2+planeYCompliance,t->zOffset);
+    dGeomSetRotation(t->planeGeom2,planeR);
+
+    // EOF Plane
 
     t->wheel1Geom = dCreateCylinder(space, t->m->radius1, t->m->trackDepth);
     dGeomSetCategoryBits(t->wheel1Geom, 0x1);
@@ -66,6 +98,8 @@ void track_create(Track *t, dWorldID world, dSpaceID space) {
 
     dJointSetHingeParam(t->wheel2Joint, dParamFMax, 10);
 
+
+
     // grouser shrink/grow factor
     const dReal f = 1.03;
     size_t i;
@@ -73,7 +107,7 @@ void track_create(Track *t, dWorldID world, dSpaceID space) {
     for(i = 0; i < t->m->numGrousers; i++) {
         t->grouserGeom[i] = dCreateBox(space, t->m->grouserHeight, t->m->trackDepth, f * t->m->grouserWidth);
         dGeomSetCategoryBits(t->grouserGeom[i], 0x2);
-        dGeomSetCollideBits(t->grouserGeom[i], 0x1 | 0x4);
+        dGeomSetCollideBits(t->grouserGeom[i], 0x1 | 0x4 | 0x10);
         dMassSetBox(&t->grouserMass[i], 10 * t->density, t->m->grouserHeight, t->m->trackDepth, f * t->m->grouserWidth);
         t->grouserBody[i] = dBodyCreate(world);
         dBodySetMass(t->grouserBody[i], &t->grouserMass[i]);
@@ -84,13 +118,13 @@ void track_create(Track *t, dWorldID world, dSpaceID space) {
         dBodySetRotation(t->grouserBody[i], R);
 
         // Disregard for now.
-        // if(i == 0) {
-        //     t->guideJoint = dJointCreateDHinge(world, 0);
-        //     dJointAttach(t->guideJoint, t->wheel1Body, t->grouserBody[i]);
-        //     dJointSetDHingeAxis(t->guideJoint, 0, 1, 0);
-        //     dJointSetDHingeAnchor1(t->guideJoint, xOffset, yOffset, zOffset);
-        //     dJointSetDHingeAnchor2(t->guideJoint, xOffset + pos[0], yOffset + pos[1], zOffset + pos[2]);
-        // }
+         //if(i == 0) {
+             //t->guideJoint = dJointCreateDHinge(world, 0);
+            // dJointAttach(t->guideJoint, t->wheel1Body, t->grouserBody[i]);
+            // dJointSetDHingeAxis(t->guideJoint, 0, 1, 0);
+            // dJointSetDHingeAnchor1(t->guideJoint, t->xOffset, t->yOffset, t->zOffset);
+            // dJointSetDHingeAnchor2(t->guideJoint, t->xOffset + pos[0], t->yOffset + pos[1], t->zOffset + pos[2]);
+         //}
     }
 
     for(i = 0; i < t->m->numGrousers; i++) {
@@ -108,6 +142,7 @@ void track_create(Track *t, dWorldID world, dSpaceID space) {
         dJointSetHingeAnchor(t->grouserJoint[i], t->xOffset + px, t->yOffset, t->zOffset + pz);
         dJointSetHingeAxis(t->grouserJoint[i], 0, 1, 0);
     }
+
 }
 
 void track_destroy(Track *t) {
@@ -122,7 +157,7 @@ void track_deinit(Track *t) {
     free(t);
 }
 
-void track_draw(Track *t) {
+void track_draw(Track *t,int draw_planes) {
     {
         const dReal *pos = dGeomGetPosition(t->wheel1Geom);
         const dReal *R = dGeomGetRotation(t->wheel1Geom);
@@ -147,5 +182,24 @@ void track_draw(Track *t) {
         dGeomBoxGetLengths(t->grouserGeom[i], sides);
         dsDrawBoxD(pos, R, sides);
     }
+
+    if(draw_planes){
+    	{ // first couple of planes
+
+			const dReal *pos = dGeomGetPosition(t->planeGeom1);
+			const dReal *R = dGeomGetRotation(t->planeGeom1);
+			dReal sides[3];
+			dGeomBoxGetLengths(t->planeGeom1,sides);
+			dsDrawBoxD(pos,R,sides);
+		}
+
+		{ // second couple of planes
+			const dReal *pos = dGeomGetPosition(t->planeGeom2);
+			const dReal *R = dGeomGetRotation(t->planeGeom2);
+			dReal sides[3];
+			dGeomBoxGetLengths(t->planeGeom2,sides);
+			dsDrawBoxD(pos,R,sides);
+		}
+		}
 }
 
