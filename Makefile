@@ -40,7 +40,7 @@ endif
 
 .PHONY: clean all
 
-OBJS := heightfield.o point_cloud.o track.o backflip.o flip.o track_kinematic_model.o tracked_vehicle.o main.o
+OBJS := heightfield.o point_cloud.o track.o backflip.o flip.o track_kinematic_model.o tracked_vehicle.o main.o csvparser.o
 TARGET = main
 
 all: $(TARGET)

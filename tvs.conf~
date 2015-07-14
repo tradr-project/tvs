@@ -1,0 +1,12 @@
+# TVS Configuration file
+
+wheelRadius 0.3
+wheelBase 0.8
+flipWheelRadius 0.075
+flipWheelBase 0.8
+trackWidth 0.2
+flipWidth 0.15
+vehicleWidth 0.5
+xOffset 0
+yOffset 0
+zOffset=0.301

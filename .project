@@ -24,4 +24,10 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>OMPL</name>
+			<value>file:/home/riccardo/omplapp-1.0.0-Source/ompl/src/ompl</value>
+		</variable>
+	</variableList>
 </projectDescription>

@@ -12,10 +12,6 @@
 #include "track_kinematic_model.h"
 #include "backflip.h"
 
-
-
-//TODO: Rendi i giunti dei motori
-
 BackFlip * back_flip_init(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal flipDepth_, dReal xOffset, dReal yOffset, dReal zOffset) {
     BackFlip *t = (BackFlip *)malloc(sizeof(BackFlip));
     t->m = track_kinematic_model_init(radius1_, radius2_, distance_, numGrousers_, grouserHeight_, 0, flipDepth_);
@@ -40,14 +36,14 @@ void back_flip_create(BackFlip * f, Track *t, dWorldID world, dSpaceID space){
 
     // Planes
 
-       dReal planeYCompliance = 0.015;
+       dReal planeYCompliance = 0.01;
 
        //first couple
 
-       dReal track_l = f->m->distance+(f->m->radius1+f->m->radius2)+0.20;
+       dReal track_l = f->m->distance+(f->m->radius1+f->m->radius2);
        dMatrix3 planeR;
        dRSetIdentity(planeR);
-       f->planeGeom1 = dCreateBox(space,track_l,0.01,2*(f->m->radius1+f->m->radius2)); // era 1.25
+       f->planeGeom1 = dCreateBox(space,track_l,0.001,2*(f->m->radius1+f->m->radius2)); // era 1.25
        dGeomSetBody(f->planeGeom1,f->flipBody);
        dGeomSetCategoryBits(f->planeGeom1,0x10);
        dGeomSetCollideBits(f->planeGeom1,0x2);
@@ -60,7 +56,7 @@ void back_flip_create(BackFlip * f, Track *t, dWorldID world, dSpaceID space){
        //dReal track_l = f->m->distance+(f->m->radius1+f->m->radius2)+0.10;
        //dMatrix3 planeR;
        //dRSetIdentity(planeR);
-       f->planeGeom2 = dCreateBox(space,track_l,0.01,2*(f->m->radius1+f->m->radius2));
+       f->planeGeom2 = dCreateBox(space,track_l,0.001,2*(f->m->radius1+f->m->radius2));
        dGeomSetBody(f->planeGeom2,f->flipBody);
        dGeomSetCategoryBits(f->planeGeom2,0x10);
        dGeomSetCollideBits(f->planeGeom2,0x2);
@@ -150,6 +146,8 @@ void back_flip_create(BackFlip * f, Track *t, dWorldID world, dSpaceID space){
         dJointAttach(f->grouserJoint[i], f->grouserBody[i], f->grouserBody[j]);
         dJointSetHingeAnchor(f->grouserJoint[i], f->xOffset + px, f->yOffset, f->zOffset + pz);
         dJointSetHingeAxis(f->grouserJoint[i], 0, 1, 0);
+
+
 
     }
 

@@ -12,14 +12,13 @@
 #include <assert.h>
 #include <drawstuff/drawstuff.h>
 
-
 TrackedVehicle * tracked_vehicle_init(dReal wheelRadius_, dReal wheelBase_, dReal flipWheelRadius, dReal flipWheelBase, dReal trackWidth_, dReal flipWidth_, dReal vehicleWidth_, dReal xOffset, dReal yOffset, dReal zOffset) {
     TrackedVehicle *v = (TrackedVehicle *)malloc(sizeof(TrackedVehicle));
 
     v->density = 1.0;
     v->width = vehicleWidth_;
-    const size_t numGrousers = 30;
-    const dReal grouserHeight = 0.01;
+    const size_t numGrousers = 31; //30
+    const dReal grouserHeight = 0.0028; //0.01
     dReal w = v->width + 2 * trackWidth_;
     v->leftTrack = track_init(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset - 0.5 * w, zOffset);
     v->rightTrack = track_init(wheelRadius_, wheelRadius_, wheelBase_, numGrousers, grouserHeight, trackWidth_, xOffset, yOffset + 0.5 * w, zOffset);
@@ -28,7 +27,7 @@ TrackedVehicle * tracked_vehicle_init(dReal wheelRadius_, dReal wheelBase_, dRea
     v->rightFlip = flip_init(wheelRadius_, flipWheelRadius, flipWheelBase, numGrousers, grouserHeight, flipWidth_, xOffset+v->rightTrack->m->distance, (yOffset + 0.625*w) + v->rightTrack->m->trackDepth/2, zOffset);
 
     v->leftBackFlip = back_flip_init(flipWheelRadius,wheelRadius_,flipWheelBase,numGrousers,grouserHeight,flipWidth_,xOffset-v->leftTrack->m->distance,(yOffset - 0.625*w)-v->leftTrack->m->trackDepth/2, zOffset);
-    v->rightBackFlip = back_flip_init(flipWheelRadius, wheelRadius_, flipWheelBase, numGrousers, grouserHeight, flipWidth_, xOffset-v->rightTrack->m->distance, (yOffset + 0.625*w) + v->rightTrack->m->trackDepth/2, zOffset);
+    v->rightBackFlip = back_flip_init(flipWheelRadius,wheelRadius_, flipWheelBase, numGrousers, grouserHeight, flipWidth_,xOffset-v->rightTrack->m->distance, (yOffset + 0.625*w) + v->rightTrack->m->trackDepth/2, zOffset);
 
     v->xOffset = xOffset;
     v->yOffset = yOffset;
@@ -38,6 +37,7 @@ TrackedVehicle * tracked_vehicle_init(dReal wheelRadius_, dReal wheelBase_, dRea
 }
 
 void tracked_vehicle_create(TrackedVehicle *v, dWorldID world, dSpaceID space) {
+
     track_create(v->leftTrack, world, space);
     track_create(v->rightTrack, world, space);
 
@@ -60,31 +60,12 @@ void tracked_vehicle_create(TrackedVehicle *v, dWorldID world, dSpaceID space) {
     v->leftTrackJoint = dJointCreateFixed(world, 0);
     v->rightTrackJoint = dJointCreateFixed(world, 0);
 
-    // AMOTOR
-
-    /*
-    v->leftFlipJoint = dJointCreateAMotor(world,0);
-    v->rightFlipJoint = dJointCreateAMotor(world,0);
-    v->leftBackFlipJoint = dJointCreateAMotor(world,0);
-    v->rightBackFlipJoint = dJointCreateAMotor(world,0);
-	*/
-
-    // HINGE
-
+    // HINGE Flip Joint creation
 
     v->leftFlipJoint = dJointCreateHinge(world,0);
     v->rightFlipJoint = dJointCreateHinge(world,0);
     v->leftBackFlipJoint = dJointCreateHinge(world,0);
     v->rightBackFlipJoint = dJointCreateHinge(world,0);
-
-
-    /* UNIVERSAL
-     *
-    v->leftFlipJoint=dJointCreateUniversal(world,0);
-    v->rightFlipJoint=dJointCreateUniversal(world,0);
-    v->leftBackFlipJoint=dJointCreateUniversal(world,0);
-    v->rightBackFlipJoint=dJointCreateUniversal(world,0);
-	*/
 
     dJointAttach(v->leftTrackJoint, v->vehicleBody, v->leftTrack->trackBody);
     dJointAttach(v->rightTrackJoint, v->vehicleBody, v->rightTrack->trackBody);
@@ -95,43 +76,13 @@ void tracked_vehicle_create(TrackedVehicle *v, dWorldID world, dSpaceID space) {
     dJointAttach(v->rightFlipJoint,v->rightTrack->trackBody,v->rightFlip->flipBody);
     dJointAttach(v->rightBackFlipJoint,v->rightTrack->trackBody,v->rightBackFlip->flipBody);
 
-
-    // AMOTOR
-    /*
-    dJointSetAMotorMode (v->leftFlipJoint,dAMotorUser);
-    dJointSetAMotorNumAxes(v->leftFlipJoint,1);
-    dJointSetAMotorAxis(v->leftFlipJoint,0,1,0,v->leftFlip->xOffset+v->leftFlip->m->distance,0);
-    dJointSetAMotorParam(v->leftFlipJoint,dParamFMax,100);
-	//dJointSetAMotorAngle(v->leftFlipJoint,0,0);
-
-    dJointSetAMotorMode (v->rightFlipJoint,dAMotorUser);
-    dJointSetAMotorNumAxes(v->rightFlipJoint,1);
-    dJointSetAMotorAxis(v->rightFlipJoint,0,1,0,1,0);
-	//dJointSetAMotorAngle(v->rightFlipJoint,0,0);
-    dJointSetAMotorParam(v->rightFlipJoint,dParamFMax,100);
-
-    dJointSetAMotorMode (v->leftBackFlipJoint,dAMotorUser);
-    dJointSetAMotorNumAxes(v->leftBackFlipJoint,1);
-    dJointSetAMotorAxis(v->leftBackFlipJoint,0,1,0,1,0);
-	//dJointSetAMotorAngle(v->leftBackFlipJoint,0,0);
-    dJointSetAMotorParam(v->leftBackFlipJoint,dParamFMax,100);
-
-    dJointSetAMotorMode (v->rightBackFlipJoint,dAMotorUser);
-    dJointSetAMotorNumAxes(v->rightBackFlipJoint,1);
-    dJointSetAMotorAxis(v->rightBackFlipJoint,0,1,0,1,0);
-	//dJointSetAMotorAngle(v->rightBackFlipJoint,0,0);
-    dJointSetAMotorParam(v->rightBackFlipJoint,dParamFMax,100);
-	*/
-
-    // HINGE
+    // HINGE Flip Anchor and Parameters
 
     dJointSetHingeAnchor(v->leftFlipJoint,v->leftFlip->xOffset,v->leftFlip->yOffset,v->leftFlip->zOffset);
     dJointSetHingeAxis(v->leftFlipJoint,0,1,0);
     dJointSetHingeParam(v->leftFlipJoint,dParamFMax,10);
     dJointSetHingeParam(v->leftFlipJoint, dParamLoStop, -0.25*M_PI);
     dJointSetHingeParam(v->leftFlipJoint, dParamHiStop, 0.50*M_PI);
-    //dJointSetHingeParam(v->leftFlipJoint,dParamERP,0.05);
-    //dJointSetHingeParam(v->leftFlipJoint,dParamCFM,0.0005);
     dJointSetHingeParam(v->leftFlipJoint,dParamBounce,0);
 
 
@@ -139,36 +90,26 @@ void tracked_vehicle_create(TrackedVehicle *v, dWorldID world, dSpaceID space) {
     dJointSetHingeAxis(v->rightFlipJoint,0,1,0);
     dJointSetHingeParam(v->rightFlipJoint,dParamFMax,10);
     dJointSetHingeParam(v->rightFlipJoint,dParamBounce,0);
-    //dJointSetHingeParam(v->rightFlipJoint,dParamERP,0.05);
-    //dJointSetHingeParam(v->rightFlipJoint,dParamCFM,0.0005);
     dJointSetHingeParam(v->rightFlipJoint, dParamLoStop, -0.25*M_PI);
     dJointSetHingeParam(v->rightFlipJoint, dParamHiStop, 0.50*M_PI);
 
 
-    //dJointSetHingeParam(v->leftFlipJoint,dParamCFM,0.0005);
     dJointSetHingeAnchor(v->rightBackFlipJoint,v->rightBackFlip->xOffset+v->rightBackFlip->m->distance,v->rightBackFlip->yOffset,v->rightBackFlip->zOffset);
     dJointSetHingeAxis(v->rightBackFlipJoint,0,1,0);
     dJointSetHingeParam(v->rightBackFlipJoint,dParamFMax,10);
-    //dJointSetHingeParam(v->rightBackFlipJoint,dParamERP,0.05);
-    //dJointSetHingeParam(v->rightBackFlipJoint,dParamCFM,0.0005);
-    dJointSetHingeParam(v->rightBackFlipJoint, dParamLoStop, -0.5*M_PI);
-    dJointSetHingeParam(v->rightBackFlipJoint, dParamHiStop, 0.25*M_PI);
+    dJointSetHingeParam(v->rightBackFlipJoint, dParamLoStop, -0.25*M_PI);
+    dJointSetHingeParam(v->rightBackFlipJoint, dParamHiStop, 0.5*M_PI);
 
 
-    //dJointSetHingeParam(v->leftFlipJoint,dParamERP,0.0005);
     dJointSetHingeAnchor(v->leftBackFlipJoint,v->leftBackFlip->xOffset+v->leftBackFlip->m->distance,v->leftBackFlip->yOffset,v->leftBackFlip->zOffset);
     dJointSetHingeAxis(v->leftBackFlipJoint,0,1,0);
     dJointSetHingeParam(v->leftBackFlipJoint,dParamFMax,10);
-    //dJointSetHingeParam(v->leftBackFlipJoint,dParamERP,0.05);
-    //dJointSetHingeParam(v->leftBackFlipJoint,dParamCFM,0.0005);
-    dJointSetHingeParam(v->leftBackFlipJoint, dParamLoStop, -0.50*M_PI);
-    dJointSetHingeParam(v->leftBackFlipJoint, dParamHiStop, 0.25*M_PI);
+    dJointSetHingeParam(v->leftBackFlipJoint, dParamLoStop, -0.25*M_PI);
+    dJointSetHingeParam(v->leftBackFlipJoint, dParamHiStop, 0.5*M_PI);
 
-   dJointSetFixed(v->leftTrackJoint);
-   dJointSetFixed(v->rightTrackJoint);
-
-
-
+    // Fixed track joints
+    dJointSetFixed(v->leftTrackJoint);
+    dJointSetFixed(v->rightTrackJoint);
 }
 
 void tracked_vehicle_destroy(TrackedVehicle *v) {
@@ -182,6 +123,23 @@ void tracked_vehicle_deinit(TrackedVehicle *v) {
     free(v);
 }
 
+void setFlipAngle(dJointID flipjoint,dReal DesiredPosition){
+	// it sets the flip to a desired angle
+	dReal Gain = 0.75;
+	dReal MaxForce = 14;
+
+	dReal TruePosition = dJointGetHingeAngle(flipjoint);
+	dReal Error = TruePosition - DesiredPosition;
+
+	dReal DesiredVelocity = -Error * Gain;
+	printf("Desired vel: %f\n",DesiredVelocity);
+
+	dJointSetHingeParam(flipjoint, dParamFMax, MaxForce);
+	dJointSetHingeParam(flipjoint, dParamVel, DesiredVelocity);
+
+}
+
+
 void tracked_vehicle_draw(TrackedVehicle *v) {
     {
         const dReal *pos = dGeomGetPosition(v->vehicleGeom);
@@ -189,8 +147,10 @@ void tracked_vehicle_draw(TrackedVehicle *v) {
         dReal sides[3];
         dGeomBoxGetLengths(v->vehicleGeom, sides);
         dsDrawBoxD(pos, R, sides);
+
     }
 
+    // draws the track if the second parameter is 1 it also draw the planes of the tracks/flippers
     track_draw(v->leftTrack,0);
     track_draw(v->rightTrack,0);
 

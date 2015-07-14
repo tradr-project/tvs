@@ -13,7 +13,6 @@
 #include "flip.h"
 
 
-//TODO: Rendi i giunti dei motori
 
 Flip * flip_init(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal grouserHeight_, dReal flipDepth_, dReal xOffset, dReal yOffset, dReal zOffset) {
     Flip *t = (Flip *)malloc(sizeof(Flip));
@@ -36,17 +35,16 @@ void flip_create(Flip * f, Track *t, dWorldID world, dSpaceID space){
 	f->flipBody = dBodyCreate(world);
     dMassSetBox(&f->flipMass, f->density, f->m->distance, f->m->radius2, f->m->flipDepth);
     dBodySetMass(f->flipBody, &f->flipMass);
-    printf("Massa Flip: %f \n",f->flipMass.mass);
-    // Planes
 
-       dReal planeYCompliance = 0.015;
+    // Planes Stuff
+
+       dReal planeYCompliance = 0.01;
 
        //first couple
-
-       dReal track_l = f->m->distance+(f->m->radius1+f->m->radius2)+0.20;
+       dReal track_l = f->m->distance+(f->m->radius1+f->m->radius2);
        dMatrix3 planeR;
        dRSetIdentity(planeR);
-       f->planeGeom1 = dCreateBox(space,track_l,0.01,2*(f->m->radius1+f->m->radius2));
+       f->planeGeom1 = dCreateBox(space,track_l,0.001,2*(f->m->radius1+f->m->radius2));
        dGeomSetBody(f->planeGeom1,f->flipBody);
        dGeomSetCategoryBits(f->planeGeom1,0x10);
        dGeomSetCollideBits(f->planeGeom1,0x2);
@@ -54,10 +52,6 @@ void flip_create(Flip * f, Track *t, dWorldID world, dSpaceID space){
        dGeomSetRotation(f->planeGeom1,planeR);
 
        // second couple
-
-       //dReal track_l = f->m->distance+(f->m->radius1+f->m->radius2)+0.10;
-       //dMatrix3 planeR;
-       //dRSetIdentity(planeR);
        f->planeGeom2 = dCreateBox(space,track_l,0.01,2*(f->m->radius1+f->m->radius2));
        dGeomSetBody(f->planeGeom2,f->flipBody);
        dGeomSetCategoryBits(f->planeGeom2,0x10);
@@ -79,7 +73,7 @@ void flip_create(Flip * f, Track *t, dWorldID world, dSpaceID space){
 	dRFromZAxis(wheel1R, 0, 1, 0);
 	dBodySetRotation(f->wheel1Body, wheel1R);
 	f->wheel1Joint = dJointCreateHinge(world, 0);
-	dJointAttach(f->wheel1Joint, f->flipBody, f->wheel1Body); // era t->TrackBody
+	dJointAttach(f->wheel1Joint, f->flipBody, f->wheel1Body);
 
 	dJointSetHingeAnchor(f->wheel1Joint, f->xOffset, f->yOffset, f->zOffset);
 	dJointSetHingeAxis(f->wheel1Joint, 0, 1, 0);
@@ -94,22 +88,15 @@ void flip_create(Flip * f, Track *t, dWorldID world, dSpaceID space){
     f->wheel2Body = dBodyCreate(world);
     dBodySetMass(f->wheel2Body, &f->wheel2Mass);
     dGeomSetBody(f->wheel2Geom, f->wheel2Body);
-	//dGeomSetBody(f->wheel2Geom,t->wheel2Body);
 
     dBodySetPosition(f->wheel2Body, f->xOffset+f->m->distance, f->yOffset, f->zOffset);
     dMatrix3 wheel2R;
     dRFromZAxis(wheel2R, 0, 1, 0);
     dBodySetRotation(f->wheel2Body, wheel2R);
     f->wheel2Joint = dJointCreateHinge(world, 0);
-	//f->wheel2Joint = dJointCreateAMotor(world,0);
-    dJointAttach(f->wheel2Joint, f->flipBody, f->wheel2Body); // era t->TrackBody
-	//f->wheel2Joint = dJointCreateAMotor(world,0);
-	//dJointAttach(f->wheel2Joint, t->trackBody, f->wheel2Body);
+    dJointAttach(f->wheel2Joint, f->flipBody, f->wheel2Body);
     dJointSetHingeAnchor(f->wheel2Joint, f->xOffset+f->m->distance, f->yOffset, f->zOffset);
 	dJointSetHingeAxis(f->wheel2Joint, 0, 1, 0);
-
-    //dJointSetHingeParam(f->wheel2Joint, dParamFMax, 10);
-
 
     // grouser shrink/grow factor
     const dReal gf = 1.03;
@@ -144,10 +131,7 @@ void flip_create(Flip * f, Track *t, dWorldID world, dSpaceID space){
         dJointAttach(f->grouserJoint[i], f->grouserBody[i], f->grouserBody[j]);
         dJointSetHingeAnchor(f->grouserJoint[i], f->xOffset + px, f->yOffset, f->zOffset + pz);
         dJointSetHingeAxis(f->grouserJoint[i], 0, 1, 0);
-
     }
-
-
 }
 
 void flip_destroy(Flip *t){
@@ -189,7 +173,6 @@ for(i = 0; i < t->m->numGrousers; i++) {
     dGeomBoxGetLengths(t->grouserGeom[i], sides);
     dsDrawBoxD(pos, R, sides);
 }
-// No need to draw the planes
 
 if(draw_planes){
 	{ // first couple of planes
@@ -211,4 +194,3 @@ if(draw_planes){
 	}
 
 }
-

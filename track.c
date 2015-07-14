@@ -31,11 +31,10 @@ void track_create(Track *t, dWorldID world, dSpaceID space) {
     t->trackBody = dBodyCreate(world);
     dMassSetBox(&t->trackMass, t->density, t->m->distance, t->m->radius2, t->m->trackDepth);
     dBodySetMass(t->trackBody, &t->trackMass);
-    printf("Massa Track: %f \n",t->trackMass.mass);
 
     // Planes
 
-    dReal planeYCompliance = 0.025;
+    dReal planeYCompliance = 0.01;
 
     //first couple
 
@@ -44,7 +43,7 @@ void track_create(Track *t, dWorldID world, dSpaceID space) {
     dRSetIdentity(planeR);
     t->planeGeom1 = dCreateBox(space,track_l,0.001,1.25*(t->m->radius1+t->m->radius2));
     dGeomSetBody(t->planeGeom1,t->trackBody);
-    dGeomSetCategoryBits(t->planeGeom1,0x10);
+    dGeomSetCategoryBits(t->planeGeom1,0x8);
     dGeomSetCollideBits(t->planeGeom1,0x2);
     //dGeomSetOffsetPosition(t->planeGeom,t->xOffset+t->m->distance/2,t->yOffset+t->m->trackDepth/2,t->zOffset);
     dGeomSetOffsetPosition(t->planeGeom1,t->xOffset+t->m->distance/2,t->yOffset-(t->m->trackDepth/2+planeYCompliance),t->zOffset);
@@ -57,7 +56,7 @@ void track_create(Track *t, dWorldID world, dSpaceID space) {
     //dRSetIdentity(planeR);
     t->planeGeom2 = dCreateBox(space,track_l,0.001,1.25*(t->m->radius1+t->m->radius2));
     dGeomSetBody(t->planeGeom2,t->trackBody);
-    dGeomSetCategoryBits(t->planeGeom2,0x10);
+    dGeomSetCategoryBits(t->planeGeom2,0x8);
     dGeomSetCollideBits(t->planeGeom2,0x2);
     dGeomSetOffsetPosition(t->planeGeom2,t->xOffset+t->m->distance/2,t->yOffset+t->m->trackDepth/2+planeYCompliance,t->zOffset);
     dGeomSetRotation(t->planeGeom2,planeR);
@@ -107,7 +106,7 @@ void track_create(Track *t, dWorldID world, dSpaceID space) {
     for(i = 0; i < t->m->numGrousers; i++) {
         t->grouserGeom[i] = dCreateBox(space, t->m->grouserHeight, t->m->trackDepth, f * t->m->grouserWidth);
         dGeomSetCategoryBits(t->grouserGeom[i], 0x2);
-        dGeomSetCollideBits(t->grouserGeom[i], 0x1 | 0x4 | 0x10);
+        dGeomSetCollideBits(t->grouserGeom[i], 0x1 | 0x4 | 0x8);
         dMassSetBox(&t->grouserMass[i], 10 * t->density, t->m->grouserHeight, t->m->trackDepth, f * t->m->grouserWidth);
         t->grouserBody[i] = dBodyCreate(world);
         dBodySetMass(t->grouserBody[i], &t->grouserMass[i]);
@@ -116,15 +115,6 @@ void track_create(Track *t, dWorldID world, dSpaceID space) {
         track_kinematic_model_compute_grouser_transform_3D(t->m, i, pos, R);
         dBodySetPosition(t->grouserBody[i], t->xOffset + pos[0], t->yOffset + pos[1], t->zOffset + pos[2]);
         dBodySetRotation(t->grouserBody[i], R);
-
-        // Disregard for now.
-         //if(i == 0) {
-             //t->guideJoint = dJointCreateDHinge(world, 0);
-            // dJointAttach(t->guideJoint, t->wheel1Body, t->grouserBody[i]);
-            // dJointSetDHingeAxis(t->guideJoint, 0, 1, 0);
-            // dJointSetDHingeAnchor1(t->guideJoint, t->xOffset, t->yOffset, t->zOffset);
-            // dJointSetDHingeAnchor2(t->guideJoint, t->xOffset + pos[0], t->yOffset + pos[1], t->zOffset + pos[2]);
-         //}
     }
 
     for(i = 0; i < t->m->numGrousers; i++) {

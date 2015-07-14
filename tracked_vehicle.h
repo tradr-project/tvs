@@ -49,4 +49,6 @@ void tracked_vehicle_deinit(TrackedVehicle *v);
 
 void tracked_vehicle_draw(TrackedVehicle *v);
 
+void setFlipAngle(dJointID flipjoint,dReal DesiredPosition);
+
 #endif // TRACKED_VEHICLE_H_INCLUDED
