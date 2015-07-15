@@ -3,3 +3,7 @@ main
 *.d
 **/UserInterfaceState.xcuserstate
 **/xcuserdata
+m-*.csv
+m-*.csv.tmp
+*.csv
+env.xyz

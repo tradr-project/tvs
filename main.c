@@ -43,12 +43,10 @@ int k_pressed=0;
 int o_pressed=0;
 int l_pressed=0;
 
-// Variable to measure the time of the simulation
-double dt=0.0;
 
 // Python Script parameters
 int test;
-char* iteration;
+char* output_filename;
 
 // Maneuvers indicators, if 1 the maneuver is in progress/started/finished
 int maneuver_in_progress=0;
@@ -56,7 +54,7 @@ int maneuver_started=0;
 
 // String of the maneuver to perform {a1/a2/b1/...} and its duration (5s or 10s)
 char* maneuver_to_perform;
-float maneuver_time;
+float maneuver_duration;
 
 // Vehicle parameters
 const dReal wheelRadius=0.2; //0.3 // 0.073
@@ -161,22 +159,20 @@ void start() {
     static float xyz[3] = {6.3286,-5.9263,1.7600};
     static float hpr[3] = {102.5000,-16.0000,0.0000};
     dsSetViewpoint(xyz,hpr);
-    char filename[16];
     // if the simulator is in test mode immediately executes the input maneuver and writes the results on a csv file
     if(test==1){
-		strcpy(filename,maneuver_to_perform);
-		strcat(filename,"-");
-		strcat(filename,iteration);
-		strcat(filename,".csv");
-		printf("%s\n",filename);
-		fp_csv= fopen (filename, "w+");
-
-		doManeuver(maneuver_to_perform);
+		printf("writing data to %s\n",output_filename);
+		fp_csv= fopen (output_filename, "w+");
     }
 }
 
 const int simulationStepsPerFrame = 12;
 int nstep = 0;
+double simstep = 0.01;
+
+double simtime = 0.00;
+double maneuvertime=0.0;
+double initialwait = 0.6;
 
 void draw() {
     tracked_vehicle_draw(v);
@@ -185,52 +181,9 @@ void draw() {
 
 void step(int pause) {
     draw();
-    double simstep = 0.01;
     if(!pause) {
         size_t i;
         for(i = 0; i < simulationStepsPerFrame; i++) {
-        	if(maneuver_started==1){
-                Rv = dBodyGetRotation(v->vehicleBody);
-                pv = dBodyGetPosition(v->vehicleBody);
-                maneuver_started=0;
-				printf("Initial position: %f, %f, %f\n",pv[0],pv[1],pv[2]);
-				fprintf(fp_csv,"%f,%f,%f,",pv[0],pv[1],pv[2]);
-				fprintf(fp_csv,"%f,%f,%f\n",pv[0]+0.05,pv[1],pv[2]); // to track the orientation of the robot
-        	}
-            if(maneuver_in_progress==1){
-            	dt += dsElapsedTime();
-				fprintf(fp_csv,"%f,%f,%f,",pv[0],pv[1],pv[2]);
-				fprintf(fp_csv,"%f,%f,%f\n",pv[0]+0.05,pv[1],pv[2]); // to track the orientation of the robot
-            	printf(".");
-            }
-            if(dt>maneuver_time && maneuver_in_progress==1){
-            	  printf("\n");
-            	  maneuver_in_progress=0;
-            	  dJointSetHingeParam(v->leftTrack->wheel2Joint,dParamVel,0);
-				  dJointSetHingeParam(v->rightTrack->wheel2Joint,dParamVel,0);
-
-				  dJointSetHingeParam(v->leftFlip->wheel1Joint,dParamVel,0);
-				  dJointSetHingeParam(v->rightFlip->wheel1Joint,dParamVel,0);
-
-				  dJointSetHingeParam(v->leftBackFlip->wheel2Joint,dParamVel,0);
-				  dJointSetHingeParam(v->rightBackFlip->wheel2Joint,dParamVel,0);
-
-				  dJointSetHingeParam(v->leftFlipJoint,dParamVel,0);
-				  dJointSetHingeParam(v->leftBackFlipJoint,dParamVel,0);
-				  dJointSetHingeParam(v->rightFlipJoint,dParamVel,0);
-				  dJointSetHingeParam(v->rightBackFlipJoint,dParamVel,0);
-
-				  dReal *ep = dBodyGetPosition(v->vehicleBody);
-	              dReal *eRv = dBodyGetRotation(v->vehicleBody);
-				  printf("Ending position: %f, %f, %f\n",ep[0],ep[1],ep[2]);
-				  fprintf(fp_csv,"%f,%f,%f,",ep[0],ep[1],ep[2]);
-				  fprintf(fp_csv,"%f,%f,%f\n",pv[0]+0.05,pv[1],pv[2]);
-
-				  if(test==1){
-					  printf("Simulation finished. \n");
-					  exit(0);
-				  }
-            }
             // find collisions and add contact joints
             dSpaceCollide(space, 0, &nearCallback);
             // step the simulation
@@ -238,6 +191,8 @@ void step(int pause) {
             // remove all contact joints
             dJointGroupEmpty(contactGroup);
         }
+        simtime += simstep;
+
         /*
         const dReal* Rb = dBodyGetRotation(v->leftTrack->trackBody);
         const dReal* p = dBodyGetPosition(v->leftTrack->trackBody);
@@ -247,6 +202,56 @@ void step(int pause) {
         printf("Asse y: %f, %f, %f \n",Rb[1],Rb[5],Rb[9]);
         printf("Asse z: %f, %f, %f \n",Rb[2],Rb[6],Rb[10]);
 		*/
+
+        if(simtime >= initialwait && !maneuver_in_progress) {
+            fprintf(stdout,"start record!\n");
+            doManeuver(maneuver_to_perform);
+        }
+
+
+        if(maneuver_started==1){
+            Rv = dBodyGetRotation(v->vehicleBody);
+            pv = dBodyGetPosition(v->vehicleBody);
+            maneuver_started=0;
+            printf("Initial position: %f, %f, %f\n",pv[0],pv[1],pv[2]);
+            fprintf(fp_csv,"%f,%f,%f,",pv[0],pv[1],pv[2]);
+            fprintf(fp_csv,"%f,%f,%f\n",pv[0]+0.05,pv[1],pv[2]); // to track the orientation of the robot
+        }
+        if(maneuver_in_progress==1){
+            maneuvertime += simstep;
+            fprintf(fp_csv,"%f,%f,%f,",pv[0],pv[1],pv[2]);
+            fprintf(fp_csv,"%f,%f,%f\n",pv[0]+0.05,pv[1],pv[2]); // to track the orientation of the robot
+            printf(".");
+            fflush(stdout);
+        }
+        if(maneuvertime>maneuver_duration && maneuver_in_progress==1){
+              printf("\n");
+              maneuver_in_progress=0;
+              dJointSetHingeParam(v->leftTrack->wheel2Joint,dParamVel,0);
+              dJointSetHingeParam(v->rightTrack->wheel2Joint,dParamVel,0);
+
+              dJointSetHingeParam(v->leftFlip->wheel1Joint,dParamVel,0);
+              dJointSetHingeParam(v->rightFlip->wheel1Joint,dParamVel,0);
+
+              dJointSetHingeParam(v->leftBackFlip->wheel2Joint,dParamVel,0);
+              dJointSetHingeParam(v->rightBackFlip->wheel2Joint,dParamVel,0);
+
+              dJointSetHingeParam(v->leftFlipJoint,dParamVel,0);
+              dJointSetHingeParam(v->leftBackFlipJoint,dParamVel,0);
+              dJointSetHingeParam(v->rightFlipJoint,dParamVel,0);
+              dJointSetHingeParam(v->rightBackFlipJoint,dParamVel,0);
+
+              dReal *ep = dBodyGetPosition(v->vehicleBody);
+              dReal *eRv = dBodyGetRotation(v->vehicleBody);
+              printf("Ending position: %f, %f, %f\n",ep[0],ep[1],ep[2]);
+              fprintf(fp_csv,"%f,%f,%f,",ep[0],ep[1],ep[2]);
+              fprintf(fp_csv,"%f,%f,%f\n",pv[0]+0.05,pv[1],pv[2]);
+
+              if(test==1){
+                  printf("Simulation finished. \n");
+                  exit(0);
+              }
+        }
     }
 }
 
@@ -576,7 +581,7 @@ int main(int argc, char **argv) {
     //feenableexcept(FE_INVALID | FE_OVERFLOW);
 	if(argc!=1 && strcmp(argv[1],"-test")==0){
 		if(argc < 9){
-			fprintf(stderr,"usage: -test <maneuver> <vel_scaling> <mass_scaling> <CFM> <ERP> <ux> <uy> <iteration>\n");
+			fprintf(stderr,"usage: -test <maneuver> <vel_scaling> <mass_scaling> <CFM> <ERP> <ux> <uy> <output_filename>\n");
 			exit(0);
 		}
 		printf("You are in test mode. Testing maneuver %s \n",argv[2]);
@@ -588,15 +593,15 @@ int main(int argc, char **argv) {
 		ERP_v = strtof(argv[6],NULL);
 		ux_v = strtof(argv[7],NULL);
 		uy_v = strtof(argv[8],NULL);
-		iteration = argv[9];
+		output_filename = argv[9];
 
 		if(strcmp(maneuver_to_perform,"d1")==0 || strcmp(maneuver_to_perform,"d2")==0){
-			maneuver_time=9.999;
+			maneuver_duration=9.999;
 		}
 		else{
-			maneuver_time=4.999;
+			maneuver_duration=4.999;
 		}
-		printf("maneuver time: %f\n",maneuver_time);
+		printf("maneuver duration: %f\n",maneuver_duration);
 	}
 	else{ // if not in the test mode the parameters are set to some default values of the arrays
 		CFM_v = CFM[cfm];
@@ -606,8 +611,8 @@ int main(int argc, char **argv) {
 		vel_scaling = 1;
 		mass_scaling = 1;
 		maneuver_to_perform="e";
-		maneuver_time=4.999;
-		iteration = 0;
+		maneuver_duration=4.999;
+		output_filename = 0;
 	}
     const dVector3 center = {3,3,0};
     const dReal limit = 8.0;
