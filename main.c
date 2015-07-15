@@ -156,13 +156,14 @@ void nearCallback(void *data, dGeomID o1, dGeomID o2) {
 }
 
 void start() {
-    static float xyz[3] = {6.3286,-5.9263,1.7600};
-    static float hpr[3] = {102.5000,-16.0000,0.0000};
-    dsSetViewpoint(xyz,hpr);
     // if the simulator is in test mode immediately executes the input maneuver and writes the results on a csv file
     if(test==1){
 		printf("writing data to %s\n",output_filename);
 		fp_csv= fopen (output_filename, "w+");
+    } else {
+        static float xyz[3] = {6.3286,-5.9263,1.7600};
+        static float hpr[3] = {102.5000,-16.0000,0.0000};
+        dsSetViewpoint(xyz,hpr);
     }
 }
 
@@ -174,13 +175,15 @@ double simtime = 0.00;
 double maneuvertime=0.0;
 double initialwait = 0.6;
 
+int run = 1;
+
 void draw() {
     tracked_vehicle_draw(v);
     //point_cloud_draw(pcl);
 }
 
 void step(int pause) {
-    draw();
+    if(!test) draw();
     if(!pause) {
         size_t i;
         for(i = 0; i < simulationStepsPerFrame; i++) {
@@ -249,7 +252,7 @@ void step(int pause) {
 
               if(test==1){
                   printf("Simulation finished. \n");
-                  exit(0);
+                  run = 0;
               }
         }
     }
@@ -655,6 +658,7 @@ int main(int argc, char **argv) {
     scale_mass(mass_scaling,v);
     //point_cloud_create_geom(pcl, world, space);
     printf("density: %f\n",v->density);
+
     dsFunctions fn;
     fn.version = DS_VERSION;
     fn.start = &start;
@@ -662,7 +666,13 @@ int main(int argc, char **argv) {
     fn.stop = &stop;
     fn.command = &command;
     fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
-    dsSimulationLoop(argc, argv, 800, 600, &fn);
+    if(test) {
+        (*fn.start)();
+        while(run) (*fn.step)(0);
+        (*fn.stop)();
+    } else {
+        dsSimulationLoop(argc, argv, 800, 600, &fn);
+    }
 
     tracked_vehicle_deinit(v);
     //point_cloud_deinit(pcl);
@@ -671,6 +681,7 @@ int main(int argc, char **argv) {
     dSpaceDestroy(space);
     dWorldDestroy(world);
     dCloseODE();
+    printf("ODE shutdown\n");
     return 0;
 }
 
