@@ -2,7 +2,7 @@
 
 RUN=$PWD/main
 
-for m in a1 a2 b1 b2 c1 c2 d1 d2 e f1 f2
+for m in a1 b1 e f1 c1 d1
 do
     for v in 2.400 2.700 3.000 3.300 3.600
     do
@@ -17,7 +17,7 @@ do
                         for mu2_f in 0.4 0.25 0.15
                         do
                             mu2=$(echo $mu2_f*$mu1 | bc)
-                            filename=m-$m-v-$v-ms-$ms-cfm-$cfm-erp-$erp-mu1-$mu1-mu2-$mu2
+                            filename=m-$m-v-$v-ms-$ms-cfm-$cfm-erp-$erp-mu1-$mu1-mu2-$mu2.csv
                             if [[ -f "$filename" ]]; then
                                 echo skipping $filename because it already exists
                             else
