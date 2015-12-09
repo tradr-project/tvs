@@ -37,6 +37,7 @@ set(LIBS
 )
 
 include_directories(
+        include
         ${OpenGL_INCLUDE_DIRS}
         ${GLUT_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIRS}
@@ -46,11 +47,11 @@ include_directories(
         ${ODE_INCLUDE_DIRS}
 )
 
-add_executable(simulator Track.cpp TrackKinematicModel.cpp TrackedVehicle.cpp SkidSteeringVehicle.cpp Environment.cpp ODEUtils.cpp utils.cpp simulator.cpp)
+add_executable(simulator src/Track.cpp src/TrackKinematicModel.cpp src/TrackedVehicle.cpp src/SkidSteeringVehicle.cpp src/Environment.cpp src/ODEUtils.cpp src/utils.cpp src/simulator.cpp)
 target_link_libraries(simulator ${LIBS})
 
-add_executable(planner Track.cpp TrackKinematicModel.cpp TrackedVehicle.cpp SkidSteeringVehicle.cpp Environment.cpp ODEUtils.cpp OMPLTVSControlSpace.cpp OMPLTVSEnvironment.cpp OMPLTVSSimpleSetup.cpp OMPLTVSStatePropagator.cpp OMPLTVSStateSpace.cpp OMPLTVSStateValidityChecker.cpp utils.cpp planner.cpp)
+add_executable(planner src/Track.cpp src/TrackKinematicModel.cpp src/TrackedVehicle.cpp src/SkidSteeringVehicle.cpp src/Environment.cpp src/ODEUtils.cpp src/OMPLTVSControlSpace.cpp src/OMPLTVSEnvironment.cpp src/OMPLTVSSimpleSetup.cpp src/OMPLTVSStatePropagator.cpp src/OMPLTVSStateSpace.cpp src/OMPLTVSStateValidityChecker.cpp src/utils.cpp src/planner.cpp)
 target_link_libraries(planner ${LIBS})
 
-add_executable(search-vis Track.cpp TrackKinematicModel.cpp TrackedVehicle.cpp SkidSteeringVehicle.cpp Environment.cpp ODEUtils.cpp utils.cpp search_vis.cpp)
+add_executable(search-vis src/Track.cpp src/TrackKinematicModel.cpp src/TrackedVehicle.cpp src/SkidSteeringVehicle.cpp src/Environment.cpp src/ODEUtils.cpp src/utils.cpp src/search_vis.cpp)
 target_link_libraries(search-vis ${LIBS})
