@@ -13,8 +13,11 @@
 #include <ode/ode.h>
 #include "utils.h"
 #include "TrackKinematicModel.h"
+#include "ODEUtils.h"
 
 class Environment;
+
+#define NUM_GUIDE_GEOMS 2
 
 class Track {
 public:
@@ -27,7 +30,7 @@ public:
     dMass wheelMass[2];
     dGeomID wheelGeom[2];
     dJointID wheelJoint[2];
-    dGeomID guideGeom[2];
+    dGeomID guideGeom[NUM_GUIDE_GEOMS];
     dBodyID *linkBody;
     dGeomID *linkGeom;
     dGeomID *grouserGeom;
@@ -40,6 +43,7 @@ public:
     dReal linkThickness;
     dReal grouserHeight;
     LinVelProfInt velocity;
+    dRigidBodyArrayID bodyArray;
 
     Track(const std::string& name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal linkThickness_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset);
     virtual ~Track();

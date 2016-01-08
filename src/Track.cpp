@@ -43,6 +43,7 @@ Track::~Track() {
 
 void Track::create(Environment *environment) {
     this->trackBody = dBodyCreate(environment->world);
+    this->bodyArray = dRigidBodyArrayCreate(this->trackBody);
     dMassSetBox(&this->trackMass, this->density, this->m->distance, this->m->radius[1], this->m->trackDepth);
     dBodySetMass(this->trackBody, &this->trackMass);
     dBodySetPosition(this->trackBody, this->xOffset, this->yOffset, this->zOffset);
@@ -53,17 +54,21 @@ void Track::create(Environment *environment) {
         dGeomSetCategoryBits(this->wheelGeom[w], Category::WHEEL);
         dGeomSetCollideBits(this->wheelGeom[w], Category::GROUSER);
         dMassSetCylinder(&this->wheelMass[w], this->density, 3, this->m->radius[w], this->m->trackDepth);
+
         this->wheelBody[w] = dBodyCreate(environment->world);
+        dRigidBodyArrayAdd(this->bodyArray, this->wheelBody[w]);
         dBodySetMass(this->wheelBody[w], &this->wheelMass[w]);
         dGeomSetBody(this->wheelGeom[w], this->wheelBody[w]);
         dBodySetPosition(this->wheelBody[w], this->xOffset + w * this->m->distance, this->yOffset, this->zOffset);
         dMatrix3 wheelR;
         dRFromZAxis(wheelR, 0, 1, 0);
         dBodySetRotation(this->wheelBody[w], wheelR);
+
         this->wheelJoint[w] = dJointCreateHinge(environment->world, 0);
         dJointAttach(this->wheelJoint[w], this->trackBody, this->wheelBody[w]);
         dJointSetHingeAnchor(this->wheelJoint[w], this->xOffset + w * this->m->distance, this->yOffset, this->zOffset);
         dJointSetHingeAxis(this->wheelJoint[w], 0, 1, 0);
+
         // this guide should avoid tracks slipping out of their designed place
         dReal gh = 2 * (0.2 + std::max(this->m->radius[0], this->m->radius[1]));
         dReal gw = gh + this->m->distance;
@@ -74,6 +79,15 @@ void Track::create(Environment *environment) {
         dGeomSetBody(this->guideGeom[w], this->trackBody);
         dGeomSetOffsetPosition(this->guideGeom[w], 0.5 * this->m->distance, (0.02 + this->m->trackDepth) * (w - 0.5), 0.0);
     }
+
+#if NUM_GUIDE_GEOMS == 3
+    this->guideGeom[2] = dCreateBox(environment->space, 0.9*this->m->distance, this->m->trackDepth, 1.95*this->m->radius[0]);
+    environment->setGeomName(this->guideGeom[2], this->name + ".grouser_guide2");
+    dGeomSetCategoryBits(this->guideGeom[2], Category::G_GUIDE);
+    dGeomSetCollideBits(this->guideGeom[2], Category::GROUSER);
+    dGeomSetBody(this->guideGeom[2], this->trackBody);
+    dGeomSetOffsetPosition(this->guideGeom[2], 0.5 * this->m->distance, 0, 0.0);
+#endif
     
     const dReal fMax = 5.0;
 #ifdef DRIVING_WHEEL_FRONT
@@ -88,6 +102,7 @@ void Track::create(Environment *environment) {
 
     for(size_t i = 0; i < this->m->numGrousers; i++) {
         this->linkBody[i] = dBodyCreate(environment->world);
+        dRigidBodyArrayAdd(this->bodyArray, this->linkBody[i]);
         dMassSetBox(&this->linkMass[i], 10 * this->density, this->m->grouserHeight, this->m->trackDepth, f * this->m->grouserWidth);
         dBodySetMass(this->linkBody[i], &this->linkMass[i]);
 
@@ -129,6 +144,7 @@ void Track::create(Environment *environment) {
 }
 
 void Track::destroy() {
+    dRigidBodyArrayDestroy(this->bodyArray);
     dBodyDestroy(this->trackBody);
     for(int w = 0; w < 2; w++) {
         dBodyDestroy(this->wheelBody[w]);
@@ -179,14 +195,17 @@ void Track::draw() {
         dGeomBoxGetLengths(this->grouserGeom[i], sides);
         dsDrawBoxD(pos, R, sides);
     }
-    
+
+//#define DEBUG_DRAW_GROUSER_GUIDES
 #ifdef DEBUG_DRAW_GROUSER_GUIDES
     dsSetColorAlpha(0, 1, 0, 0.3);
-    for(int w = 0; w < 2; w++) {
+    for(int w = 0; w < NUM_GUIDE_GEOMS; w++) {
         const dReal *pos = dGeomGetPosition(this->guideGeom[w]);
         const dReal *R = dGeomGetRotation(this->guideGeom[w]);
         dReal sides[3];
         dGeomBoxGetLengths(this->guideGeom[w], sides);
+        if (w >= 2)
+            dsSetColorAlpha(1, 1, 1, 1);
         dsDrawBoxD(pos, R, sides);
     }
 #endif

@@ -89,11 +89,9 @@ public:
     std::string getGeomName(dGeomID geom) const;
     void setGeomName(dGeomID geom, const std::string &name);
     bool isCatPair(unsigned long cat1, unsigned long cat2, dGeomID *o1, dGeomID *o2);
-    bool isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact);
-    void nearCallback(dGeomID o1, dGeomID o2);
-    void nearCallbackWheelGrouser(dGeomID o1, dGeomID o2);
-    void nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2);
-    void nearCallbackGrouserGuide(dGeomID o1, dGeomID o2);
+    virtual bool isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact) = 0;
+
+    virtual void nearCallback(dGeomID o1, dGeomID o2) = 0;
     void nearCallbackDefault(dGeomID o1, dGeomID o2);
     bool step(dReal stepSize, int simulationStepsPerFrame);
     bool step();

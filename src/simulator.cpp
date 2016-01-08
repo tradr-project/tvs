@@ -16,6 +16,7 @@
 #include "Environment.h"
 #include <SDL.h>
 #include <SDL_joystick.h>
+#include <TrackedVehicleEnvironment.h>
 
 Environment *environment;
 SDL_Joystick *joystick;
@@ -25,14 +26,14 @@ dReal kbd_gain = 1.0;
 
 void initRobotPose() {
     static dVector3 p = {
-        1.4554, 3.01316, 0.077984+0.0246
+        2.4554, 3.01316, 0.077984+0.0246
     };
     static dQuaternion q = {
         -0.767196, -1.83056e-06, 2.44949e-06, -0.641413
     };
 
-    environment->v->setPosition(p);
-    environment->v->setQuaternion(q);
+//    environment->v->setPosition(p);
+//    environment->v->setQuaternion(q);
     vel_left = vel_right = 0.0;
     environment->v->setVelocities(0, 0);
 }
@@ -151,7 +152,7 @@ int main(int argc, char **argv) {
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
 
-    environment = new Environment();
+    environment = new TrackedVehicleEnvironment();
     environment->create();
 
     // set initial robot pose:
@@ -165,8 +166,8 @@ int main(int argc, char **argv) {
     fn.stop = &stop;
     fn.command = &command;
     fn.path_to_textures = DRAWSTUFF_TEXTURE_PATH;
-    dsSimulationLoop(argc, argv, 800, 600, &fn);
-    
+    dsSimulationLoop(argc, argv, 1920, 1000, &fn);
+
     // quit -> cleanup
     environment->destroy();
     delete environment;

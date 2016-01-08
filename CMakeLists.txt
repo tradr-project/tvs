@@ -47,11 +47,24 @@ include_directories(
         ${ODE_INCLUDE_DIRS}
 )
 
-add_executable(simulator src/Track.cpp src/TrackKinematicModel.cpp src/TrackedVehicle.cpp src/SkidSteeringVehicle.cpp src/Environment.cpp src/ODEUtils.cpp src/utils.cpp src/simulator.cpp)
+set(BASE_SOURCES
+        src/Track.cpp
+        src/TrackKinematicModel.cpp
+        src/TrackedVehicle.cpp
+        src/SkidSteeringVehicle.cpp
+        src/Environment.cpp
+        src/TrackedVehicleEnvironment.cpp
+        src/SkidSteerVehicleEnvironment.cpp
+        src/ODEUtils.cpp
+        src/utils.cpp
+        src/SimpleTrackedVehicle.cpp
+        src/SimpleTrackedVehicleEnvironment.cpp)
+
+add_executable(simulator ${BASE_SOURCES} src/simulator.cpp)
 target_link_libraries(simulator ${LIBS})
 
-add_executable(planner src/Track.cpp src/TrackKinematicModel.cpp src/TrackedVehicle.cpp src/SkidSteeringVehicle.cpp src/Environment.cpp src/ODEUtils.cpp src/OMPLTVSControlSpace.cpp src/OMPLTVSEnvironment.cpp src/OMPLTVSSimpleSetup.cpp src/OMPLTVSStatePropagator.cpp src/OMPLTVSStateSpace.cpp src/OMPLTVSStateValidityChecker.cpp src/utils.cpp src/planner.cpp)
+add_executable(planner ${BASE_SOURCES}  src/OMPLTVSControlSpace.cpp src/OMPLTVSEnvironment.cpp src/OMPLTVSSimpleSetup.cpp src/OMPLTVSStatePropagator.cpp src/OMPLTVSStateSpace.cpp src/OMPLTVSStateValidityChecker.cpp src/planner.cpp)
 target_link_libraries(planner ${LIBS})
 
-add_executable(search-vis src/Track.cpp src/TrackKinematicModel.cpp src/TrackedVehicle.cpp src/SkidSteeringVehicle.cpp src/Environment.cpp src/ODEUtils.cpp src/utils.cpp src/search_vis.cpp)
+add_executable(search-vis ${BASE_SOURCES} src/search_vis.cpp)
 target_link_libraries(search-vis ${LIBS})
