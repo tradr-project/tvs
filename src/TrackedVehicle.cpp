@@ -88,10 +88,10 @@ void TrackedVehicle::create(Environment *environment) {
     dJointAttach(this->frontRightFlipperJoint, this->rightTrack->trackBody, this->frontRightFlipper->trackBody);
     dJointAttach(this->rearLeftFlipperJoint, this->leftTrack->trackBody, this->rearLeftFlipper->trackBody);
     dJointAttach(this->rearRightFlipperJoint, this->rightTrack->trackBody, this->rearRightFlipper->trackBody);
-    dJointSetHingeAnchor(this->frontLeftFlipperJoint, xOffset + wheelBase/2.0, yOffset - (vehicleBodyWidth/2 + trackWidth + trackVehicleSpace), zOffset);
-    dJointSetHingeAnchor(this->frontRightFlipperJoint, xOffset + wheelBase/2.0, yOffset + vehicleBodyWidth/2 + trackWidth + trackVehicleSpace, zOffset);
-    dJointSetHingeAnchor(this->rearLeftFlipperJoint, xOffset - wheelBase/2.0, yOffset - (vehicleBodyWidth/2 + trackWidth + trackVehicleSpace), zOffset);
-    dJointSetHingeAnchor(this->rearRightFlipperJoint, xOffset - wheelBase/2.0, yOffset + vehicleBodyWidth/2 + trackWidth + trackVehicleSpace, zOffset);
+    dJointSetHingeAnchor(this->frontLeftFlipperJoint, yOffset - (vehicleBodyWidth/2 + trackWidth + trackVehicleSpace), xOffset - wheelBase/2.0, zOffset);
+    dJointSetHingeAnchor(this->frontRightFlipperJoint, yOffset - (vehicleBodyWidth/2 + trackWidth + trackVehicleSpace), xOffset + wheelBase/2.0, zOffset);
+    dJointSetHingeAnchor(this->rearLeftFlipperJoint, yOffset + (vehicleBodyWidth/2 + trackWidth + trackVehicleSpace), xOffset + wheelBase/2.0, zOffset);
+    dJointSetHingeAnchor(this->rearRightFlipperJoint, yOffset + vehicleBodyWidth/2 + trackWidth + trackVehicleSpace, xOffset - wheelBase/2.0, zOffset);
     dJointSetHingeAxis(this->frontLeftFlipperJoint, 0, 1, 0);
     dJointSetHingeAxis(this->frontRightFlipperJoint, 0, 1, 0);
     dJointSetHingeAxis(this->rearLeftFlipperJoint, 0, 1, 0);
