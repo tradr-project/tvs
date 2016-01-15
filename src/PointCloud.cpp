@@ -107,7 +107,7 @@ void PointCloud::create(Environment *environment, const dReal *pos, dReal radius
         dMatrix3 R; dRSetIdentity(R);
         dGeomSetRotation(this->geom[i], R);
         dGeomSetCategoryBits(this->geom[i], Category::TERRAIN);
-        dGeomSetCollideBits(this->geom[i], Category::GROUSER | Category::OBSTACLE);
+        dGeomSetCollideBits(this->geom[i], Category::TRACK_GROUSER | Category::OBSTACLE);
     }
 }
 

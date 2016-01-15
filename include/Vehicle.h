@@ -11,7 +11,6 @@
 
 #include <string>
 #include <ode/ode.h>
-#include "Track.h"
 #include "ODEUtils.h"
 
 class Environment;

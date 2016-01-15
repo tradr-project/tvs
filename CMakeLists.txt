@@ -58,7 +58,7 @@ set(BASE_SOURCES
         src/ODEUtils.cpp
         src/utils.cpp
         src/SimpleTrackedVehicle.cpp
-        src/SimpleTrackedVehicleEnvironment.cpp)
+        src/SimpleTrackedVehicleEnvironment.cpp src/TrackBase.cpp include/TrackBase.h src/Flipper.cpp include/Flipper.h)
 
 add_executable(simulator ${BASE_SOURCES} src/simulator.cpp)
 target_link_libraries(simulator ${LIBS})

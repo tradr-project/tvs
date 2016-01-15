@@ -21,24 +21,13 @@ class TrackedVehicle : public Vehicle {
 public:
     Track *leftTrack;
     Track *rightTrack;
-    Track *frontLeftFlipper;
-    Track *frontRightFlipper;
-    Track *rearLeftFlipper;
-    Track *rearRightFlipper;
     dReal density;
     dBodyID vehicleBody;
     dMass vehicleMass;
     dGeomID vehicleGeom;
     dJointID leftTrackJoint;
     dJointID rightTrackJoint;
-    dJointID frontLeftFlipperJoint;
-    dJointID frontRightFlipperJoint;
-    dJointID rearLeftFlipperJoint;
-    dJointID rearRightFlipperJoint;
     dReal width;
-    dReal xOffset;
-    dReal yOffset;
-    dReal zOffset;
     dReal wheelBase;
     dReal wheelRadius;
     dReal flipperRadius;
@@ -48,7 +37,7 @@ public:
     dReal trackVehicleSpace;
     dReal vehicleBodyWidth;
     
-    TrackedVehicle(const std::string& name_, dReal xOffset, dReal yOffset, dReal zOffset);
+    TrackedVehicle(const std::string &name_);
     virtual ~TrackedVehicle();
     void create(Environment *environment);
     void destroy();

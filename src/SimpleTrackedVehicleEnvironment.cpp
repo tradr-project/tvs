@@ -17,13 +17,13 @@ SimpleTrackedVehicleEnvironment::~SimpleTrackedVehicleEnvironment() {
 }
 
 bool SimpleTrackedVehicleEnvironment::isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact) {
-    if(isCatPair(Category::GROUSER, Category::TERRAIN, &o1, &o2))
+    if(isCatPair(Category::TRACK_GROUSER, Category::TERRAIN, &o1, &o2))
         return true;
     return false;
 }
 
 void SimpleTrackedVehicleEnvironment::nearCallback(dGeomID o1, dGeomID o2){
-//    if(isCatPair(Category::GROUSER, Category::TERRAIN, &o1, &o2))
+//    if(isCatPair(Category::TRACK_GROUSER, Category::TERRAIN, &o1, &o2))
 //        this->nearCallbackGrouserTerrain(o1, o2);
 //    else
         nearCallbackDefault(o1, o2);

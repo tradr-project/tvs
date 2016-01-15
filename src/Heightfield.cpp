@@ -37,7 +37,7 @@ void Heightfield::create(Environment *environment) {
     dRFromAxisAndAngle(R, 1, 0, 0, M_PI_2);
     dGeomSetRotation(this->geom, R);
     dGeomSetCategoryBits(this->geom, Category::TERRAIN);
-    dGeomSetCollideBits(this->geom, Category::GROUSER | Category::OBSTACLE);
+    dGeomSetCollideBits(this->geom, Category::TRACK_GROUSER | Category::OBSTACLE);
 }
 
 void Heightfield::destroy() {

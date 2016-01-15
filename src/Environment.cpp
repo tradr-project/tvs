@@ -71,7 +71,7 @@ void createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y
     dRFromAxisAndAngle(R, rx, ry, rz, rAngle);
     dGeomSetRotation(g, R);
     dGeomSetCategoryBits(g, Category::TERRAIN);
-    dGeomSetCollideBits(g, Category::GROUSER);
+    dGeomSetCollideBits(g, Category::TRACK_GROUSER | Category::FLIPPER_GROUSER);
     e->setGeomName(g, "panel" + boost::lexical_cast<std::string>(i++));
     e->boxes.push_back(g);
 }
@@ -116,10 +116,10 @@ void Environment::create() {
     this->planeGeom = dCreatePlane(this->space, 0, 0, 1, 0); // (a, b, c)' (x, y, z) = d
     setGeomName(this->planeGeom, "worldPlane");
     dGeomSetCategoryBits(this->planeGeom, Category::TERRAIN);
-    dGeomSetCollideBits(this->planeGeom, Category::GROUSER | Category::OBSTACLE);
+    dGeomSetCollideBits(this->planeGeom, Category::TRACK_GROUSER | Category::FLIPPER_GROUSER | Category::OBSTACLE);
 
     if(this->v) this->v->create(this);
-    
+
     const dReal h = 1.3; // wall height
     const dReal t = 0.1; // wall thickness
     const dReal T = 0.25; // arch thickness
@@ -216,10 +216,13 @@ bool Environment::step(dReal stepSize, int simulationStepsPerFrame) {
     this->contacts.clear();
     
     for(size_t i = 0; i < simulationStepsPerFrame; i++) {
+
         // find collisions and add contact joints
         dSpaceCollide(this->space, this, &nearCallbackWrapper);
         // step the simulation
+//        dWorldStep(this->world, stepSize / (dReal)simulationStepsPerFrame);
         dWorldQuickStep(this->world, stepSize / (dReal)simulationStepsPerFrame);
+
         // remove all contact joints
         dJointGroupEmpty(this->contactGroup);
     }

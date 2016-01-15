@@ -23,6 +23,7 @@ struct dxRigidBodyArray {
 
 dRigidBodyArrayID dRigidBodyArrayCreate(dBodyID centerBody);
 void dRigidBodyArrayAdd(dRigidBodyArrayID bodyArray, dBodyID body);
+void dRigidBodyArrayAdd(dRigidBodyArrayID bodyArray, dRigidBodyArrayID bodies);
 void dRigidBodyArrayDestroy(dRigidBodyArrayID bodyArray);
 size_t dRigidBodyArraySize(dRigidBodyArrayID bodyArray);
 dBodyID dRigidBodyArrayGet(dRigidBodyArrayID bodyArray, size_t i);

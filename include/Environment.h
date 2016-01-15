@@ -102,10 +102,13 @@ public:
 
 namespace Category { enum Category {
     TERRAIN  = 1 << 0,
-    GROUSER  = 1 << 1,
-    G_GUIDE  = 1 << 2,
-    WHEEL    = 1 << 3,
-    OBSTACLE = 1 << 4
+    TRACK_GROUSER = 1 << 1,
+    TRACK_GUIDE = 1 << 2,
+    TRACK_WHEEL = 1 << 3,
+    OBSTACLE = 1 << 4,
+    FLIPPER_GROUSER = 1 << 5,
+    FLIPPER_GUIDE = 1 << 6,
+    FLIPPER_WHEEL = 1 << 7
 }; };
 
 #endif // WORLD_H_INCLUDED

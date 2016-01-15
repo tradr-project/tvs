@@ -17,23 +17,29 @@
 #include <SDL.h>
 #include <SDL_joystick.h>
 #include <TrackedVehicleEnvironment.h>
+#include <TrackedVehicle.h>
+#include <iostream>
 
 Environment *environment;
 SDL_Joystick *joystick;
 dReal vel_left = 0.0, vel_right = 0.0;
 bool following = false;
-dReal kbd_gain = 1.0;
+dReal kbd_gain = 2.0;
+
+bool flipperFLbuttonDown = false, flipperFRbuttonDown = false, flipperRLbuttonDown = false, flipperRRbuttonDown = false;
+int flipperMovementSpeed = 0;
+
 
 void initRobotPose() {
     static dVector3 p = {
-        2.4554, 3.01316, 0.077984+0.0246
+            2.4554, 3.01316, 0.077984 + 0.0246
     };
     static dQuaternion q = {
-        -0.767196, -1.83056e-06, 2.44949e-06, -0.641413
+            -0.767196, -1.83056e-06, 2.44949e-06, -0.641413
     };
 
-//    environment->v->setPosition(p);
-//    environment->v->setQuaternion(q);
+    environment->v->setPosition(p);
+    environment->v->setQuaternion(q);
     vel_left = vel_right = 0.0;
     environment->v->setVelocities(0, 0);
 }
@@ -86,15 +92,61 @@ void start() {
 void step(int pause) {
     if(environment->config.joystick.enabled) {
         SDL_Event event;
+        dReal V;
         while(SDL_PollEvent(&event)) {
             switch(event.type) {
                 case SDL_JOYAXISMOTION:
-                    const dReal V = environment->config.world.max_track_speed * environment->config.joystick.gain;
-                    if(event.jaxis.axis == 1)
-                        vel_right = V * event.jaxis.value / 32768.0;
-                    if(event.jaxis.axis == 3)
-                        vel_left = V * event.jaxis.value / 32768.0;
-                    //std::cout << "    " << joy_l << "    " << joy_r << std::endl;
+                    V = environment->config.world.max_track_speed * environment->config.joystick.gain;
+                    switch (event.jaxis.axis) {
+                        case 1:
+                            vel_right = V * event.jaxis.value / 32768.0;
+                            break;
+                        case 4:
+                            vel_left = V * event.jaxis.value / 32768.0;
+                            break;
+                        case 2:
+                            flipperRLbuttonDown = (event.jaxis.value >= -32767);
+                        case 5:
+                            flipperRRbuttonDown = (event.jaxis.value >= -32767);
+                    }
+//                    std::cout << (uint)event.jaxis.axis << " " << (uint)event.jaxis.value << std::endl;
+                    break;
+                case SDL_JOYBUTTONDOWN:
+                    switch (event.jbutton.button) {
+                        case 4:
+                            flipperFLbuttonDown = true;
+                            break;
+                        case 5:
+                            flipperFRbuttonDown = true;
+                            break;
+                    }
+//                    std::cout << (uint)event.jbutton.button << " " << (uint)event.jbutton.state << std::endl;
+                    break;
+                case SDL_JOYBUTTONUP:
+                    switch (event.jbutton.button) {
+                        case 4:
+                            flipperFLbuttonDown = false;
+                            break;
+                        case 5:
+                            flipperFRbuttonDown = false;
+                            break;
+                    }
+//                    std::cout << (uint)event.jbutton.button << " " << (uint)event.jbutton.state << std::endl;
+                    break;
+                case SDL_JOYHATMOTION:
+                    if (event.jhat.hat == 0) {
+                        switch (event.jhat.value) {
+                            case 1:
+                                flipperMovementSpeed = -1;
+                                break;
+                            case 4:
+                                flipperMovementSpeed = 1;
+                                break;
+                            default:
+                                flipperMovementSpeed = 0;
+                        }
+                    }
+//                    std::cout << (uint)event.jhat.hat << " " << (uint)event.jhat.value << std::endl;
                     break;
             }
         }
@@ -103,8 +155,19 @@ void step(int pause) {
         const dReal *p = environment->v->getPosition();
         follow(p[0], p[1], p[2]);
     }
+
     environment->v->setVelocities(kbd_gain * vel_left, kbd_gain * vel_right);
+
+    TrackedVehicle* tv = dynamic_cast<TrackedVehicle*>(environment->v);
+    if (tv != NULL) {
+        tv->leftTrack->setFlipperAngularVelocity(0,  flipperFLbuttonDown * flipperMovementSpeed);
+        tv->leftTrack->setFlipperAngularVelocity(1,  flipperRLbuttonDown * flipperMovementSpeed);
+        tv->rightTrack->setFlipperAngularVelocity(0, flipperFRbuttonDown * flipperMovementSpeed);
+        tv->rightTrack->setFlipperAngularVelocity(1, flipperRRbuttonDown * flipperMovementSpeed);
+    }
+
     environment->draw();
+
     if(!pause) environment->step();
 }
 

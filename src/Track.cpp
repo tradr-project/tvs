@@ -8,191 +8,121 @@
 
 #include "Track.h"
 #include "Environment.h"
-#include <cstdio>
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
 #include <drawstuff/drawstuff.h>
 
-#define DRIVING_WHEEL_FRONT
+Track::Track(const std::string &name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_,
+             dReal linkThickness_, dReal grouserHeight_, dReal trackDepth_, int yDirection) :
+        TrackBase(name_, 0, radius1_, radius2_, distance_, numGrousers_, linkThickness_, grouserHeight_, trackDepth_),
+        yDirection(yDirection) {
 
-Track::Track(const std::string& name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal linkThickness_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset) : name(name_) {
-    this->m = new TrackKinematicModel(radius1_, radius2_, distance_, numGrousers_, grouserHeight_, trackDepth_);
-    this->density = 1.0;
-    this->linkBody = new dBodyID[numGrousers_];
-    this->linkGeom = new dGeomID[numGrousers_];
-    this->grouserGeom = new dGeomID[numGrousers_];
-    this->linkJoint = new dJointID[numGrousers_];
-    this->linkMass = new dMass[numGrousers_];
-    this->xOffset = xOffset;
-    this->yOffset = yOffset;
-    this->zOffset = zOffset;
-    this->numGrousers = numGrousers_;
-    this->linkThickness = linkThickness_;
-    this->grouserHeight = grouserHeight_;
+    for (size_t i=0; i < NUM_FLIPPERS; i++) {
+        flippers[i] = NULL;
+        flipperJoints[i] = NULL;
+    }
+
 }
 
 Track::~Track() {
-    delete [] this->linkBody;
-    delete [] this->linkGeom;
-    delete [] this->grouserGeom;
-    delete [] this->linkJoint;
-    delete [] this->linkMass;
-    delete this->m;
+    for (size_t i=0; i < NUM_FLIPPERS; i++) {
+        if (flippers[i] != NULL) {
+            delete &flippers[i];
+            flippers[i] = NULL;
+        }
+        if (flipperJoints[i] != NULL) {
+            delete &flipperJoints[i];
+            flipperJoints[i] = NULL;
+        }
+    }
+}
+
+void Track::prepareFlippers(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal linkThickness_,
+                            dReal grouserHeight_, dReal flipperWidth_) {
+
+    if (NUM_FLIPPERS > 0) {
+        this->flippers[0] = new Flipper(name + ".frontFlipper",  radius1_, radius2_, distance_, numGrousers_,
+                                        linkThickness_, grouserHeight_, flipperWidth_);
+    }
+
+    if (NUM_FLIPPERS > 1) {
+        this->flippers[1] = new Flipper(name + ".rearFlipper",  radius1_, radius2_, distance_, numGrousers_,
+                                        linkThickness_, grouserHeight_, flipperWidth_);
+    }
+
 }
 
 void Track::create(Environment *environment) {
-    this->trackBody = dBodyCreate(environment->world);
-    this->bodyArray = dRigidBodyArrayCreate(this->trackBody);
-    dMassSetBox(&this->trackMass, this->density, this->m->distance, this->m->radius[1], this->m->trackDepth);
-    dBodySetMass(this->trackBody, &this->trackMass);
-    dBodySetPosition(this->trackBody, this->xOffset, this->yOffset, this->zOffset);
+    TrackBase::create(environment);
 
-    for(int w = 0; w < 2; w++) {
-        this->wheelGeom[w] = dCreateCylinder(environment->space, this->m->radius[w], this->m->trackDepth);
-        environment->setGeomName(this->wheelGeom[w], this->name + ".wheel" + boost::lexical_cast<std::string>(w));
-        dGeomSetCategoryBits(this->wheelGeom[w], Category::WHEEL);
-        dGeomSetCollideBits(this->wheelGeom[w], Category::GROUSER);
-        dMassSetCylinder(&this->wheelMass[w], this->density, 3, this->m->radius[w], this->m->trackDepth);
+#if NUM_TRACK_STRUT_GEOMS >= 1
+    this->strutGeoms[0] = dCreateBox(environment->space, 0.9*this->m->distance, this->m->trackDepth, 1.95*this->m->radius[0]);
+    environment->setGeomName(this->strutGeoms[0], this->name + ".strut");
+    dGeomSetCategoryBits(this->strutGeoms[0], Category::TRACK_GUIDE);
+    dGeomSetCollideBits(this->strutGeoms[0], Category::TRACK_GROUSER);
+    dGeomSetBody(this->strutGeoms[0], this->trackBody);
+    dGeomSetOffsetPosition(this->strutGeoms[0], 0.5 * this->m->distance, 0, 0.0);
+#endif
 
-        this->wheelBody[w] = dBodyCreate(environment->world);
-        dRigidBodyArrayAdd(this->bodyArray, this->wheelBody[w]);
-        dBodySetMass(this->wheelBody[w], &this->wheelMass[w]);
-        dGeomSetBody(this->wheelGeom[w], this->wheelBody[w]);
-        dBodySetPosition(this->wheelBody[w], this->xOffset + w * this->m->distance, this->yOffset, this->zOffset);
-        dMatrix3 wheelR;
-        dRFromZAxis(wheelR, 0, 1, 0);
-        dBodySetRotation(this->wheelBody[w], wheelR);
 
-        this->wheelJoint[w] = dJointCreateHinge(environment->world, 0);
-        dJointAttach(this->wheelJoint[w], this->trackBody, this->wheelBody[w]);
-        dJointSetHingeAnchor(this->wheelJoint[w], this->xOffset + w * this->m->distance, this->yOffset, this->zOffset);
-        dJointSetHingeAxis(this->wheelJoint[w], 0, 1, 0);
+    for (size_t i=0; i < NUM_FLIPPERS; i++) {
+        flippers[i]->create(environment);
 
-        // this guide should avoid tracks slipping out of their designed place
-        dReal gh = 2 * (0.2 + std::max(this->m->radius[0], this->m->radius[1]));
-        dReal gw = gh + this->m->distance;
-        this->guideGeom[w] = dCreateBox(environment->space, gw, 0.01, gh);
-        environment->setGeomName(this->guideGeom[w], this->name + ".grouser_guide" + boost::lexical_cast<std::string>(w));
-        dGeomSetCategoryBits(this->guideGeom[w], Category::G_GUIDE);
-        dGeomSetCollideBits(this->guideGeom[w], Category::GROUSER);
-        dGeomSetBody(this->guideGeom[w], this->trackBody);
-        dGeomSetOffsetPosition(this->guideGeom[w], 0.5 * this->m->distance, (0.02 + this->m->trackDepth) * (w - 0.5), 0.0);
+        // origin of the track is in the front wheel
+        dRigidBodyArraySetPosition(flippers[i]->bodyArray, i * this->m->distance, yDirection * (this->m->trackDepth / 2.0 + flippers[i]->m->trackDepth / 2 + 0.005), 0);
+
+        flipperJoints[i] = dJointCreateHinge(environment->world, 0);
+        dJointAttach(flipperJoints[i], trackBody, flippers[i]->trackBody);
+        dJointSetHingeAnchor(flipperJoints[i], i * this->m->distance, yDirection * (this->m->trackDepth / 2 + flippers[i]->m->trackDepth / 2), 0);
+        dJointSetHingeAxis(flipperJoints[i], 0, 1, 0);
+
+        flipperMotors[i] = dJointCreateAMotor(environment->world, 0);
+        dJointSetAMotorMode(flipperMotors[i], dAMotorUser);
+        dJointSetAMotorNumAxes(flipperMotors[i], 1);
+        dJointAttach(flipperMotors[i], trackBody, flippers[i]->trackBody);
+        dJointSetAMotorAxis(flipperMotors[i], 0, 1, 0, 1, 0);
+        dJointSetAMotorParam(flipperMotors[i], dParamFMax, 10);
+
+        dRigidBodyArrayAdd(bodyArray, flippers[i]->bodyArray);
     }
 
-#if NUM_GUIDE_GEOMS == 3
-    this->guideGeom[2] = dCreateBox(environment->space, 0.9*this->m->distance, this->m->trackDepth, 1.95*this->m->radius[0]);
-    environment->setGeomName(this->guideGeom[2], this->name + ".grouser_guide2");
-    dGeomSetCategoryBits(this->guideGeom[2], Category::G_GUIDE);
-    dGeomSetCollideBits(this->guideGeom[2], Category::GROUSER);
-    dGeomSetBody(this->guideGeom[2], this->trackBody);
-    dGeomSetOffsetPosition(this->guideGeom[2], 0.5 * this->m->distance, 0, 0.0);
-#endif
-    
-    const dReal fMax = 5.0;
-#ifdef DRIVING_WHEEL_FRONT
-    dJointSetHingeParam(this->wheelJoint[0], dParamFMax, fMax);
-#endif
-#ifdef DRIVING_WHEEL_BACK
-    dJointSetHingeParam(this->wheelJoint[1], dParamFMax, fMax);
-#endif
-
-    // grouser shrink/grow factor
-    const dReal f = 1.03;
-
-    for(size_t i = 0; i < this->m->numGrousers; i++) {
-        this->linkBody[i] = dBodyCreate(environment->world);
-        dRigidBodyArrayAdd(this->bodyArray, this->linkBody[i]);
-        dMassSetBox(&this->linkMass[i], 10 * this->density, this->m->grouserHeight, this->m->trackDepth, f * this->m->grouserWidth);
-        dBodySetMass(this->linkBody[i], &this->linkMass[i]);
-
-        dVector3 pos; dMatrix3 R;
-        this->m->computeGrouserTransform3D(i, pos, R);
-
-        this->linkGeom[i] = dCreateBox(environment->space, this->linkThickness, this->m->trackDepth, f * this->m->grouserWidth);
-        environment->setGeomName(this->linkGeom[i], this->name + ".grouser" + boost::lexical_cast<std::string>(i));
-        dGeomSetCategoryBits(this->linkGeom[i], Category::GROUSER);
-        dGeomSetCollideBits(this->linkGeom[i], Category::TERRAIN | Category::WHEEL | Category::OBSTACLE);
-        dGeomSetBody(this->linkGeom[i], this->linkBody[i]);
-
-        this->grouserGeom[i] = dCreateBox(environment->space, this->m->grouserHeight, this->m->trackDepth, this->linkThickness);
-        environment->setGeomName(this->grouserGeom[i], this->name + ".grouserTooth" + boost::lexical_cast<std::string>(i));
-        dGeomSetCategoryBits(this->grouserGeom[i], Category::GROUSER);
-        dGeomSetCollideBits(this->grouserGeom[i], Category::TERRAIN | Category::WHEEL | Category::OBSTACLE);
-        dGeomSetBody(this->grouserGeom[i], this->linkBody[i]);
-        dGeomSetOffsetPosition(this->grouserGeom[i], 0.5 * (this->linkThickness + this->m->grouserHeight), 0, 0);
-
-        dBodySetPosition(this->linkBody[i], this->xOffset + pos[0], this->yOffset + pos[1], this->zOffset + pos[2]);
-        dBodySetRotation(this->linkBody[i], R);
-    }
-
-    for(size_t i = 0; i < this->m->numGrousers; i++) {
-        size_t j = (i + 1) % this->m->numGrousers;
-        dReal px, pz, qx, qz, a, dx, dz;
-        this->m->getPointOnPath(i / (dReal)this->m->numGrousers, &px, &pz, &a);
-        dx = cos(a - M_PI_2);
-        dz = sin(a - M_PI_2);
-        qx = px - this->m->grouserWidth * f * 0.5 * dx;
-        qz = pz - this->m->grouserWidth * f * 0.5 * dz;
-        px = px + this->m->grouserWidth * f * 0.5 * dx;
-        pz = pz + this->m->grouserWidth * f * 0.5 * dz;
-        this->linkJoint[i] = dJointCreateHinge(environment->world, 0);
-        dJointAttach(this->linkJoint[i], this->linkBody[i], this->linkBody[j]);
-        dJointSetHingeAnchor(this->linkJoint[i], this->xOffset + px, this->yOffset, this->zOffset + pz);
-        dJointSetHingeAxis(this->linkJoint[i], 0, 1, 0);
+    if (NUM_FLIPPERS > 0) {
+        // rotate the front flipper by 180 degrees
+        dMatrix3 rot;
+        dRFromAxisAndAngle(rot, 0, 1, 0, M_PI);
+        dRigidBodyArraySetRotationRelative(this->flippers[0]->bodyArray, rot);
     }
 }
 
 void Track::destroy() {
-    dRigidBodyArrayDestroy(this->bodyArray);
-    dBodyDestroy(this->trackBody);
-    for(int w = 0; w < 2; w++) {
-        dBodyDestroy(this->wheelBody[w]);
-        dGeomDestroy(this->wheelGeom[w]);
-        dGeomDestroy(this->guideGeom[w]);
-    }
-    for(size_t i = 0; i < this->m->numGrousers; i++) {
-        dBodyDestroy(this->linkBody[i]);
-        dGeomDestroy(this->linkGeom[i]);
-        dGeomDestroy(this->grouserGeom[i]);
-        dJointDestroy(this->linkJoint[i]);
+    TrackBase::destroy();
+
+    for (size_t i=0; i < NUM_FLIPPERS; i++) {
+        flippers[i]->destroy();
+        dJointDestroy(flipperJoints[i]);
     }
 }
 
 void Track::step(dReal stepSize) {
     this->velocity.step(stepSize);
-    
-#ifdef DRIVING_WHEEL_FRONT
-    dJointSetHingeParam(this->wheelJoint[0], dParamVel, this->velocity.get());
-#endif
-#ifdef DRIVING_WHEEL_BACK
-    dJointSetHingeParam(this->wheelJoint[1], dParamVel, this->velocity.get());
-#endif
+    dJointSetHingeParam(this->wheelJoint[this->drivingWheelIndex], dParamVel, this->velocity.get());
+
+    for (size_t i=0; i < NUM_FLIPPERS; i++) {
+        flippers[i]->step(stepSize);
+    }
 }
 
 void Track::draw() {
-    dsSetColor(1, 1, 0);
-    for(int w = 0; w < 2; w++) {
-        const dReal *pos = dGeomGetPosition(this->wheelGeom[w]);
-        const dReal *R = dGeomGetRotation(this->wheelGeom[w]);
-        dReal radius, length;
-        dGeomCylinderGetParams(this->wheelGeom[w], &radius, &length);
-        dsDrawCylinderD(pos, R, length, radius);
+    TrackBase::draw();
+
+    for (size_t i=0; i < NUM_FLIPPERS; i++) {
+        flippers[i]->draw();
     }
 
-    dsSetColor(1, 0, 0);
-    for(size_t i = 0; i < this->m->numGrousers; i++) {
-        const dReal *pos = dGeomGetPosition(this->linkGeom[i]);
-        const dReal *R = dGeomGetRotation(this->linkGeom[i]);
+    dsSetColorAlpha(0, 0, 0, 1);
+    for(int w = 0; w < NUM_TRACK_STRUT_GEOMS; w++) {
+        const dReal *pos = dGeomGetPosition(this->strutGeoms[w]);
+        const dReal *R = dGeomGetRotation(this->strutGeoms[w]);
         dReal sides[3];
-        dGeomBoxGetLengths(this->linkGeom[i], sides);
-        dsDrawBoxD(pos, R, sides);
-    }
-    for(size_t i = 0; i < this->m->numGrousers; i++) {
-        const dReal *pos = dGeomGetPosition(this->grouserGeom[i]);
-        const dReal *R = dGeomGetRotation(this->grouserGeom[i]);
-        dReal sides[3];
-        dGeomBoxGetLengths(this->grouserGeom[i], sides);
+        dGeomBoxGetLengths(this->strutGeoms[w], sides);
         dsDrawBoxD(pos, R, sides);
     }
 
@@ -213,4 +143,28 @@ void Track::draw() {
 
 void Track::setVelocity(dReal velocity) {
     this->velocity.set(velocity);
+
+    for (size_t i=0; i < NUM_FLIPPERS; i++) {
+        flippers[i]->setVelocity(velocity);
+    }
+}
+
+void Track::setFlipperAngularVelocity(size_t flipperNumber, dReal velocity) {
+    if (flipperNumber < NUM_FLIPPERS) {
+        if (flipperNumber == 1)
+            velocity = -velocity;
+        dJointSetAMotorParam(flipperMotors[flipperNumber], dParamVel, velocity);
+    }
+}
+
+Category::Category Track::getWheelCategory() {
+    return Category::TRACK_WHEEL;
+}
+
+Category::Category Track::getGuideCategory() {
+    return Category::TRACK_GUIDE;
+}
+
+Category::Category Track::getGrouserCategory() {
+    return Category::TRACK_GROUSER;
 }

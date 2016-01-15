@@ -12,46 +12,43 @@
 #include <string>
 #include <ode/ode.h>
 #include "utils.h"
+#include "TrackBase.h"
 #include "TrackKinematicModel.h"
 #include "ODEUtils.h"
+#include "Flipper.h"
+
+#define NUM_FLIPPERS 2
+#define NUM_TRACK_STRUT_GEOMS 1
 
 class Environment;
 
-#define NUM_GUIDE_GEOMS 2
-
-class Track {
+class Track : public TrackBase {
 public:
-    std::string name;
-    TrackKinematicModel *m;
-    dReal density;
-    dBodyID trackBody;
-    dMass trackMass;
-    dBodyID wheelBody[2];
-    dMass wheelMass[2];
-    dGeomID wheelGeom[2];
-    dJointID wheelJoint[2];
-    dGeomID guideGeom[NUM_GUIDE_GEOMS];
-    dBodyID *linkBody;
-    dGeomID *linkGeom;
-    dGeomID *grouserGeom;
-    dJointID *linkJoint;
-    dMass *linkMass;
-    dReal xOffset;
-    dReal yOffset;
-    dReal zOffset;
-    size_t numGrousers;
-    dReal linkThickness;
-    dReal grouserHeight;
     LinVelProfInt velocity;
-    dRigidBodyArrayID bodyArray;
 
-    Track(const std::string& name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal linkThickness_, dReal grouserHeight_, dReal trackDepth_, dReal xOffset, dReal yOffset, dReal zOffset);
+    Track(const std::string &name_, dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_,
+              dReal linkThickness_, dReal grouserHeight_, dReal trackDepth_, int yDirection);
     virtual ~Track();
     void create(Environment *environment);
     void destroy();
     void step(dReal stepSize);
     void draw();
     void setVelocity(dReal velocity);
+    void prepareFlippers(dReal radius1_, dReal radius2_, dReal distance_, size_t numGrousers_, dReal linkThickness_,
+                             dReal grouserHeight_, dReal flipperWidth_);
+    void setFlipperAngularVelocity(size_t flipperNumber, dReal velocity);
+
+protected:
+    dGeomID strutGeoms[NUM_TRACK_STRUT_GEOMS];
+    Flipper* flippers[NUM_FLIPPERS];
+    dJointID flipperJoints[NUM_FLIPPERS];
+    dJointID flipperMotors[NUM_FLIPPERS];
+    int yDirection;
+
+
+    Category::Category getWheelCategory();
+    Category::Category getGuideCategory();
+    Category::Category getGrouserCategory();
 };
 
 #endif // TRACK_H_INCLUDED

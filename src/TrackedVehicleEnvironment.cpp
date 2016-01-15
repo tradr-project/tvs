@@ -6,7 +6,7 @@
 #include "TrackedVehicle.h"
 
 TrackedVehicleEnvironment::TrackedVehicleEnvironment() {
-    TrackedVehicle *tv = new TrackedVehicle("robot", 2, 2, 0.077984+0.0246);
+    TrackedVehicle *tv = new TrackedVehicle("robot");
     tv->leftTrack->velocity.setSlope(config.world.track_acceleration);
     tv->rightTrack->velocity.setSlope(config.world.track_acceleration);
     this->v = tv;
@@ -17,16 +17,28 @@ TrackedVehicleEnvironment::~TrackedVehicleEnvironment() {
 }
 
 bool TrackedVehicleEnvironment::isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact) {
-    if(isCatPair(Category::GROUSER, Category::TERRAIN, &o1, &o2))
+    if(isCatPair(Category::TRACK_GROUSER, Category::TERRAIN, &o1, &o2))
         return true;
-    if(isCatPair(Category::GROUSER, Category::G_GUIDE, &o1, &o2))
+    if(isCatPair(Category::TRACK_GROUSER, Category::TRACK_GUIDE, &o1, &o2))
         return true;
-    if(isCatPair(Category::WHEEL, Category::G_GUIDE, &o1, &o2)) // XXX: not needed really
+    if(isCatPair(Category::TRACK_WHEEL, Category::TRACK_GUIDE, &o1, &o2)) // XXX: not needed really
         return true;
-    if(isCatPair(Category::WHEEL, Category::GROUSER, &o1, &o2))
+    if(isCatPair(Category::TRACK_WHEEL, Category::TRACK_GROUSER, &o1, &o2))
         return true;
-    if(isCatPair(Category::WHEEL, Category::TERRAIN, &o1, &o2))
+    if(isCatPair(Category::TRACK_WHEEL, Category::TERRAIN, &o1, &o2))
         return true;
+
+    if(isCatPair(Category::FLIPPER_GROUSER, Category::TERRAIN, &o1, &o2))
+        return true;
+    if(isCatPair(Category::FLIPPER_GROUSER, Category::FLIPPER_GUIDE, &o1, &o2))
+        return true;
+    if(isCatPair(Category::FLIPPER_WHEEL, Category::FLIPPER_GUIDE, &o1, &o2)) // XXX: not needed really
+        return true;
+    if(isCatPair(Category::FLIPPER_WHEEL, Category::FLIPPER_GROUSER, &o1, &o2))
+        return true;
+    if(isCatPair(Category::FLIPPER_WHEEL, Category::TERRAIN, &o1, &o2))
+        return true;
+    
     return false;
 }
 
@@ -106,11 +118,11 @@ void TrackedVehicleEnvironment::nearCallbackGrouserGuide(dGeomID o1, dGeomID o2)
 }
 
 void TrackedVehicleEnvironment::nearCallback(dGeomID o1, dGeomID o2){
-    if(isCatPair(Category::WHEEL, Category::GROUSER, &o1, &o2))
+    if(isCatPair(Category::TRACK_WHEEL, Category::TRACK_GROUSER, &o1, &o2) || isCatPair(Category::FLIPPER_WHEEL, Category::FLIPPER_GROUSER, &o1, &o2))
         this->nearCallbackWheelGrouser(o1, o2);
-    else if(isCatPair(Category::GROUSER, Category::TERRAIN, &o1, &o2))
+    else if(isCatPair(Category::TRACK_GROUSER, Category::TERRAIN, &o1, &o2) || isCatPair(Category::FLIPPER_GROUSER, Category::TERRAIN, &o1, &o2))
         this->nearCallbackGrouserTerrain(o1, o2);
-    else if(isCatPair(Category::GROUSER, Category::G_GUIDE, &o1, &o2))
+    else if(isCatPair(Category::TRACK_GROUSER, Category::TRACK_GUIDE, &o1, &o2) || isCatPair(Category::FLIPPER_GROUSER, Category::FLIPPER_GUIDE, &o1, &o2))
         this->nearCallbackGrouserGuide(o1, o2);
     else
         nearCallbackDefault(o1, o2);

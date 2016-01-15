@@ -16,6 +16,13 @@ void dRigidBodyArrayAdd(dRigidBodyArrayID bodyArray, dBodyID body) {
     bodyArray->bodies.push_back(body);
 }
 
+void dRigidBodyArrayAdd(dRigidBodyArrayID bodyArray, dRigidBodyArrayID bodies) {
+    dRigidBodyArrayAdd(bodyArray, bodies->center);
+    for (std::vector<dBodyID>::iterator body = bodies->bodies.begin(); body != bodies->bodies.end(); ++body) {
+        dRigidBodyArrayAdd(bodyArray, *body);
+    }
+}
+
 void dRigidBodyArrayDestroy(dRigidBodyArrayID bodyArray) {
     delete bodyArray;
 }
