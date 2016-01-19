@@ -16,6 +16,7 @@
 #include <drawstuff/drawstuff.h>
 #include <ompl/util/Console.h>
 #include <boost/foreach.hpp>
+#include <PlanarJoint.h>
 #include "utils.h"
 #include "TrackedVehicle.h"
 #include "SkidSteeringVehicle.h"
@@ -63,7 +64,7 @@ void Environment::readConfig() {
     config.show_contact_points = false;
 }
 
-void createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y2, dReal z2, unsigned long cat = Category::OBSTACLE, dReal rx = 1.0, dReal ry = 0.0, dReal rz = 0.0, dReal rAngle = 0.0) {
+dGeomID createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y2, dReal z2, unsigned long cat = Category::OBSTACLE, dReal rx = 1.0, dReal ry = 0.0, dReal rz = 0.0, dReal rAngle = 0.0) {
     static int i = 0;
     dGeomID g = dCreateBox(e->space, x2 - x1, y2 - y1, z2 - z1);
     dGeomSetPosition(g, x1 + 0.5 * (x2 - x1), y1 + 0.5 * (y2 - y1), z1 + 0.5 * (z2 - z1));
@@ -74,6 +75,8 @@ void createAABox(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y
     dGeomSetCollideBits(g, Category::TRACK_GROUSER | Category::FLIPPER_GROUSER);
     e->setGeomName(g, "panel" + boost::lexical_cast<std::string>(i++));
     e->boxes.push_back(g);
+
+    return g;
 }
 
 void makeStairCase(Environment *e, dReal x1, dReal y1, dReal z1, dReal x2, dReal y2, dReal z2, int axis, int steps) {

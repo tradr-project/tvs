@@ -25,12 +25,10 @@ Track::Track(const std::string &name_, dReal radius1_, dReal radius2_, dReal dis
 Track::~Track() {
     for (size_t i=0; i < NUM_FLIPPERS; i++) {
         if (flippers[i] != NULL) {
-            delete &flippers[i];
-            flippers[i] = NULL;
+            flippers[i]->destroy();
         }
         if (flipperJoints[i] != NULL) {
-            delete &flipperJoints[i];
-            flipperJoints[i] = NULL;
+            dJointDestroy(flipperJoints[i]);
         }
     }
 }
@@ -97,7 +95,10 @@ void Track::destroy() {
 
     for (size_t i=0; i < NUM_FLIPPERS; i++) {
         flippers[i]->destroy();
+        flippers[i] = NULL;
+
         dJointDestroy(flipperJoints[i]);
+        flipperJoints[i] = NULL;
     }
 }
 
@@ -126,7 +127,8 @@ void Track::draw() {
         dsDrawBoxD(pos, R, sides);
     }
 
-//#define DEBUG_DRAW_GROUSER_GUIDES
+#if USE_GUIDE_GEOMS
+#define DEBUG_DRAW_GROUSER_GUIDES
 #ifdef DEBUG_DRAW_GROUSER_GUIDES
     dsSetColorAlpha(0, 1, 0, 0.3);
     for(int w = 0; w < NUM_GUIDE_GEOMS; w++) {
@@ -134,10 +136,9 @@ void Track::draw() {
         const dReal *R = dGeomGetRotation(this->guideGeom[w]);
         dReal sides[3];
         dGeomBoxGetLengths(this->guideGeom[w], sides);
-        if (w >= 2)
-            dsSetColorAlpha(1, 1, 1, 1);
         dsDrawBoxD(pos, R, sides);
     }
+#endif
 #endif
 }
 

@@ -9,6 +9,7 @@
 #include "ODEUtils.h"
 #include "Environment.h"
 
+#define USE_GUIDE_GEOMS false
 #define NUM_GUIDE_GEOMS 2
 
 class TrackBase {
@@ -22,7 +23,11 @@ public:
     dMass wheelMass[2];
     dGeomID wheelGeom[2];
     dJointID wheelJoint[2];
+#if USE_GUIDE_GEOMS
     dGeomID guideGeom[NUM_GUIDE_GEOMS];
+#else
+    dJointID* guideJoints;
+#endif
     size_t drivingWheelIndex;
     dBodyID *linkBody;
     dGeomID *linkGeom;

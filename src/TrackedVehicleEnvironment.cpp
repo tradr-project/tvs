@@ -97,7 +97,7 @@ void TrackedVehicleEnvironment::nearCallbackGrouserTerrain(dGeomID o1, dGeomID o
 void TrackedVehicleEnvironment::nearCallbackGrouserGuide(dGeomID o1, dGeomID o2) {
     dBodyID b1 = dGeomGetBody(o1);
     dBodyID b2 = dGeomGetBody(o2);
-    if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;
+//    if(b1 && b2 && dAreConnectedExcluding(b1, b2, dJointTypeContact)) return;  // we connect grousers to tracks (having guides) via a planar joint
     int maxc = config.contact_grouser_guide.max_contacts;
     dContact contact[maxc];
     int numc = dCollide(o1, o2, maxc, &contact[0].geom, sizeof(dContact));
