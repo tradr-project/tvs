@@ -45,6 +45,7 @@ include_directories(
         ${SDL2_INCLUDE_DIR}
         ${OMPL_INCLUDE_DIRS}
         ${ODE_INCLUDE_DIRS}
+        ../ode/ode/src/
 )
 
 set(BASE_SOURCES
