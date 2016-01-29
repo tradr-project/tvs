@@ -16,7 +16,9 @@ public:
     bool isValidCollision(dGeomID o1, dGeomID o2, const dContact& contact);
 
     void nearCallback(dGeomID o1, dGeomID o2);
+    void nearCallbackGrouserTerrain(dGeomID o1, dGeomID o2);
 
+    virtual void draw();
 };
 
 #endif //TRACKED_MOTION_SIMPLETRACKEDVEHICLEENVIRONMENT_H

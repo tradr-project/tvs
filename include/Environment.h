@@ -97,7 +97,8 @@ public:
     bool step();
     void evaluateCollisionNearCallback(dGeomID o1, dGeomID o2);
     bool evaluateCollision();
-    void draw();
+
+    virtual void draw();
 };
 
 namespace Category { enum Category {
@@ -108,7 +109,13 @@ namespace Category { enum Category {
     OBSTACLE = 1 << 4,
     FLIPPER_GROUSER = 1 << 5,
     FLIPPER_GUIDE = 1 << 6,
-    FLIPPER_WHEEL = 1 << 7
+    FLIPPER_WHEEL = 1 << 7,
+    TRACK = 1 << 8,
+    FLIPPER = 1 << 9,
+    LEFT = 1 << 10,
+    RIGHT = 1 << 11,
+    FRONT = 1 << 12,
+    REAR = 1 << 13
 }; };
 
 #endif // WORLD_H_INCLUDED

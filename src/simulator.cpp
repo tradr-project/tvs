@@ -16,9 +16,14 @@
 #include "Environment.h"
 #include <SDL.h>
 #include <SDL_joystick.h>
-#include <TrackedVehicleEnvironment.h>
-#include <TrackedVehicle.h>
+//#include <TrackedVehicleEnvironment.h>
+//#include <TrackedVehicle.h>
 #include <iostream>
+#include <SimpleTrackedVehicleEnvironment.h>
+#include <SimpleTrackedVehicle.h>
+
+#define VEHICLE_TYPE SimpleTrackedVehicle
+#define ENVIRONMENT_TYPE SimpleTrackedVehicleEnvironment
 
 Environment *environment;
 SDL_Joystick *joystick;
@@ -28,6 +33,7 @@ dReal kbd_gain = 2.0;
 
 bool flipperFLbuttonDown = false, flipperFRbuttonDown = false, flipperRLbuttonDown = false, flipperRRbuttonDown = false;
 int flipperMovementSpeed = 0;
+dReal linearSpeed = 0, angularSpeed = 0;
 
 
 void initRobotPose() {
@@ -92,24 +98,42 @@ void start() {
 void step(int pause) {
     if(environment->config.joystick.enabled) {
         SDL_Event event;
-        dReal V;
+        dReal maxLinearSpeed;
+        dReal maxAngularSpeed;
+        dReal tracksDistance = 0.4;
+        dReal steeringEfficiency = 0.5;
+
         while(SDL_PollEvent(&event)) {
             switch(event.type) {
                 case SDL_JOYAXISMOTION:
-                    V = environment->config.world.max_track_speed * environment->config.joystick.gain;
+                    maxLinearSpeed = environment->config.world.max_track_speed * environment->config.joystick.gain;
+                    maxAngularSpeed = maxLinearSpeed * 2.0;
                     switch (event.jaxis.axis) {
-                        case 1:
-                            vel_right = V * event.jaxis.value / 32768.0;
+                        case 0:
+                            angularSpeed = maxAngularSpeed * event.jaxis.value / 32768.0;
                             break;
-                        case 4:
-                            vel_left = V * event.jaxis.value / 32768.0;
+                        case 1:
+                            linearSpeed = maxLinearSpeed * (-1 * event.jaxis.value) / 32768.0;
                             break;
                         case 2:
                             flipperRLbuttonDown = (event.jaxis.value >= -32767);
+                            break;
                         case 5:
                             flipperRRbuttonDown = (event.jaxis.value >= -32767);
+                            break;
                     }
-//                    std::cout << (uint)event.jaxis.axis << " " << (uint)event.jaxis.value << std::endl;
+
+                    vel_left = linearSpeed + angularSpeed * tracksDistance / 2 / steeringEfficiency;
+                    vel_right = linearSpeed - angularSpeed * tracksDistance / 2 / steeringEfficiency;
+
+                    if (fabs(vel_left) > maxLinearSpeed) {
+                        vel_left = sgn(vel_left) * maxLinearSpeed;
+                    }
+                    if (fabs(vel_right) > maxLinearSpeed) {
+                        vel_right = sgn(vel_right) * maxLinearSpeed;
+                    }
+
+//                    std::cout << (uint)event.jaxis.axis << " " << event.jaxis.value << std::endl;
                     break;
                 case SDL_JOYBUTTONDOWN:
                     switch (event.jbutton.button) {
@@ -158,7 +182,7 @@ void step(int pause) {
 
     environment->v->setVelocities(kbd_gain * vel_left, kbd_gain * vel_right);
 
-    TrackedVehicle* tv = dynamic_cast<TrackedVehicle*>(environment->v);
+    VEHICLE_TYPE* tv = dynamic_cast<VEHICLE_TYPE*>(environment->v);
     if (tv != NULL) {
         tv->leftTrack->setFlipperAngularVelocity(0,  flipperFLbuttonDown * flipperMovementSpeed);
         tv->leftTrack->setFlipperAngularVelocity(1,  flipperRLbuttonDown * flipperMovementSpeed);
@@ -211,11 +235,11 @@ int main(int argc, char **argv) {
         return 1;
     }
     SDL_GameControllerAddMappingsFromFile(CONFIG_PATH "/gamecontrollerdb.txt");
-    
+
     dInitODE2(0);
     dAllocateODEDataForThread(dAllocateMaskAll);
 
-    environment = new TrackedVehicleEnvironment();
+    environment = new ENVIRONMENT_TYPE();
     environment->create();
 
     // set initial robot pose:

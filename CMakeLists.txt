@@ -49,17 +49,27 @@ include_directories(
 )
 
 set(BASE_SOURCES
-        src/Track.cpp
-        src/TrackKinematicModel.cpp
-        src/TrackedVehicle.cpp
-        src/SkidSteeringVehicle.cpp
         src/Environment.cpp
-        src/TrackedVehicleEnvironment.cpp
-        src/SkidSteerVehicleEnvironment.cpp
         src/ODEUtils.cpp
         src/utils.cpp
+
+        src/TrackKinematicModel.cpp
+        src/PlanarJoint.cpp
+        src/TrackBase.cpp
+        src/Flipper.cpp
+        src/Track.cpp
+        src/TrackedVehicle.cpp
+        src/TrackedVehicleEnvironment.cpp
+
+        src/SkidSteeringVehicle.cpp
+        src/SkidSteerVehicleEnvironment.cpp
+
+        src/SimpleTrackBase.cpp
+        src/SimpleFlipper.cpp
+        src/SimpleTrack.cpp
         src/SimpleTrackedVehicle.cpp
-        src/SimpleTrackedVehicleEnvironment.cpp src/TrackBase.cpp include/TrackBase.h src/Flipper.cpp include/Flipper.h src/PlanarJoint.cpp include/PlanarJoint.h)
+        src/SimpleTrackedVehicleEnvironment.cpp
+)
 
 add_executable(simulator ${BASE_SOURCES} src/simulator.cpp)
 target_link_libraries(simulator ${LIBS})
